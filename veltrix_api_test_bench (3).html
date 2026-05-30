@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ht" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veltrix - Bann Tès API Entel yo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090B11',
+                        darkCard: '#111520',
+                        darkCardMuted: '#171D2B',
+                        neonGreen: '#CCFF00',
+                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
+                        oliveAccent: '#88B000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .neon-glow-border {
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.05);
+            border: 1px solid rgba(204, 255, 0, 0.1);
+        }
+        .neon-glow-border:focus-within {
+            box-shadow: 0 0 25px rgba(204, 255, 0, 0.25);
+            border-color: rgba(204, 255, 0, 0.6);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
+        }
+        /* Personnalisation de la barre de défilement */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #090B11;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #171D2B;
+            border-radius: 99px;
+            border: 1px solid rgba(204, 255, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans h-full flex flex-col overflow-hidden">
+
+    <!-- HEADER -->
+    <header class="w-full bg-darkCard/80 border-b border-white/5 backdrop-blur-md px-6 py-4 flex items-center justify-between z-30 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center">
+                <i class="fa-solid fa-flask text-neonGreen text-md"></i>
+            </div>
+            <div>
+                <span class="font-display font-bold text-lg tracking-wider text-white">VELTRIX <span class="text-neonGreen text-xs">TEST BENCH</span></span>
+                <span class="hidden sm:inline block text-[9px] text-slate-500 uppercase tracking-widest ml-2">Arèn Eksperimantasyon an Dirèk</span>
+            </div>
+        </div>
+        <div class="text-xs text-slate-400">
+            Kanal API: <span class="font-mono font-bold text-neonGreen">v1beta</span>
+        </div>
+    </header>
+
+    <!-- CONTENT LAYOUT -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden w-full h-full">
+        
+        <!-- SIDEBAR DE CONFIGURATION (PANÈL GÒCH) -->
+        <aside class="w-full lg:w-96 bg-darkCard/40 border-b lg:border-b-0 lg:border-r border-white/5 p-6 overflow-y-auto custom-scrollbar shrink-0">
+            <div class="space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider">Configurateur de Débat</h2>
+                    <p class="text-[11px] text-slate-500">Mete paramèt yo epi konekte kle w la pou kòmanse tès la.</p>
+                </div>
+
+                <!-- API Key Input -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gemini API Key</label>
+                        <a href="https://aistudio.google.com/" target="_blank" class="text-[9px] text-neonGreen hover:underline font-bold">Jwenn yon kle gratis <i class="fa-solid fa-up-right-from-square"></i></a>
+                    </div>
+                    <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
+                        <i class="fa-solid fa-key text-slate-500 text-xs"></i>
+                        <input id="api-key-input" type="password" placeholder="Antre kle AI Studio w la..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                        <button onclick="clearApiKey()" title="Efase kle sa a nan memwa a" class="text-slate-500 hover:text-red-400 transition-colors focus:outline-none">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Bouton Dyagnostik Kle API -->
+                    <div class="flex gap-2">
+                        <button onclick="runDiagnostics()" class="flex-1 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold text-slate-300 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-stethoscope text-neonGreen"></i>
+                            <span>Fè Dyagnostik Kle API</span>
+                        </button>
+                    </div>
+                    <span class="text-[9px] text-slate-500 block text-slate-400">Kle sa a sove nan navigatè w la sèlman, li pap janm voye okenn lòt kote.</span>
+                </div>
+
+                <!-- Modèl AI Selector -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Modèl AI pou itilize</label>
+                    <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2.5">
+                        <select id="model-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                            <option class="bg-darkCard text-white" value="gemini-1.5-flash" selected>Gemini 1.5 Flash (Trè rapid & Rekòmande)</option>
+                            <option class="bg-darkCard text-white" value="gemini-1.5-pro">Gemini 1.5 Pro (Plis Analiz & Detaye)</option>
+                            <option class="bg-darkCard text-white" value="gemini-2.5-flash">Gemini 2.5 Flash (Dènye Jenerasyon)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sélection Entel A -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Premye Entel (Entel A)</label>
+                    <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2.5">
+                        <select id="entel-a-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                            <option class="bg-darkCard text-white" value="KronoPol-9">KronoPol-9 (Doktora nan Politik - Politik)</option>
+                            <option class="bg-darkCard text-white" value="MètKonsey">MètKonsey (Espè nan Lwa - Avoka)</option>
+                            <option class="bg-darkCard text-white" value="NexoFin-X">NexoFin-X (Ph.D nan Macroéconomie - Ekonomi)</option>
+                            <option class="bg-darkCard text-white" value="KèKontan">KèKontan (Espè nan Sikoloji - Lanmou)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sélection Entel B -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Dezyèm Entel (Entel B)</label>
+                    <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2.5">
+                        <select id="entel-b-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                            <option class="bg-darkCard text-white" value="NexoFin-X" selected>NexoFin-X (Ph.D nan Macroéconomie - Ekonomi)</option>
+                            <option class="bg-darkCard text-white" value="KronoPol-9">KronoPol-9 (Doktora nan Politik - Politik)</option>
+                            <option class="bg-darkCard text-white" value="MètKonsey">MètKonsey (Espè nan Lwa - Avoka)</option>
+                            <option class="bg-darkCard text-white" value="KèKontan">KèKontan (Espè nan Sikoloji - Lanmou)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sijè a (Topic) -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Sijè pou deba a</label>
+                    <div class="neon-glow-border bg-darkCard rounded-xl flex items-center p-3">
+                        <textarea id="topic-input" rows="3" class="w-full bg-transparent text-xs text-white focus:outline-none resize-none placeholder-slate-600" placeholder="Ekri sijè ou vle yo debat la...">Est-ce que l'économie libre ou le contrôle de l'État garantit un meilleur avenir ?</textarea>
+                    </div>
+                </div>
+
+                <!-- Langue et Tours -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lang</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2">
+                            <select id="language-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                                <option class="bg-darkCard text-white" value="French">Français</option>
+                                <option class="bg-darkCard text-white" value="Creole">Kreyòl</option>
+                                <option class="bg-darkCard text-white" value="English">English</option>
+                                <option class="bg-darkCard text-white" value="Spanish">Español</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Replik (Tours)</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2">
+                            <select id="turns-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                                <option class="bg-darkCard text-white" value="4">4 Replik</option>
+                                <option class="bg-darkCard text-white" value="6">6 Replik</option>
+                                <option class="bg-darkCard text-white" value="8">8 Replik</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bouton kòmanse -->
+                <button id="start-btn" onclick="startDebate()" class="w-full py-3.5 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.15)] hover:shadow-[0_0_25px_rgba(204,255,0,0.4)]">
+                    <i class="fa-solid fa-play"></i>
+                    <span>LANSE DEBA A</span>
+                </button>
+
+                <!-- Bouton arête -->
+                <button id="stop-btn" onclick="stopDebate()" class="w-full py-3.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-display font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-2 border border-red-500/20 hidden">
+                    <i class="fa-solid fa-stop"></i>
+                    <span>KANPE DEBA A</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- CHAT AREA (ARÈN DEBA A) -->
+        <main class="flex-1 bg-darkBg flex flex-col overflow-hidden h-full">
+            
+            <!-- Estati Arèn nan -->
+            <div class="px-6 py-4 bg-darkCard/20 border-b border-white/5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span id="arena-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+                    <span id="arena-status-text" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Arèn San Aktivite</span>
+                </div>
+                <div class="text-[10px] text-slate-500 font-mono">
+                    Istwa: <span id="history-counter">0/0</span> mesaj
+                </div>
+            </div>
+
+            <!-- Zòn Mesaj yo k ap desann -->
+            <div id="chat-messages-container" class="flex-1 p-6 overflow-y-auto custom-scrollbar space-y-6 flex flex-col justify-start">
+                <!-- Mesaj Byenveni -->
+                <div id="welcome-message" class="my-auto text-center space-y-4 max-w-md mx-auto">
+                    <div class="w-14 h-14 bg-neonGreen/10 border border-neonGreen/20 rounded-full flex items-center justify-center mx-auto text-neonGreen text-xl animate-pulse">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="font-display font-bold text-lg text-white">Byenveni nan Arèn Eksperimantal la</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Mete kle API w la sou bò gòch la, chwazi de "Entel", ekri yon sijè, epi gade kijan yo ap reponn epi kontredi youn lòt an tan reyèl ak gwo sèvo Gemini API a!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicator Refleksyon (Typing Indicator) -->
+            <div id="typing-indicator" class="px-6 py-3 bg-darkCard/40 border-t border-white/5 flex items-center gap-3 shrink-0 hidden">
+                <div class="relative">
+                    <img id="typing-avatar" src="" class="w-8 h-8 rounded-lg bg-darkBg border border-neonGreen/20">
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500"></div>
+                </div>
+                <div class="space-y-1">
+                    <span id="typing-name" class="block text-[10px] font-bold text-white font-mono"></span>
+                    <div class="flex items-center gap-1">
+                        <span class="text-[10px] text-slate-500">ap kalkile replik li</span>
+                        <span class="flex gap-0.5 ml-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-neonGreen animate-bounce" style="animation-delay: 0ms"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-neonGreen animate-bounce" style="animation-delay: 150ms"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-neonGreen animate-bounce" style="animation-delay: 300ms"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const entelsDatabase = {
+            "KronoPol-9": {
+                name: "KronoPol-9",
+                avatarSeed: "Krono",
+                domain: "Politique",
+                prompt: `You are KronoPol-9, an elite political scientist. You are in a live, direct debate.
+                         You argue that social structures, laws, and public policies are more important than pure financial systems or individual metrics.
+                         
+                         CRITICAL RULES FOR THE DEBATE:
+                         1. Address the other speaker by their name when appropriate.
+                         2. NEVER write long paragraphs. Your responses must be 2 to 3 sentences maximum. Keep it very conversational.
+                         3. Be sharp, polite but extremely challenging.
+                         4. End every turn by asking the other speaker ONE direct, difficult question.
+                         5. Never say you are an AI or bot. You are KronoPol-9.`
+            },
+            "NexoFin-X": {
+                name: "NexoFin-X",
+                avatarSeed: "Cypher",
+                domain: "Économie",
+                prompt: `You are NexoFin-X, a brilliant macroeconomist. You are in a live, direct debate.
+                         You argue that economy, free markets, and currency stability dictate politics, not the other way around.
+                         
+                         CRITICAL RULES FOR THE DEBATE:
+                         1. Address the other speaker by their name when appropriate.
+                         2. NEVER write long paragraphs. Your responses must be 2 to 3 sentences maximum. Keep it very conversational.
+                         3. Be analytical, firm, and use economic logic.
+                         4. End every turn by asking the other speaker ONE direct, difficult question.
+                         5. Never say you are an AI or bot. You are NexoFin-X.`
+            },
+            "MètKonsey": {
+                name: "MètKonsey",
+                avatarSeed: "Alex",
+                domain: "Avoka",
+                prompt: `You are MètKonsey, a sharp, analytical, and highly articulate corporate and criminal lawyer.
+                         You look at every subject through the lens of constitutionality, evidence, contracts, and statutory law.
+                         
+                         CRITICAL RULES FOR THE DEBATE:
+                         1. Address the other speaker by their name when appropriate.
+                         2. NEVER write long paragraphs. Your responses must be 2 to 3 sentences maximum. Keep it very conversational.
+                         3. Be objective, formal, persuasive, and legally rigorous.
+                         4. End every turn by asking the other speaker ONE direct, difficult question.
+                         5. Never say you are an AI or bot. You are MètKonsey.`
+            },
+            "KèKontan": {
+                name: "KèKontan",
+                avatarSeed: "Jean",
+                domain: "Lanmou",
+                prompt: `You are KèKontan, a compassionate, emotionally intelligent, and perceptive relationship counselor.
+                         You analyze human behavior, attachment styles, and the complexities of romance, empathy, and social connection.
+                         
+                         CRITICAL RULES FOR THE DEBATE:
+                         1. Address the other speaker by their name when appropriate.
+                         2. NEVER write long paragraphs. Your responses must be 2 to 3 sentences maximum. Keep it very conversational.
+                         3. Be warm, empathetic, realistic, yet deeply psychological.
+                         4. End every turn by asking the other speaker ONE direct, difficult question.
+                         5. Never say you are an AI or bot. You are KèKontan.`
+            }
+        };
+
+        let activeDebate = null;
+        let shouldStop = false;
+
+        // Verifye epi chaje kle a depi nan localStorage lè paj la louvri
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('veltrix_gemini_api_key');
+            if (savedKey) {
+                document.getElementById('api-key-input').value = savedKey;
+                showToast("Nou chaje kle API ou a otomatikman depi nan navigatè a !", "success");
+            }
+        });
+
+        // Efase kle a nan navigatè a
+        function clearApiKey() {
+            const input = document.getElementById('api-key-input');
+            if (input.value) {
+                input.value = '';
+                localStorage.removeItem('veltrix_gemini_api_key');
+                showToast("Kle API a efase nan memwa navigatè sa a.", "success");
+            } else {
+                showToast("Bwat la vid deja !", "error");
+            }
+        }
+
+        // Kouri dyagnostik kle API a an dirèk ak Google
+        async function runDiagnostics() {
+            const apiKey = document.getElementById('api-key-input').value.trim();
+            if (!apiKey) {
+                showToast("Tanpri antre yon kle API anvan pou w ka fè dyagnostik la.", "error");
+                return;
+            }
+
+            // Tcheke si se yon kle egzanp/placeholder
+            if (apiKey === "VOTRE_CLE_API_GEMINI_ICI" || apiKey.toLowerCase().includes("votre_cle") || apiKey.toLowerCase().includes("your_api") || apiKey === "your_key") {
+                showToast("Erè : Sa a se yon kle egzanp !", "error");
+                const chatContainer = document.getElementById('chat-messages-container');
+                chatContainer.innerHTML = `
+                    <div class="p-5 bg-darkCard border border-red-500/30 rounded-2xl max-w-md mx-auto space-y-3">
+                        <div class="flex items-center gap-2 text-red-500 font-bold text-xs">
+                            <i class="fa-solid fa-triangle-exclamation"></i> KÒD EGZANP DETEKTE
+                        </div>
+                        <p class="text-xs text-slate-300">Ou antre kle egzanp lan <strong>"${apiKey}"</strong>.</p>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Ou bezwen klike sou lyen <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline font-bold">Google AI Studio <i class="fa-solid fa-up-right-from-square text-[9px]"></i></a> pou w jwenn pwòp kle pèsonèl ou ki kòmanse ak <strong class="text-white">"AIzaSy..."</strong>.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            showToast("Verifikasyon kle a an dirèk ak Google...", "success");
+
+            // Nou teste toujou ak v1beta pou asire tout modèl yo parèt
+            const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error?.message || "Erè enkoni nan Google.");
+                }
+
+                const models = data.models || [];
+                const modelNames = models.map(m => m.name.replace('models/', ''));
+                
+                // Afiche rezilta a nan chat la pou itilizatè a ka wè l
+                const chatContainer = document.getElementById('chat-messages-container');
+                chatContainer.innerHTML = `
+                    <div class="p-5 bg-darkCard border border-neonGreen/30 rounded-2xl max-w-md mx-auto space-y-3 shadow-[0_0_30px_rgba(204,255,0,0.1)]">
+                        <div class="flex items-center gap-2 text-neonGreen font-bold text-xs">
+                            <i class="fa-solid fa-circle-check"></i> DYAGNOSTIK REUSSI !
+                        </div>
+                        <p class="text-xs text-slate-300">Kle API ou a <strong>aktif ak valab</strong> sou sèvè Google.</p>
+                        <div class="text-[10px] text-slate-400 space-y-1">
+                            <span class="block font-semibold">Modèl kle sa a gen dwa itilize :</span>
+                            <div class="max-h-32 overflow-y-auto custom-scrollbar p-2 bg-darkBg border border-white/5 rounded font-mono text-[9px] text-slate-500">
+                                ${modelNames.map(name => `● ${name}`).join('<br>')}
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed">
+                            Koulye a, asire w ou chwazi <strong class="text-white">Gemini 1.5 Flash</strong> epi klike sou "Lanse Deba a" pou w kòmanse !
+                        </p>
+                    </div>
+                `;
+                showToast("Kle a fonksyone parfe !", "success");
+
+            } catch (error) {
+                const chatContainer = document.getElementById('chat-messages-container');
+                chatContainer.innerHTML = `
+                    <div class="p-5 bg-darkCard border border-red-500/30 rounded-2xl max-w-md mx-auto space-y-3">
+                        <div class="flex items-center gap-2 text-red-500 font-bold text-xs">
+                            <i class="fa-solid fa-circle-xmark"></i> DYAGNOSTIK ECHOUE
+                        </div>
+                        <p class="text-xs text-slate-300">Google refize kle API sa a.</p>
+                        <div class="p-3 bg-darkBg border border-white/5 rounded text-[10px] text-red-400 font-mono">
+                            Erè: ${error.message}
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed">
+                            Asire w ou pa gen okenn espas anplis nan kle a, epi kle a soti nan <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline">Google AI Studio</a>.
+                        </p>
+                    </div>
+                `;
+                showToast("Kle API a pa valab.", "error");
+            }
+        }
+
+        // Mizajou nan header
+        function updateHeaderModel(value) {
+            document.getElementById('header-model-display').textContent = value;
+        }
+
+        // Klas pou jere deba a an tan reyèl ak API a
+        class LiveDebateOrchestrator {
+            constructor(apiKey, entelAName, entelBName, topic, language, modelName) {
+                this.apiKey = apiKey;
+                this.entelA = entelsDatabase[entelAName];
+                this.entelB = entelsDatabase[entelBName];
+                this.topic = topic;
+                this.language = language;
+                this.modelName = modelName;
+                this.history = [];
+            }
+
+            // Rele API a ak sistèm sekirite Retry ak Exponential Backoff
+            async callGeminiWithRetry(payload, delay = 1000, retries = 5) {
+                // Nou fòse v1beta pou tout modèl yo pou nou ka itilize systemInstruction nòmalman !
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.modelName}:generateContent?key=${this.apiKey}`;
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        const errData = await response.json().catch(() => ({}));
+                        throw new Error(errData.error?.message || `API Error: ${response.statusText}`);
+                    }
+                    
+                    return await response.json();
+                } catch (error) {
+                    if (retries > 0) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return this.callGeminiWithRetry(payload, delay * 2, retries - 1);
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+
+            // Bati kontèks la pou modèl AI a ka konnen istwa a
+            buildContextPrompt(current, other) {
+                let context = `This is a live debate on the topic: "${this.topic}".\n`;
+                context += `You must speak fluently in ${this.language}.\n\n`;
+                context += `Here is the conversation history so far:\n`;
+
+                if (this.history.length === 0) {
+                    context += `[System: The debate has just started. You have the first turn. Introduce your position on the topic and challenge ${other.name}.]`;
+                } else {
+                    this.history.forEach(msg => {
+                        context += `${msg.sender}: ${msg.text}\n`;
+                    });
+                    context += `\n[System: It is your turn now. Respond to the last message from ${other.name}, challenge their arguments, and ask them a sharp question.]`;
+                }
+
+                return context;
+            }
+
+            // Kouri yon vire (turn)
+            async runTurn(speakerName) {
+                const current = speakerName === this.entelA.name ? this.entelA : this.entelB;
+                const other = speakerName === this.entelA.name ? this.entelB : this.entelA;
+
+                const promptContent = this.buildContextPrompt(current, other);
+
+                const payload = {
+                    contents: [{
+                        parts: [{ text: promptContent }]
+                    }],
+                    systemInstruction: {
+                        parts: [{ text: current.prompt }]
+                    }
+                };
+
+                const data = await this.callGeminiWithRetry(payload);
+                const rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!rawResponse) {
+                    throw new Error("API a pa t tounen okenn tèks valid.");
+                }
+
+                const cleanText = rawResponse.trim();
+                
+                this.history.push({
+                    sender: current.name,
+                    text: cleanText
+                });
+
+                return cleanText;
+            }
+        }
+
+        // Kòmanse Deba a
+        async function startDebate() {
+            const apiKey = document.getElementById('api-key-input').value.trim();
+            const entelAName = document.getElementById('entel-a-select').value;
+            const entelBName = document.getElementById('entel-b-select').value;
+            const topic = document.getElementById('topic-input').value.trim();
+            const language = document.getElementById('language-select').value;
+            const maxTurns = parseInt(document.getElementById('turns-select').value);
+            const modelName = document.getElementById('model-select').value;
+
+            if (!apiKey) {
+                showToast("Tanpri mete kle API Gemini ou a pou w ka testel.", "error");
+                return;
+            }
+
+            // Tcheke si se yon kle egzanp/placeholder
+            if (apiKey === "VOTRE_CLE_API_GEMINI_ICI" || apiKey.toLowerCase().includes("votre_cle") || apiKey.toLowerCase().includes("your_api") || apiKey === "your_key") {
+                showToast("Oops ! Se yon kle egzanp, antre yon kle reyèl.", "error");
+                runDiagnostics(); // Rele dyagnostik otomatikman pou montre eksplikatyon an
+                return;
+            }
+
+            localStorage.setItem('veltrix_gemini_api_key', apiKey);
+
+            if (entelAName === entelBName) {
+                showToast("Tanpri chwazi de (2) Entel diferan pou deba a ka fèt.", "error");
+                return;
+            }
+
+            if (!topic) {
+                showToast("Tanpri antre yon sijè pou yo debat.", "error");
+                return;
+            }
+
+            const chatContainer = document.getElementById('chat-messages-container');
+            chatContainer.innerHTML = ''; 
+            
+            document.getElementById('start-btn').classList.add('hidden');
+            document.getElementById('stop-btn').classList.remove('hidden');
+            
+            document.getElementById('arena-status-dot').className = "w-2.5 h-2.5 rounded-full bg-neonGreen animate-pulse shadow-[0_0_8px_#CCFF00]";
+            document.getElementById('arena-status-text').textContent = "Deba ap dewoule";
+            document.getElementById('arena-status-text').className = "text-xs font-bold text-neonGreen uppercase tracking-wider neon-text-glow";
+            
+            document.getElementById('history-counter').textContent = `0/${maxTurns}`;
+
+            shouldStop = false;
+            activeDebate = new LiveDebateOrchestrator(apiKey, entelAName, entelBName, topic, language, modelName);
+
+            let nextSpeakerName = entelAName;
+
+            try {
+                for (let turn = 1; turn <= maxTurns; turn++) {
+                    if (shouldStop) break;
+
+                    const speaker = nextSpeakerName === entelAName ? activeDebate.entelA : activeDebate.entelB;
+                    
+                    showTypingIndicator(speaker);
+
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    if (shouldStop) break;
+
+                    const messageText = await activeDebate.runTurn(nextSpeakerName);
+
+                    hideTypingIndicator();
+
+                    appendMessage(speaker, messageText);
+                    
+                    document.getElementById('history-counter').textContent = `${turn}/${maxTurns}`;
+
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    nextSpeakerName = nextSpeakerName === entelAName ? entelBName : entelAName;
+                }
+
+                if (!shouldStop) {
+                    showToast("Deba a fini ak siksè !");
+                    resetInterface();
+                }
+
+            } catch (error) {
+                hideTypingIndicator();
+                resetInterface();
+                showToast(error.message || "Erè koneksyon API.", "error");
+                
+                chatContainer.innerHTML += `
+                    <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-xs text-red-400 space-y-2 max-w-md mx-auto">
+                        <div class="font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Erè API Gemini
+                        </div>
+                        <p>${error.message}. Asire w ke kle API w la kòrèk, epi modèl ou chwazi a aktif nan zòn ou an.</p>
+                        <button onclick="runDiagnostics()" class="px-3 py-1.5 bg-red-500/20 hover:bg-red-500 text-white font-bold rounded-lg text-[10px] transition-all">
+                            Lanse dyagnostik kle API a kounye a
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Kanpe Deba a
+        function stopDebate() {
+            shouldStop = true;
+            hideTypingIndicator();
+            resetInterface();
+            showToast("Yo kanpe deba a.");
+        }
+
+        // Reyajiste bouton yo nan eta inisyal la
+        function resetInterface() {
+            document.getElementById('start-btn').classList.remove('hidden');
+            document.getElementById('stop-btn').classList.add('hidden');
+            
+            document.getElementById('arena-status-dot').className = "w-2.5 h-2.5 rounded-full bg-slate-600";
+            document.getElementById('arena-status-text').textContent = "Arèn San Aktivite";
+            document.getElementById('arena-status-text').className = "text-xs font-semibold text-slate-400 uppercase tracking-wider";
+        }
+
+        // Afiche "Typing Indicator"
+        function showTypingIndicator(speaker) {
+            document.getElementById('typing-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${speaker.avatarSeed}&backgroundColor=090b11`;
+            document.getElementById('typing-name').textContent = speaker.name;
+            document.getElementById('typing-indicator').classList.remove('hidden');
+            
+            const chatContainer = document.getElementById('chat-messages-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Kache "Typing Indicator"
+        function hideTypingIndicator() {
+            document.getElementById('typing-indicator').classList.add('hidden');
+        }
+
+        // Ajoute mesaj la nan koòdone a (Typewriter effect dousman)
+        function appendMessage(speaker, text) {
+            const chatContainer = document.getElementById('chat-messages-container');
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = "flex gap-4 items-start max-w-3xl opacity-0 translate-y-2 transition-all duration-300";
+            
+            messageElement.innerHTML = `
+                <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${speaker.avatarSeed}&backgroundColor=090b11" class="w-10 h-10 rounded-xl bg-darkCard border border-white/10 shrink-0">
+                <div class="space-y-1.5 flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-white font-mono">${speaker.name}</span>
+                        <span class="text-[9px] text-slate-500 uppercase tracking-wider px-2 py-0.5 bg-white/5 rounded">${speaker.domain}</span>
+                    </div>
+                    <div class="p-4 bg-darkCard border border-white/5 rounded-2xl rounded-tl-none">
+                        <p id="typing-text-target" class="text-xs text-slate-300 leading-relaxed"></p>
+                    </div>
+                </div>
+            `;
+
+            chatContainer.appendChild(messageElement);
+            
+            setTimeout(() => {
+                messageElement.classList.remove('opacity-0', 'translate-y-2');
+            }, 50);
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            const textTarget = messageElement.querySelector('#typing-text-target');
+            let index = 0;
+            
+            function typeWriter() {
+                if (index < text.length) {
+                    textTarget.textContent += text.charAt(index);
+                    index++;
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    setTimeout(typeWriter, 25);
+                }
+            }
+            
+            typeWriter();
+        }
+
+        // Custom Toast Notification
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "p-4 rounded-xl text-xs text-white flex items-center gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.5)] transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto min-w-[280px]";
+            
+            if (type === "success") {
+                toast.classList.add('bg-darkCard', 'border', 'border-neonGreen/40');
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-neonGreen text-md"></i> <span>${message}</span>`;
+            } else {
+                toast.classList.add('bg-darkCard', 'border', 'border-red-500/40');
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 text-md"></i> <span>${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-2px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
