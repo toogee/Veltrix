@@ -8,6 +8,11 @@ const SUPABASE_URL = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
 
 // Chargement de la clé Anon depuis le localStorage
 let supabaseAnonKey = localStorage.getItem('veltrix_supabase_anon_key') || "";
+// Nettoyage automatique des valeurs invalides de localStorage
+if (supabaseAnonKey === "undefined" || supabaseAnonKey === "null" || supabaseAnonKey === "[object Object]") {
+    localStorage.removeItem('veltrix_supabase_anon_key');
+    supabaseAnonKey = "";
+}
 let supabase = null;
 
 // Fonction pour initialiser le client Supabase
@@ -23,11 +28,29 @@ function initSupabaseClient() {
     }
 
     try {
+        // Validation basique de la longueur de la clé Anon
+        if (supabaseAnonKey.length < 20) {
+            throw new Error("Clé Anon trop courte ou invalide.");
+        }
+
         supabase = window.supabase.createClient(SUPABASE_URL, supabaseAnonKey);
+        
+        // Auto-détection d'une instance corrompue/incomplète (auth non disponible)
+        if (!supabase || !supabase.auth) {
+            throw new Error("L'instance Supabase créée est incomplète (auth non disponible).");
+        }
+
         console.log("Client Supabase initialisé avec succès !");
         return true;
     } catch (error) {
         console.error("Erreur d'initialisation de Supabase :", error);
+        
+        // Réinitialisation automatique du localStorage pour forcer la saisie d'une nouvelle clé
+        localStorage.removeItem('veltrix_supabase_anon_key');
+        supabaseAnonKey = "";
+        supabase = null;
+        
+        injectSupabaseKeyModal();
         return false;
     }
 }
