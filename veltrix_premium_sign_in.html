@@ -277,7 +277,7 @@
             }
 
             if (!supabase) {
-                showToast("Sistèm Supabase la pako konekte byen. Mete Anon Key la.", "error");
+                showToast("La connexion à Supabase n'est pas encore établie. Veuillez saisir votre clé Anon.", "error");
                 return;
             }
 
@@ -307,7 +307,7 @@
             }).catch(err => {
                 button.disabled = false;
                 button.innerHTML = originalBtnContent;
-                showToast(err.message || "Erè enkoni rive.", "error");
+                showToast(err.message || "Une erreur inconnue est survenue.", "error");
             });
         }
 

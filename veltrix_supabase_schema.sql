@@ -1,12 +1,12 @@
 -- =========================================================================
 -- VELTRIX - DEPLOYMENT SCHEMA FOR SUPABASE DATABASE
 -- 
--- Kouri script SQL sa a nan "SQL Editor" nan tablodbò Supabase ou a.
--- Li pral kreye tab profile yo, konfigirasyon deba yo, ak sistèm otomatik
--- debalans kredi pou itilizatè yo.
+-- Exécutez ce script SQL dans le "SQL Editor" de votre tableau de bord Supabase.
+-- Il va créer la table des profils, configurer les débats, et mettre en place le système automatique
+-- de balance de crédits pour les utilisateurs.
 -- =========================================================================
 
--- 1. KREYE TAB PROFILE LA (PROFILES TABLE)
+-- 1. CRÉATION DE LA TABLE DES PROFILS (PROFILES TABLE)
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name TEXT NOT NULL,
@@ -16,16 +16,16 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. KREYE YON DEKLANCHE OTOMATIK (AUTOMATED TRIGGER) POU KREYE PROFILS YO
--- Lè yon itilizatè enskri nan auth.users, sistèm nan ap otomatikman kreye
--- yon ranje (row) korespondan nan profiles la ak 50 Kredi kòm kado byenveni !
+-- 2. CRÉATION D'UN DÉCLENCHEUR AUTOMATIQUE (AUTOMATED TRIGGER) POUR CRÉER LES PROFILS
+-- Lorsqu'un utilisateur s'inscrit dans auth.users, le système va automatiquement créer
+-- une ligne correspondante dans la table profiles avec 50 Crédits offerts en cadeau de bienvenue !
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO public.profiles (id, full_name, credits, tier)
     VALUES (
         new.id,
-        COALESCE(new.raw_user_meta_data->>'full_name', 'Itilizatè Veltrix'),
+        COALESCE(new.raw_user_meta_data->>'full_name', 'Utilisateur Veltrix'),
         50,
         'STANDARD'
     );
@@ -33,25 +33,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Kouri trigger a apre chak nouvo itilizatè enskri
+-- Lancer le trigger après l'inscription de chaque nouvel utilisateur
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- 3. JERE SEKIRITE DE PATI (ROW LEVEL SECURITY - RLS)
+-- 3. GESTION DE LA SÉCURITÉ DE NIVEAU LIGNE (ROW LEVEL SECURITY - RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Itilizatè yo gen dwa wè tout profiles (pou yo ka wè debatan ak lòt Entel yo)
+-- Les utilisateurs peuvent voir tous les profils (pour voir les détails des autres Entels de débat)
 CREATE POLICY "profiles_select_policy" ON public.profiles
     FOR SELECT TO authenticated USING (true);
 
--- Itilizatè a kapab modifye SÈLMAN pwòp profile pa li
+-- L'utilisateur peut modifier UNIQUEMENT son propre profil
 CREATE POLICY "profiles_update_policy" ON public.profiles
     FOR UPDATE TO authenticated USING (auth.uid() = id);
 
--- 4. KREYE WOUT RAPID POU DEDIKSYON KREDI (CREDIT DEBIT FUNCTION)
--- Yon fonksyon ki asire dediksyon kredi yo fèt byen san okenn triche nan frontend la
+-- 4. CRÉATION DE LA FONCTION DE DÉDUCTION DE CRÉDITS (CREDIT DEBIT FUNCTION)
+-- Une fonction qui garantit que la déduction des crédits est effectuée de manière sécurisée sans aucune triche possible côté frontend
 CREATE OR REPLACE FUNCTION public.deduct_user_credits(user_id UUID, amount INT)
 RETURNS VOID AS $$
 BEGIN
@@ -60,7 +60,7 @@ BEGIN
     WHERE id = user_id AND credits >= amount;
     
     IF NOT FOUND THEN
-        RAISE EXCEPTION 'Balans kredi pa sifizan oswa itilizatè a pa egziste.';
+        RAISE EXCEPTION 'Solde de crédits insuffisant ou utilisateur inexistant.';
     END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

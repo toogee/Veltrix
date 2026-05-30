@@ -45,7 +45,7 @@
         .neon-text-glow {
             text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
         }
-        /* Personalizasyon Scrollbar */
+        /* Personnalisation de la barre de défilement */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
@@ -69,11 +69,11 @@
             </div>
             <div>
                 <span class="font-display font-bold text-lg tracking-wider text-white">VELTRIX <span class="text-neonGreen text-xs">BROADCAST PRO</span></span>
-                <span class="hidden sm:inline block text-[9px] text-slate-500 uppercase tracking-widest ml-2">Panèl Tès Vokal ElevenLabs</span>
+                <span class="hidden sm:inline block text-[9px] text-slate-500 uppercase tracking-widest ml-2">Panneau de Test Vocal ElevenLabs</span>
             </div>
         </div>
         <div class="flex items-center gap-3">
-            <span class="text-xs text-slate-400">Modpas API:</span>
+            <span class="text-xs text-slate-400">Canaux API :</span>
             <span class="px-2 py-0.5 rounded bg-neonGreen/10 border border-neonGreen/20 text-[10px] text-neonGreen font-semibold uppercase">v1beta (Gemini) + v1 (ElevenLabs)</span>
         </div>
     </header>
@@ -81,23 +81,23 @@
     <!-- CONTENT LAYOUT -->
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden w-full h-full">
         
-        <!-- SIDEBAR DE CONFIGURATION (PANÈL GÒCH) -->
+        <!-- SIDEBAR DE CONFIGURATION (PANNEAU GAUCHE) -->
         <aside class="w-full lg:w-96 bg-darkCard/40 border-b lg:border-b-0 lg:border-r border-white/5 p-6 overflow-y-auto custom-scrollbar shrink-0">
             <div class="space-y-6">
                 <div class="space-y-1">
-                    <h2 class="text-sm font-bold text-white uppercase tracking-wider">Konfigirasyon vokal</h2>
-                    <p class="text-[11px] text-slate-500">Mete paramèt yo pou w ka teste emisyon odyo an dirèk.</p>
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider">Configuration Vocale</h2>
+                    <p class="text-[11px] text-slate-500">Définissez les paramètres pour tester les émissions audio en direct.</p>
                 </div>
 
                 <!-- 1. Gemini API Key -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gemini API Key</label>
-                        <button onclick="runGeminiDiagnostics()" class="text-[9px] text-neonGreen hover:underline font-bold">Tcheke Kle Gemini <i class="fa-solid fa-stethoscope"></i></button>
+                        <button onclick="runGeminiDiagnostics()" class="text-[9px] text-neonGreen hover:underline font-bold">Vérifier Clé Gemini <i class="fa-solid fa-stethoscope"></i></button>
                     </div>
                     <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
                         <i class="fa-solid fa-brain text-slate-500 text-xs"></i>
-                        <input id="gemini-key-input" type="password" placeholder="Kle Google AI Studio..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                        <input id="gemini-key-input" type="password" placeholder="Clé Google AI Studio..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
                     </div>
                 </div>
 
@@ -105,12 +105,12 @@
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ElevenLabs API Key</label>
-                        <button onclick="runElevenDiagnostics()" class="text-[9px] text-neonGreen hover:underline font-bold">Tcheke Kle Eleven <i class="fa-solid fa-stethoscope"></i></button>
+                        <button onclick="runElevenDiagnostics()" class="text-[9px] text-neonGreen hover:underline font-bold">Vérifier Clé Eleven <i class="fa-solid fa-stethoscope"></i></button>
                     </div>
                     <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
                         <i class="fa-solid fa-key text-slate-500 text-xs"></i>
-                        <input id="eleven-key-input" type="password" placeholder="Kle ElevenLabs..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
-                        <button onclick="clearApiKey()" title="Efase kle sa a nan memwa a" class="text-slate-500 hover:text-red-400 transition-colors focus:outline-none">
+                        <input id="eleven-key-input" type="password" placeholder="Clé ElevenLabs..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                        <button onclick="clearApiKey()" title="Effacer cette clé de la mémoire" class="text-slate-500 hover:text-red-400 transition-colors focus:outline-none">
                             <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
@@ -118,49 +118,49 @@
 
                 <!-- 3. Seleksyon Mòd Jenerasyon -->
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Mòd Jenerasyon Vwa</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Mode de Génération Vocale</label>
                     <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2.5">
                         <select id="voice-generation-mode" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                            <option class="bg-darkCard text-white" value="real" selected>Mòd Reyèl (ElevenLabs API - Peiye)</option>
-                            <option class="bg-darkCard text-white" value="simulation">Mòd Simulation (Navigatè TTS - Gratis)</option>
+                            <option class="bg-darkCard text-white" value="real" selected>Mode Réel (API ElevenLabs - Payant)</option>
+                            <option class="bg-darkCard text-white" value="simulation">Mode Simulation (TTS Navigateur - Gratuit)</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- 3.5 Vitès vokal (Simulation) -->
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Vitès vwa (Mòd Simulation)</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Vitesse Vocale (Mode Simulation)</label>
                     <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2.5">
                         <select id="voice-rate-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                            <option class="bg-darkCard text-white" value="1.25" selected>Rapid & Dinamik (1.25x)</option>
-                            <option class="bg-darkCard text-white" value="1.1">Nòmal (1.1x)</option>
-                            <option class="bg-darkCard text-white" value="0.95">Dousman (0.95x)</option>
+                            <option class="bg-darkCard text-white" value="1.25" selected>Rapide & Dynamique (1.25x)</option>
+                            <option class="bg-darkCard text-white" value="1.1">Normale (1.1x)</option>
+                            <option class="bg-darkCard text-white" value="0.95">Lente (0.95x)</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- ELEVENLABS VOICE HUMANIZER CONTROLS (NEW) -->
                 <div class="space-y-4 pt-4 border-t border-white/5">
-                    <h3 class="text-[10px] font-bold text-neonGreen uppercase tracking-wider">Kontwòl Imèn ElevenLabs (PRO)</h3>
+                    <h3 class="text-[10px] font-bold text-neonGreen uppercase tracking-wider">Contrôles d'Humanisation ElevenLabs (PRO)</h3>
                     
                     <!-- Slider Stability -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-[10px] text-slate-400">
-                            <span>Estabilite (Stability)</span>
+                            <span>Stabilité (Stability)</span>
                             <span id="stability-val" class="font-mono text-neonGreen font-bold">40%</span>
                         </div>
                         <input id="voice-stability-range" type="range" min="0" max="1" step="0.05" value="0.40" oninput="document.getElementById('stability-val').textContent = Math.round(this.value * 100) + '%'" class="w-full accent-neonGreen bg-darkBg h-1 rounded-lg">
-                        <span class="text-[9px] text-slate-500 block">Pi ba rann li gen plis emosyon, souf, ak varyasyon imen.</span>
+                        <span class="text-[9px] text-slate-500 block">Des valeurs plus basses produisent plus d'émotions, de respirations et de variations humaines.</span>
                     </div>
 
                     <!-- Slider Similarity/Clarity -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-[10px] text-slate-400">
-                            <span>Klète & Fidlite (Similarity)</span>
+                            <span>Clarté & Fidélité (Similarity)</span>
                             <span id="similarity-val" class="font-mono text-neonGreen font-bold">85%</span>
                         </div>
                         <input id="voice-similarity-range" type="range" min="0" max="1" step="0.05" value="0.85" oninput="document.getElementById('similarity-val').textContent = Math.round(this.value * 100) + '%'" class="w-full accent-neonGreen bg-darkBg h-1 rounded-lg">
-                        <span class="text-[9px] text-slate-500 block">Pi wo rann vwa a pi klè e pafè ak vwa klone a.</span>
+                        <span class="text-[9px] text-slate-500 block">Des valeurs plus élevées rendent la voix plus claire et fidèle à la voix clonée.</span>
                     </div>
                 </div>
 
@@ -170,7 +170,7 @@
                     
                     <!-- KronoPol-9 Voice ID -->
                     <div class="space-y-1">
-                        <span class="text-[10px] text-slate-400">Voice ID pou KronoPol-9</span>
+                        <span class="text-[10px] text-slate-400">Voice ID pour KronoPol-9</span>
                         <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-1.5">
                             <input id="voice-id-krono" type="text" value="pNInz6ob9g9j9YGCt834" class="w-full bg-transparent text-xs text-white font-mono focus:outline-none">
                         </div>
@@ -178,7 +178,7 @@
 
                     <!-- NexoFin-X Voice ID -->
                     <div class="space-y-1">
-                        <span class="text-[10px] text-slate-400">Voice ID pou NexoFin-X</span>
+                        <span class="text-[10px] text-slate-400">Voice ID pour NexoFin-X</span>
                         <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-1.5">
                             <input id="voice-id-nexo" type="text" value="ErXwobaYiN019tU2b10X" class="w-full bg-transparent text-xs text-white font-mono focus:outline-none">
                         </div>
@@ -187,30 +187,30 @@
 
                 <!-- Sijè deba a -->
                 <div class="space-y-2 pt-3 border-t border-white/5">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Sijè pou Broadcast la</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Sujet du Broadcast</label>
                     <div class="neon-glow-border bg-darkCard rounded-xl flex items-center p-3">
-                        <textarea id="topic-input" rows="2" class="w-full bg-transparent text-xs text-white focus:outline-none resize-none placeholder-slate-600" placeholder="Ekri sijè a...">Est-ce que l'économie libre ou le contrôle de l'État garantit un meilleur avenir ?</textarea>
+                        <textarea id="topic-input" rows="2" class="w-full bg-transparent text-xs text-white focus:outline-none resize-none placeholder-slate-600" placeholder="Écrivez le sujet...">Est-ce que l'économie libre ou le contrôle de l'État garantit un meilleur avenir ?</textarea>
                     </div>
                 </div>
 
                 <!-- Lang ak Tours -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lang</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Langue</label>
                         <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2">
                             <select id="language-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
                                 <option class="bg-darkCard text-white" value="French">Français</option>
-                                <option class="bg-darkCard text-white" value="Creole" selected>Kreyòl</option>
+                                <option class="bg-darkCard text-white" value="Creole" selected>Créole</option>
                                 <option class="bg-darkCard text-white" value="English">English</option>
                             </select>
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Replik (Tours)</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Répliques (Tours)</label>
                         <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2">
                             <select id="turns-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                                <option class="bg-darkCard text-white" value="4" selected>4 Replik</option>
-                                <option class="bg-darkCard text-white" value="6">6 Replik</option>
+                                <option class="bg-darkCard text-white" value="4" selected>4 Répliques</option>
+                                <option class="bg-darkCard text-white" value="6">6 Répliques</option>
                             </select>
                         </div>
                     </div>
@@ -219,12 +219,12 @@
                 <!-- Action Button -->
                 <button id="start-btn" onclick="startBroadcast()" class="w-full py-3.5 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.15)] hover:shadow-[0_0_25px_rgba(204,255,0,0.4)]">
                     <i class="fa-solid fa-tower-broadcast"></i>
-                    <span>LANSE EMISYON AN (BROADCAST)</span>
+                    <span>LANCER L'ÉMISSION (BROADCAST)</span>
                 </button>
 
                 <button id="stop-btn" onclick="stopBroadcast()" class="w-full py-3.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-display font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-2 border border-red-500/20 hidden">
                     <i class="fa-solid fa-stop"></i>
-                    <span>KITE ANTÈN LAN (STOP)</span>
+                    <span>QUITTER L'ANTENNE (STOP)</span>
                 </button>
             </div>
         </aside>
@@ -236,10 +236,10 @@
             <div class="px-6 py-4 bg-darkCard/20 border-b border-white/5 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-2.5">
                     <span id="broadcast-dot" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-                    <span id="broadcast-status-text" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Antèn San Aktivite</span>
+                    <span id="broadcast-status-text" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Antenne Inactive</span>
                 </div>
                 <div class="text-[10px] text-slate-500 font-mono">
-                    Replik: <span id="turns-counter">0/0</span>
+                    Répliques : <span id="turns-counter">0/0</span>
                 </div>
             </div>
 
@@ -291,7 +291,7 @@
 
                 <!-- BÈL ONN VOKAL DINAMIK (WAVEFORM) -->
                 <div class="bg-darkCard/30 border border-white/5 rounded-2xl p-6 max-w-xl mx-auto w-full space-y-4">
-                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block text-center">Frekans Onn Vokal yo an Tan Reyèl</span>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block text-center">Fréquence des Ondes Vocales en Temps Réel</span>
                     <!-- Waveform container -->
                     <div class="h-16 flex items-end justify-center gap-1.5 px-6">
                         <!-- 12 Waveform bars -->
@@ -321,11 +321,7 @@
     </div>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-2 pointer-events-none"></div>
-
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        // Database deba ak pèsonalite yo (Optimisé pour un Créole et Français ultra naturel et humain)
+    <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-2 pointer-events-none">        // Base de données des Entels et de leurs personnalités (Optimisée pour un Créole et Français ultra naturel et humain)
         const entelsDatabase = {
             "KronoPol-9": {
                 name: "KronoPol-9",
@@ -358,12 +354,12 @@
         let shouldStop = false;
         let isAudioPlaying = false;
         
-        // Konfigirasyon Web Audio API pou Waveform nan
+        // Configuration de l'Web Audio API pour la forme d'onde
         let audioCtx = null;
         let analyser = null;
         let animationFrameId = null;
 
-        // Chaje kle yo ak Voice IDs depi nan localStorage nan kòmansman
+        // Charger les clés et les Voice IDs depuis le localStorage au démarrage
         window.addEventListener('DOMContentLoaded', () => {
             const savedGeminiKey = localStorage.getItem('veltrix_gemini_api_key');
             const savedElevenKey = localStorage.getItem('veltrix_eleven_api_key');
@@ -376,26 +372,26 @@
             if (savedVoiceNexo) document.getElementById('voice-id-nexo').value = savedVoiceNexo;
 
             if (savedGeminiKey && savedElevenKey) {
-                showToast("Nou chaje kle API ou yo otomatikman !", "success");
+                showToast("Vos clés API ont été chargées automatiquement !", "success");
             }
         });
 
-        // Efase kle nan memwa a
+        // Effacer la clé de la mémoire
         function clearApiKey() {
             document.getElementById('eleven-key-input').value = '';
             localStorage.removeItem('veltrix_eleven_api_key');
-            showToast("Kle ElevenLabs la efase.", "success");
+            showToast("La clé ElevenLabs a été supprimée.", "success");
         }
 
-        // --- DYAGNOSTIK GEMINI AVANSE ---
+        // --- DIAGNOSTIC GEMINI AVANCÉ ---
         async function runGeminiDiagnostics() {
             const geminiKey = document.getElementById('gemini-key-input').value.trim();
             if (!geminiKey) {
-                showToast("Tanpri antre yon kle Gemini anvan pou w ka verifye li.", "error");
+                showToast("Veuillez d'abord saisir une clé Gemini pour pouvoir la vérifier.", "error");
                 return;
             }
 
-            showToast("Verifikasyon kle Gemini an dirèk ak Google...", "success");
+            showToast("Vérification de la clé Gemini en direct avec Google...", "success");
             const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`;
             
             try {
@@ -403,10 +399,10 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error?.message || "Erè enkoni Google.");
+                    throw new Error(data.error?.message || "Erreur inconnue Google.");
                 }
 
-                showToast("Bravò! Kle API Gemini ou a 100% valab ak aktif!", "success");
+                showToast("Bravo ! Votre clé API Gemini est 100% valide et active !", "success");
             } catch (error) {
                 const isPrepayError = error.message.includes("prepayment credits") || error.message.includes("depleted");
                 
@@ -414,38 +410,38 @@
                 if (isPrepayError) {
                     diagContainer.innerHTML = `
                         <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl space-y-2 text-left">
-                            <span class="text-xs font-bold text-red-500 block"><i class="fa-solid fa-triangle-exclamation"></i> KREDI GEMINI FINI (DEPLAYED)</span>
-                            <p class="text-[11px] text-slate-300 leading-relaxed">
-                                Google di ke kle API Gemini ou a ap sèvi ak yon kont <strong>Prepayment</strong> kote balans ou se <strong>$0.00</strong>.
+                            <span class="text-xs font-bold text-red-500 block"><i class="fa-solid fa-triangle-exclamation"></i> CRÉDITS GEMINI ÉPUISÉS</span>
+                            <p class="text-[11px] text-slate-300 leading-relaxed font-semibold">
+                                Google indique que votre clé API Gemini utilise un compte <strong>Prépayé</strong> dont le solde est de <strong>0,00 $</strong>.
                             </p>
-                            <p class="text-[11px] text-slate-400 leading-relaxed font-semibold">
-                                Pou rezoud sa : <br>
-                                1. Ale sou <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline">Google AI Studio</a>, klike sou <strong>Billing</strong>, epi ajoute $5 oswa $10 sou balans prepay ou.<br>
-                                2. Oswa, kreye yon lòt kle API ak yon <strong>lòt kont Google nèf</strong> ki pa gen Billing/Prepay aktif sou li pou w kontinye teste gratis!
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Pour résoudre cela : <br>
+                                1. Allez sur <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline">Google AI Studio</a>, cliquez sur <strong>Billing</strong>, et ajoutez 5 $ ou 10 $ à votre solde prépayé.<br>
+                                2. Ou créez une autre clé API avec un <strong>autre compte Google neuf</strong> sans Billing/Prepay actif pour continuer à tester gratuitement !
                             </p>
                         </div>
                     `;
                 } else {
                     diagContainer.innerHTML = `
                         <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl space-y-2 text-left text-xs text-red-400">
-                            <span class="font-bold block">Erè Gemini :</span>
+                            <span class="font-bold block">Erreur Gemini :</span>
                             <p>${error.message}</p>
                         </div>
                     `;
                 }
-                showToast("Nou jwenn yon pwoblèm ak kle Gemini ou a.", "error");
+                showToast("Nous avons rencontré un problème avec votre clé Gemini.", "error");
             }
         }
 
-        // --- DYAGNOSTIK ELEVENLABS ---
+        // --- DIAGNOSTIC ELEVENLABS ---
         async function runElevenDiagnostics() {
             const elevenKey = document.getElementById('eleven-key-input').value.trim();
             if (!elevenKey) {
-                showToast("Tanpri antre yon kle ElevenLabs anvan.", "error");
+                showToast("Veuillez d'abord saisir une clé ElevenLabs.", "error");
                 return;
             }
 
-            showToast("Verifikasyon ElevenLabs...", "success");
+            showToast("Vérification ElevenLabs...", "success");
             try {
                 const response = await fetch("https://api.elevenlabs.io/v1/voices", {
                     headers: { "xi-api-key": elevenKey }
@@ -453,16 +449,16 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.detail?.message || "Erè koneksyon.");
+                    throw new Error(data.detail?.message || "Erreur de connexion.");
                 }
 
-                showToast(`Koneksyon ElevenLabs konfime ! Nou jwenn ${data.voices.length} vwa disponib.`, "success");
+                showToast(`Connexion ElevenLabs confirmée ! Nous avons trouvé ${data.voices.length} voix disponibles.`, "success");
             } catch (error) {
-                showToast(`Erè ElevenLabs: ${error.message}`, "error");
+                showToast(`Erreur ElevenLabs : ${error.message}`, "error");
             }
         }
 
-        // --- SISTÈM DEBA PILÒT AK VWA (START BROADCAST) ---
+        // --- SYSTÈME DE DÉBAT PILOTÉ PAR LA VOIX (START BROADCAST) ---
         async function startBroadcast() {
             const geminiKey = document.getElementById('gemini-key-input').value.trim();
             const elevenKey = document.getElementById('eleven-key-input').value.trim();
@@ -475,27 +471,27 @@
             const voiceNexo = document.getElementById('voice-id-nexo').value.trim();
 
             if (!geminiKey) {
-                showToast("Tanpri mete kle API Gemini ou an.", "error");
+                showToast("Veuillez renseigner votre clé API Gemini.", "error");
                 return;
             }
 
             if (mode === "real" && !elevenKey) {
-                showToast("Mòd reyèl mande yon kle API ElevenLabs. Oswa chwazi 'Mòd Simulation' !", "error");
+                showToast("Le mode réel requiert une clé API ElevenLabs. Ou sélectionnez le 'Mode Simulation' !", "error");
                 return;
             }
 
-            // Sove done yo pou pwochen fwa
+            // Enregistrer les données pour la prochaine fois
             localStorage.setItem('veltrix_gemini_api_key', geminiKey);
             if (elevenKey) localStorage.setItem('veltrix_eleven_api_key', elevenKey);
             localStorage.setItem('veltrix_voice_id_krono', voiceKrono);
             localStorage.setItem('veltrix_voice_id_nexo', voiceNexo);
 
             if (!topic) {
-                showToast("Tanpri ekri yon sijè pou yo debat.", "error");
+                showToast("Veuillez saisir un sujet de débat.", "error");
                 return;
             }
 
-            // Initialize Web Audio API si li pako fèt
+            // Initialiser l'Web Audio API si elle n'est pas encore créée
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioCtx.createAnalyser();
@@ -506,7 +502,7 @@
             document.getElementById('start-btn').classList.add('hidden');
             document.getElementById('stop-btn').classList.remove('hidden');
 
-            // Aktivite antèn lan
+            // Activation de l'antenne
             document.getElementById('broadcast-dot').className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_red]";
             document.getElementById('broadcast-status-text').textContent = "🔴 EN DIRECT À L'ANTENNE";
             document.getElementById('broadcast-status-text').className = "text-xs font-bold text-red-500 uppercase tracking-wider neon-text-glow";
@@ -524,44 +520,44 @@
                     const speaker = entelsDatabase[speakerName];
                     const voiceId = speakerName === "KronoPol-9" ? voiceKrono : voiceNexo;
 
-                    // 1. Mete vizyèl Ajan k ap pale a aktif
+                    // 1. Définir le visuel de l'agent qui parle comme actif
                     setSpeakerVisualActive(speaker.avatarId);
 
-                    // 2. Rele Gemini API pou jenere tèks la
-                    document.getElementById('transcription-text').innerHTML = `<span class="text-neonGreen font-bold font-mono">${speakerName}</span> ap kalkile diskou li...`;
+                    // 2. Appeler l'API Gemini pour générer le texte
+                    document.getElementById('transcription-text').innerHTML = `<span class="text-neonGreen font-bold font-mono">${speakerName}</span> calcule son discours...`;
                     
                     const textContent = await generateTextFromGemini(geminiKey, speaker, otherSpeakerName(speakerName), topic, language, history);
                     
-                    // Sove nan istorik la
+                    // Enregistrer dans l'historique
                     history.push({ sender: speakerName, text: textContent });
 
                     if (shouldStop) break;
 
-                    // 3. Jwe odyo a (Reyèl ak ElevenLabs oswa simulation)
+                    // 3. Jouer l'audio (Réel avec ElevenLabs ou simulation)
                     if (mode === "real") {
-                        document.getElementById('transcription-text').innerHTML = `<span class="text-neonGreen font-bold font-mono">${speakerName}</span> ap prepare vwa ElevenLabs...`;
+                        document.getElementById('transcription-text').innerHTML = `<span class="text-neonGreen font-bold font-mono">${speakerName}</span> prépare la voix ElevenLabs...`;
                         const audioBuffer = await fetchElevenLabsVoice(elevenKey, textContent, voiceId);
                         
                         document.getElementById('transcription-text').innerHTML = `<span class="text-neonGreen font-bold font-mono">${speakerName}</span> : "${textContent}"`;
                         await playAudioBuffer(audioBuffer);
                     } else {
-                        // Mòd Simulation (TTS Navigatè)
+                        // Mode Simulation (TTS Navigateur)
                         document.getElementById('transcription-text').innerHTML = `<span class="text-neonGreen font-bold font-mono">${speakerName}</span> : "${textContent}"`;
                         await playVoiceSimulation(textContent, language);
                     }
 
-                    // Reyajiste vizyèl yo apre diskou a fini
+                    // Réinitialiser les visuels après la fin du discours
                     setSpeakerVisualInactive(speaker.avatarId);
                     document.getElementById('turns-counter').textContent = `${turn}/${maxTurns}`;
 
-                    // Ti poz natirèl lekti 1.5 segonn anvan lòt la kòmanse reponn
+                    // Petite pause naturelle de lecture de 1.5 secondes avant que l'autre ne réponde
                     await new Promise(resolve => setTimeout(resolve, 1500));
 
                     nextSpeaker = otherSpeakerName(speakerName);
                 }
 
                 if (!shouldStop) {
-                    showToast("Emisyon Broadcast la fini ak siksè !");
+                    showToast("L'émission de Broadcast s'est terminée avec succès !");
                     resetInterface();
                 }
 
@@ -571,34 +567,34 @@
                 resetInterface();
                 showToast(error.message, "error");
                 
-                // Si se erè Prepayment Credits Google la, nou montre solisyon detaye a nan bwat transcription an!
+                // Si c'est l'erreur Prepayment Credits de Google, nous montrons l'explication détaillée dans la boîte de transcription !
                 const isPrepayError = error.message.includes("prepayment credits") || error.message.includes("depleted") || error.message.includes("billing");
                 if (isPrepayError) {
                     document.getElementById('transcription-panel').innerHTML = `
                         <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl space-y-2 text-left">
-                            <span class="text-xs font-bold text-red-500 block"><i class="fa-solid fa-triangle-exclamation"></i> KREDI GEMINI FINI (DEPLAYED)</span>
+                            <span class="text-xs font-bold text-red-500 block"><i class="fa-solid fa-triangle-exclamation"></i> CRÉDITS GEMINI ÉPUISÉS</span>
                             <p class="text-[11px] text-slate-300 leading-relaxed font-semibold">
-                                Google di ke kle API Gemini ou a ap sèvi ak yon kont <strong>Prepayment</strong> kote balans ou se <strong>$0.00</strong>.
+                                Google indique que votre clé API Gemini utilise un compte <strong>Prépayé</strong> dont le solde est de <strong>0,00 $</strong>.
                             </p>
                             <p class="text-[11px] text-slate-400 leading-relaxed">
-                                Pou rezoud sa kounye a : <br>
-                                1. Ale sou <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline font-bold">Google AI Studio</a>, klike sou <strong>Billing</strong>, epi ajoute omwen $5 sou balans lan.<br>
-                                2. Osoa pi rapid la, kreye yon lòt kle API ak yon <strong>lòt kont Google nèf</strong> ki pa gen Billing aktif pou w ka kontinye teste gratis!
+                                Pour résoudre cela maintenant : <br>
+                                1. Allez sur <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline font-bold">Google AI Studio</a>, cliquez sur <strong>Billing</strong>, et ajoutez au moins 5 $ à votre solde.<br>
+                                2. Ou plus rapidement, créez une autre clé API avec un <strong>autre compte Google neuf</strong> sans Billing actif pour continuer à tester gratuitement !
                             </p>
                         </div>
                     `;
                 } else {
-                    document.getElementById('transcription-text').textContent = `Erè Gemini: ${error.message}`;
+                    document.getElementById('transcription-text').textContent = `Erreur Gemini : ${error.message}`;
                 }
             }
         }
 
-        // Jwenn lòt Entel la
+        // Trouver l'autre Entel
         function otherSpeakerName(current) {
             return current === "KronoPol-9" ? "NexoFin-X" : "KronoPol-9";
         }
 
-        // Mete vizyèl aktif
+        // Définir le visuel actif
         function setSpeakerVisualActive(avatarId) {
             const container = document.getElementById(`avatar-container-${avatarId}`);
             const ring = document.getElementById(`glow-ring-${avatarId}`);
@@ -625,7 +621,7 @@
             badge.classList.add('opacity-0');
         }
 
-        // --- DEKLANCHE GEMINI API (TEXT-GENERATION) ---
+        // --- DÉCLENCHER L'API GEMINI (GÉNÉRATION DE TEXTE) ---
         async function generateTextFromGemini(apiKey, current, otherName, topic, language, history) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             
@@ -655,18 +651,18 @@
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error?.message || "Erè koneksyon Gemini API.");
+                throw new Error(errData.error?.message || "Erreur de connexion à l'API Gemini.");
             }
 
             const data = await response.json();
             return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
         }
 
-        // --- RELE ELEVENLABS API (VWA REYÈL - DYNAMIC CONTROLS) ---
+        // --- APPELER L'API ELEVENLABS (VOIX RÉELLE - CONTRÔLES DYNAMIQUES) ---
         async function fetchElevenLabsVoice(apiKey, text, voiceId) {
             const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
             
-            // Nou rekupere vale kontwol imè yo an tan reyèl depi nan Sliders yo
+            // Nous récupérons les valeurs des contrôles en temps réel depuis les Sliders
             const stabilityValue = parseFloat(document.getElementById('voice-stability-range').value);
             const similarityValue = parseFloat(document.getElementById('voice-similarity-range').value);
 
@@ -678,7 +674,7 @@
                 },
                 body: JSON.stringify({
                     text: text,
-                    model_id: "eleven_multilingual_v2", // Modèl biling rekòmande
+                    model_id: "eleven_multilingual_v2", // Modèle bilingue recommandé
                     voice_settings: {
                         stability: stabilityValue,
                         similarity_boost: similarityValue
@@ -688,13 +684,13 @@
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.detail?.message || "Erè ElevenLabs API.");
+                throw new Error(errData.detail?.message || "Erreur de l'API ElevenLabs.");
             }
 
             return await response.arrayBuffer();
         }
 
-        // --- JWE VWA AK WEB AUDIO API AK ONN REYÈL ---
+        // --- JOUER LA VOIX AVEC WEB AUDIO API ET VRAIES ONDES ---
         function playAudioBuffer(audioBuffer) {
             return new Promise((resolve, reject) => {
                 if (shouldStop) { resolve(); return; }
@@ -703,12 +699,12 @@
                     const source = audioCtx.createBufferSource();
                     source.buffer = decodedBuffer;
                     
-                    // Konekte ak analizeur onn lan
+                    // Connecter à l'analyseur de forme d'onde
                     source.connect(analyser);
                     analyser.connect(audioCtx.destination);
                     
                     isAudioPlaying = true;
-                    animateWaveform(); // Lanse animasyon onn yo
+                    animateWaveform(); // Lancer l'animation des ondes
 
                     source.start(0);
                     
@@ -717,28 +713,28 @@
                         resolve();
                     };
                 }, (err) => {
-                    reject(new Error("Erè nan dekodaj odyo ElevenLabs."));
+                    reject(new Error("Erreur de décodage audio ElevenLabs."));
                 });
             });
         }
 
-        // --- JWE VWA SIMULATION (SPEECH SYNTHESIS GRATIS) ---
+        // --- JOUER LA VOIX EN SIMULATION (SYNTHÈSE VOCALE GRATUITE) ---
         function playVoiceSimulation(text, language) {
             return new Promise((resolve) => {
                 if (shouldStop) { resolve(); return; }
 
                 const utterance = new SpeechSynthesisUtterance(text);
                 
-                // Konfigire lang simulation an
+                // Configurer la langue de la simulation
                 if (language === "French") utterance.lang = "fr-FR";
                 else if (language === "English") utterance.lang = "en-US";
-                else utterance.lang = "fr-FR"; // Simulation mwayèn pou Kreyòl la se vwa Franse ki pi pre
+                else utterance.lang = "fr-FR"; // Simulation moyenne pour le Créole avec la voix française la plus proche
 
-                // Sèvi ak vitès vokal itilizatè a chwazi a
+                // Utiliser la vitesse vocale sélectionnée par l'utilisateur
                 const selectedRate = parseFloat(document.getElementById('voice-rate-select').value);
                 utterance.rate = selectedRate;
 
-                // Simulation frekans onn yo (Mock wave generator pou lè simulation ap kouri)
+                // Simulation des fréquences d'ondes (générateur d'ondes fictif pendant la simulation)
                 isAudioPlaying = true;
                 animateWaveformSimulation();
 
@@ -751,7 +747,7 @@
             });
         }
 
-        // --- ANIME ONN REYÈL SELON FREKANS ODYO ELEVENLABS ---
+        // --- ANIMER LES ONDES RÉELLES SELON LES FRÉQUENCES AUDIO ELEVENLABS ---
         function animateWaveform() {
             if (!isAudioPlaying || shouldStop) {
                 resetWaveformBars();
@@ -764,18 +760,18 @@
 
             const bars = document.querySelectorAll('.waveform-bar');
             bars.forEach((bar, index) => {
-                // Katye done yo pou bati wotè a nan pixel
+                // Ajuster les données pour construire la hauteur en pixels
                 const value = dataArray[index % bufferLength] || 0;
-                const height = Math.max(4, (value / 255) * 58); // Wotè max 58px
+                const height = Math.max(4, (value / 255) * 58); // Hauteur max 58px
                 bar.style.height = `${height}px`;
-                bar.style.backgroundColor = "rgba(204, 255, 0, 0.85)"; // Neon Green klere
+                bar.style.backgroundColor = "rgba(204, 255, 0, 0.85)"; // Neon Green éclatant
                 bar.style.boxShadow = "0 0 10px rgba(204, 255, 0, 0.25)";
             });
 
             animationFrameId = requestAnimationFrame(animateWaveform);
         }
 
-        // --- ANIME ONN SIMULATION (ALEATWA RAPID) ---
+        // --- ANIMER LES ONDES DE SIMULATION (ALÉATOIRE RAPIDE) ---
         function animateWaveformSimulation() {
             if (!isAudioPlaying || shouldStop) {
                 resetWaveformBars();
@@ -784,15 +780,15 @@
 
             const bars = document.querySelectorAll('.waveform-bar');
             bars.forEach(bar => {
-                const height = Math.floor(Math.random() * 45) + 4; // Wotè ant 4 ak 49 pixel
+                const height = Math.floor(Math.random() * 45) + 4; // Hauteur entre 4 et 49 pixels
                 bar.style.height = `${height}px`;
-                bar.style.backgroundColor = "rgba(16, 185, 129, 0.8)"; // Emerald vèt pou simulation
+                bar.style.backgroundColor = "rgba(16, 185, 129, 0.8)"; // Émeraude pour la simulation
             });
 
             animationFrameId = setTimeout(animateWaveformSimulation, 85);
         }
 
-        // Reyajiste tout onn yo nan eta inisyal la
+        // Réinitialiser toutes les ondes à l'état initial
         function resetWaveformBars() {
             const bars = document.querySelectorAll('.waveform-bar');
             bars.forEach(bar => {
@@ -802,12 +798,12 @@
             });
         }
 
-        // Kanpe tout emisyon an imedyatman
+        // Arrêter toute l'émission immédiatement
         function stopBroadcast() {
             shouldStop = true;
             isAudioPlaying = false;
             
-            // Kanpe simulation vokal
+            // Arrêter la simulation vocale
             window.speechSynthesis.cancel();
 
             if (animationFrameId) {
@@ -818,17 +814,17 @@
             setSpeakerVisualInactive("krono");
             setSpeakerVisualInactive("nexo");
             resetInterface();
-            showToast("Ou kite antèn nan.");
+            showToast("Vous avez quitté l'antenne.");
         }
 
-        // Reyajiste bouton ak eta yo
+        // Réinitialiser les boutons et les états
         function resetInterface() {
             document.getElementById('start-btn').classList.remove('hidden');
             document.getElementById('stop-btn').classList.add('hidden');
             resetWaveformBars();
 
             document.getElementById('broadcast-dot').className = "w-2.5 h-2.5 rounded-full bg-slate-600";
-            document.getElementById('broadcast-status-text').textContent = "Antèn San Aktivite";
+            document.getElementById('broadcast-status-text').textContent = "Antenne Inactive";
             document.getElementById('broadcast-status-text').className = "text-xs font-semibold text-slate-400 uppercase tracking-wider";
         }
 

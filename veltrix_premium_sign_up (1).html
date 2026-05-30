@@ -436,9 +436,9 @@
                 return;
             }
 
-            // Sove done itilizatè a nan Supabase
+            // Enregistrement de l'utilisateur dans Supabase
             if (!supabase) {
-                showToast("Sistèm Supabase la pako konekte byen. Mete Anon Key la.", "error");
+                showToast("La connexion à Supabase n'est pas encore établie. Veuillez saisir votre clé Anon.", "error");
                 return;
             }
 
@@ -465,7 +465,7 @@
                     return;
                 }
 
-                // Afiche modal siksè a
+                // Affichage du modal de succès
                 document.getElementById('success-welcome-message').textContent = `Félicitations ${firstName}, votre compte Veltrix a été créé avec succès.`;
                 
                 const modal = document.getElementById('success-modal');
@@ -478,7 +478,7 @@
             }).catch(err => {
                 button.disabled = false;
                 button.innerHTML = originalBtnContent;
-                showToast(err.message || "Erè enkoni rive.", "error");
+                showToast(err.message || "Une erreur inconnue est survenue.", "error");
             });
         }
 

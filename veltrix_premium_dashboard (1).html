@@ -1129,20 +1129,20 @@
 
         async function buyCredits(amount) {
             if (!supabase || !activeUser) {
-                showGlobalNotification("Sistèm Supabase la pako pare.");
+                showGlobalNotification("Le système Supabase n'est pas encore prêt.");
                 return;
             }
 
             const newCredits = userState.credits + amount;
             
-            // Mizajou dirèk nan profiles la - epi pase li nan PRO otomatikman!
+            // Mise à jour directe dans profiles et passage automatique en PRO !
             const { error } = await supabase
                 .from('profiles')
                 .update({ credits: newCredits, tier: 'PRO' })
                 .eq('id', activeUser.id);
 
             if (error) {
-                showGlobalNotification("Erè nan achte kredi: " + error.message);
+                showGlobalNotification("Erreur lors de l'achat de crédits : " + error.message);
                 return;
             }
 
@@ -1181,7 +1181,7 @@
                 });
 
                 if (deductError) {
-                    showGlobalNotification("Erè: " + deductError.message);
+                    showGlobalNotification("Erreur : " + deductError.message);
                     return;
                 }
             }
@@ -1374,7 +1374,7 @@
                 });
 
                 if (deductError) {
-                    showGlobalNotification("Erè: " + deductError.message);
+                    showGlobalNotification("Erreur : " + deductError.message);
                     return;
                 }
             }
@@ -1611,14 +1611,14 @@
 
             const { data: { session }, error } = await supabase.auth.getSession();
             if (error || !session) {
-                console.warn("Session pa aktif oswa erè rive. Redireksyon...");
+                console.warn("La session n'est pas active ou une erreur est survenue. Redirection...");
                 window.location.href = 'veltrix_premium_sign_in.html';
                 return;
             }
 
             activeUser = session.user;
             
-            // Chaje pwofil itilizatè a depi nan profiles table nan Supabase
+            // Chargement du profil utilisateur depuis la table profiles dans Supabase
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
@@ -1626,28 +1626,28 @@
                 .single();
 
             if (profileError || !profile) {
-                console.error("Erè nan chaje pwofil la:", profileError);
+                console.error("Erreur lors du chargement du profil :", profileError);
                 const meta = activeUser.user_metadata || {};
                 activeProfile = {
                     id: activeUser.id,
-                    full_name: meta.full_name || "Itilizatè Veltrix",
+                    full_name: meta.full_name || "Utilisateur Veltrix",
                     credits: 420
                 };
             } else {
                 activeProfile = profile;
             }
 
-            // Mizajou userState a
+            // Mise à jour de userState
             userState.credits = parseInt(activeProfile.credits);
             
-            // Mete non ak lòt detay yo sou ekran an
+            // Affichage du nom et des autres détails à l'écran
             updateUIWithUserProfile();
         }
 
         function updateUIWithUserProfile() {
             if (!activeProfile) return;
             
-            const fullname = activeProfile.full_name || "Itilizatè Veltrix";
+            const fullname = activeProfile.full_name || "Utilisateur Veltrix";
             const tier = activeProfile.tier || 'STANDARD';
             
             const nameParts = fullname.split(' ');

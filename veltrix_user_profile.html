@@ -466,14 +466,14 @@
 
             const { data: { session }, error } = await supabase.auth.getSession();
             if (error || !session) {
-                console.warn("Session pa aktif oswa erè rive. Redireksyon...");
+                console.warn("La session n'est pas active ou une erreur est survenue. Redirection...");
                 window.location.href = 'veltrix_premium_sign_in.html';
                 return;
             }
 
             activeUser = session.user;
             
-            // Chaje pwofil itilizatè a depi nan profiles table nan Supabase
+            // Charger le profil utilisateur à partir de la table profiles dans Supabase
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
@@ -481,11 +481,11 @@
                 .single();
 
             if (profileError || !profile) {
-                console.error("Erè nan chaje pwofil la:", profileError);
+                console.error("Erreur lors du chargement du profil :", profileError);
                 const meta = activeUser.user_metadata || {};
                 activeProfile = {
                     id: activeUser.id,
-                    full_name: meta.full_name || "Itilizatè Veltrix",
+                    full_name: meta.full_name || "Utilisateur Veltrix",
                     credits: 420,
                     avatar_url: ""
                 };
@@ -493,14 +493,14 @@
                 activeProfile = profile;
             }
 
-            // Mete non ak lòt detay yo sou ekran an
+            // Mettre à jour le nom et les autres détails à l'écran
             updateProfileUI();
         }
 
         function updateProfileUI() {
             if (!activeProfile) return;
 
-            const fullname = activeProfile.full_name || "Itilizatè Veltrix";
+            const fullname = activeProfile.full_name || "Utilisateur Veltrix";
             const tier = activeProfile.tier || 'STANDARD';
             const nameParts = fullname.split(' ');
             const firstName = nameParts[0] || "";
@@ -584,7 +584,7 @@
                 .eq('id', activeUser.id);
 
             if (error) {
-                showToast("Erè nan sove avatar la: " + error.message, "error");
+                showToast("Erreur lors de l'enregistrement de l'avatar : " + error.message, "error");
                 return;
             }
 
@@ -622,7 +622,7 @@
             button.innerHTML = originalBtnContent;
 
             if (error) {
-                showToast("Erè nan sove pwofil la: " + error.message, "error");
+                showToast("Erreur lors de l'enregistrement du profil : " + error.message, "error");
                 return;
             }
 
@@ -660,7 +660,7 @@
             button.innerHTML = originalBtnContent;
 
             if (error) {
-                showToast("Erè nan chanje mot de pas: " + error.message, "error");
+                showToast("Erreur lors de la modification du mot de passe : " + error.message, "error");
                 return;
             }
 
@@ -688,7 +688,7 @@
                 .eq('id', activeUser.id);
 
             if (error) {
-                showToast("Erè nan achte kredi: " + error.message, "error");
+                showToast("Erreur lors de l'achat de crédits : " + error.message, "error");
                 return;
             }
 

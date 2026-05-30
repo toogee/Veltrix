@@ -1,19 +1,19 @@
 /**
- * VELTRIX - CLIENT INITIALISATION SUPABASE
- * Fichye sa a jere koneksyon ant navigatè a ak baz de done Supabase la.
- * Li gen yon sistèm entèlijan pou mande Anon Key la dirèkteman nan koòdone a si li pako sove.
+ * VELTRIX - INITIALISATION CLIENT SUPABASE
+ * Ce fichier gère la connexion entre le navigateur et la base de données Supabase.
+ * Il dispose d'un système intelligent demandant la clé publique Anon directement dans l'interface si elle n'est pas encore enregistrée.
  */
 
 const SUPABASE_URL = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
 
-// Chaje kle Anon nan localStorage la
+// Chargement de la clé Anon depuis le localStorage
 let supabaseAnonKey = localStorage.getItem('veltrix_supabase_anon_key') || "";
 let supabase = null;
 
-// Fonksyon pou inisyalize kliyan Supabase la
+// Fonction pour initialiser le client Supabase
 function initSupabaseClient() {
     if (typeof window.supabase === 'undefined') {
-        console.warn("Supabase SDK pako chaje nan paj sa a. Rete tann...");
+        console.warn("Le SDK Supabase n'est pas encore chargé sur cette page. Attente...");
         return false;
     }
     
@@ -24,17 +24,17 @@ function initSupabaseClient() {
 
     try {
         supabase = window.supabase.createClient(SUPABASE_URL, supabaseAnonKey);
-        console.log("Supabase Client konfime ak siksè !");
+        console.log("Client Supabase initialisé avec succès !");
         return true;
     } catch (error) {
-        console.error("Erè nan inisyalizasyon Supabase:", error);
+        console.error("Erreur d'initialisation de Supabase :", error);
         return false;
     }
 }
 
-// Enjekte yon Modal Premium pou mande Supabase Anon Key si li pa la
+// Injecte un Modal Premium pour demander la clé Anon Supabase si elle est absente
 function injectSupabaseKeyModal() {
-    // Si modal la deja la, nou pa fè anyen
+    // Si le modal est déjà là, on ne fait rien
     if (document.getElementById('supabase-key-modal')) return;
 
     const modal = document.createElement('div');
@@ -47,25 +47,25 @@ function injectSupabaseKeyModal() {
                 <i class="fa-solid fa-database"></i>
             </div>
             <div class="space-y-1.5">
-                <h3 class="font-display font-bold text-lg text-white">Koneksyon Veltrix ak Supabase</h3>
+                <h3 class="font-display font-bold text-lg text-white">Connexion Veltrix & Supabase</h3>
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    Pou nou kapab konekte sistèm enskripsyon, koneksyon, ak balans Kredi ou yo nan Supabase, tanpri antre **Anon Public Key** pwojè w la bò kote.
+                    Pour connecter la création de compte, la connexion et les soldes de vos Crédits à Supabase, veuillez saisir la **Clé Publique Anon** de votre projet ci-dessous.
                 </p>
             </div>
             
             <div class="space-y-3">
                 <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
                     <i class="fa-solid fa-key text-slate-500 text-xs"></i>
-                    <input id="supabase-key-input" type="password" placeholder="Antre Supabase Anon Key w la..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                    <input id="supabase-key-input" type="password" placeholder="Entrez votre clé Anon Supabase..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
                 </div>
                 <a href="https://supabase.com/dashboard" target="_blank" class="text-[10px] text-neonGreen hover:underline block font-semibold text-right">
-                    Kote m ka jwenn kle sa a ? <i class="fa-solid fa-up-right-from-square text-[8px]"></i>
+                    Où puis-je trouver cette clé ? <i class="fa-solid fa-up-right-from-square text-[8px]"></i>
                 </a>
             </div>
 
             <div class="flex gap-3">
                 <button onclick="saveSupabaseKey()" class="flex-1 py-3 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform shadow-[0_0_15px_rgba(204,255,0,0.1)]">
-                    KONEKTE BAZ DE DONE A
+                    CONNECTER LA BASE DE DONNÉES
                 </button>
             </div>
         </div>
@@ -73,43 +73,43 @@ function injectSupabaseKeyModal() {
 
     document.body.appendChild(modal);
     
-    // Ti animasyon aparisyon dousman
+    // Animation d'apparition
     setTimeout(() => {
         modal.querySelector('.transform').classList.remove('scale-95');
         modal.querySelector('.transform').classList.add('scale-100');
     }, 50);
 }
 
-// Sove kle Supabase la
+// Enregistrement de la clé Supabase
 window.saveSupabaseKey = function() {
     const input = document.getElementById('supabase-key-input');
     const key = input.value.trim();
     
     if (!key) {
-        alert("Tanpri antre kle Supabase Anon Key la anvan !");
+        alert("Veuillez d'abord entrer votre clé Anon Supabase !");
         return;
     }
 
     localStorage.setItem('veltrix_supabase_anon_key', key);
     supabaseAnonKey = key;
     
-    // Inisyalize kliyan an
+    // Initialisation du client
     const success = initSupabaseClient();
     
     if (success) {
         const modal = document.getElementById('supabase-key-modal');
         if (modal) modal.remove();
         
-        // Rafrechi paj la otomatikman pou chaje done yo depi nan Supabase
+        // Rafraîchit la page automatiquement pour charger les données depuis Supabase
         window.location.reload();
     } else {
-        alert("Erè nan inisyalizasyon. Asire w ke kle a kòrèk !");
+        alert("Erreur d'initialisation. Assurez-vous que la clé est correcte !");
     }
 };
 
-// Deklanche inisyalizasyon an le pli vit ke script la chaje
+// Déclenche l'initialisation dès que le script est chargé
 window.addEventListener('DOMContentLoaded', () => {
-    // Si SDK a pako chaje nèt, nou tcheke apre 100ms
+    // Si le SDK n'est pas encore complètement chargé, on réessaye après 100ms
     const checkInterval = setInterval(() => {
         if (typeof window.supabase !== 'undefined') {
             clearInterval(checkInterval);

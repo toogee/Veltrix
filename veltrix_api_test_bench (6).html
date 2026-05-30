@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ht" class="h-full">
+<html lang="fr" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veltrix - Bann Tès API Entel yo</title>
+    <title>Veltrix - Banc d'Essai API des Entels</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -69,11 +69,11 @@
             </div>
             <div>
                 <span class="font-display font-bold text-lg tracking-wider text-white">VELTRIX <span class="text-neonGreen text-xs">TEST BENCH</span></span>
-                <span class="hidden sm:inline block text-[9px] text-slate-500 uppercase tracking-widest ml-2">Arèn Eksperimantasyon an Dirèk</span>
+                <span class="hidden sm:inline block text-[9px] text-slate-500 uppercase tracking-widest ml-2">Arène d'Expérimentation en Direct</span>
             </div>
         </div>
         <div class="text-xs text-slate-400">
-            Kanal API: <span class="font-mono font-bold text-neonGreen">v1beta</span>
+            Canal API : <span class="font-mono font-bold text-neonGreen">v1beta</span>
         </div>
     </header>
 
@@ -85,19 +85,19 @@
             <div class="space-y-6">
                 <div class="space-y-1">
                     <h2 class="text-sm font-bold text-white uppercase tracking-wider">Configurateur de Débat</h2>
-                    <p class="text-[11px] text-slate-500">Mete paramèt yo epi konekte kle w la pou kòmanse tès la.</p>
+                    <p class="text-[11px] text-slate-500">Configurez les paramètres et connectez votre clé pour commencer le test.</p>
                 </div>
 
                 <!-- API Key Input -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gemini API Key</label>
-                        <a href="https://aistudio.google.com/" target="_blank" class="text-[9px] text-neonGreen hover:underline font-bold">Jwenn yon kle gratis <i class="fa-solid fa-up-right-from-square"></i></a>
+                        <a href="https://aistudio.google.com/" target="_blank" class="text-[9px] text-neonGreen hover:underline font-bold">Obtenir une clé gratuite <i class="fa-solid fa-up-right-from-square"></i></a>
                     </div>
                     <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
                         <i class="fa-solid fa-key text-slate-500 text-xs"></i>
-                        <input id="api-key-input" type="password" placeholder="Antre kle AI Studio w la..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
-                        <button onclick="clearApiKey()" title="Efase kle sa a nan memwa a" class="text-slate-500 hover:text-red-400 transition-colors focus:outline-none">
+                        <input id="api-key-input" type="password" placeholder="Entrez votre clé AI Studio..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                        <button onclick="clearApiKey()" title="Effacer cette clé de la mémoire" class="text-slate-500 hover:text-red-400 transition-colors focus:outline-none">
                             <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
@@ -106,20 +106,20 @@
                     <div class="flex gap-2">
                         <button onclick="runDiagnostics()" class="flex-1 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold text-slate-300 rounded-lg transition-all flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-stethoscope text-neonGreen"></i>
-                            <span>Fè Dyagnostik Kle API</span>
+                            <span>Exécuter le diagnostic de clé API</span>
                         </button>
                     </div>
-                    <span class="text-[9px] text-slate-500 block text-slate-400">Kle sa a sove nan navigatè w la sèlman, li pap janm voye okenn lòt kote.</span>
+                    <span class="text-[9px] text-slate-500 block text-slate-400">Cette clé est enregistrée uniquement dans votre navigateur et ne sera jamais envoyée ailleurs.</span>
                 </div>
 
                 <!-- Modèl AI Selector -->
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Modèl AI pou itilize</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Modèle IA à utiliser</label>
                     <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2.5">
                         <select id="model-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                            <option class="bg-darkCard text-white" value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Dènye Jenerasyon & Trè Rapid)</option>
-                            <option class="bg-darkCard text-white" value="gemini-2.5-pro">Gemini 2.5 Pro (Maksimòm Analiz & Detay)</option>
-                            <option class="bg-darkCard text-white" value="gemini-2.0-flash">Gemini 2.0 Flash (Trè Rapid & Efikas)</option>
+                            <option class="bg-darkCard text-white" value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Dernière Génération & Très Rapide)</option>
+                            <option class="bg-darkCard text-white" value="gemini-2.5-pro">Gemini 2.5 Pro (Maximum d'Analyse & Détails)</option>
+                            <option class="bg-darkCard text-white" value="gemini-2.0-flash">Gemini 2.0 Flash (Très Rapide & Efficace)</option>
                             <option class="bg-darkCard text-white" value="gemini-1.5-flash">Gemini 1.5 Flash (Legacy)</option>
                         </select>
                     </div>
@@ -127,58 +127,58 @@
 
                 <!-- Sélection Entel A -->
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Premye Entel (Entel A)</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Premier Entel (Entel A)</label>
                     <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2.5">
                         <select id="entel-a-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                            <option class="bg-darkCard text-white" value="KronoPol-9">KronoPol-9 (Doktora nan Politik - Politik)</option>
-                            <option class="bg-darkCard text-white" value="MètKonsey">MètKonsey (Espè nan Lwa - Avoka)</option>
-                            <option class="bg-darkCard text-white" value="NexoFin-X">NexoFin-X (Ph.D nan Macroéconomie - Ekonomi)</option>
-                            <option class="bg-darkCard text-white" value="KèKontan">KèKontan (Espè nan Sikoloji - Lanmou)</option>
+                            <option class="bg-darkCard text-white" value="KronoPol-9">KronoPol-9 (Doctorat en Science Politique - Politique)</option>
+                            <option class="bg-darkCard text-white" value="MètKonsey">MètKonsey (Expert en Droit - Avocat)</option>
+                            <option class="bg-darkCard text-white" value="NexoFin-X">NexoFin-X (Ph.D en Macroéconomie - Économie)</option>
+                            <option class="bg-darkCard text-white" value="KèKontan">KèKontan (Expert en Psychologie - Amour/Relations)</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Sélection Entel B -->
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Dezyèm Entel (Entel B)</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Deuxième Entel (Entel B)</label>
                     <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2.5">
                         <select id="entel-b-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                            <option class="bg-darkCard text-white" value="NexoFin-X" selected>NexoFin-X (Ph.D nan Macroéconomie - Ekonomi)</option>
-                            <option class="bg-darkCard text-white" value="KronoPol-9">KronoPol-9 (Doktora nan Politik - Politik)</option>
-                            <option class="bg-darkCard text-white" value="MètKonsey">MètKonsey (Espè nan Lwa - Avoka)</option>
-                            <option class="bg-darkCard text-white" value="KèKontan">KèKontan (Espè nan Sikoloji - Lanmou)</option>
+                            <option class="bg-darkCard text-white" value="NexoFin-X" selected>NexoFin-X (Ph.D en Macroéconomie - Économie)</option>
+                            <option class="bg-darkCard text-white" value="KronoPol-9">KronoPol-9 (Doctorat en Science Politique - Politique)</option>
+                            <option class="bg-darkCard text-white" value="MètKonsey">MètKonsey (Expert en Droit - Avocat)</option>
+                            <option class="bg-darkCard text-white" value="KèKontan">KèKontan (Expert en Psychologie - Amour/Relations)</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Sijè a (Topic) -->
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Sijè pou deba a</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Sujet du débat</label>
                     <div class="neon-glow-border bg-darkCard rounded-xl flex items-center p-3">
-                        <textarea id="topic-input" rows="3" class="w-full bg-transparent text-xs text-white focus:outline-none resize-none placeholder-slate-600" placeholder="Ekri sijè ou vle yo debat la...">Est-ce que l'économie libre ou le contrôle de l'État garantit un meilleur avenir ?</textarea>
+                        <textarea id="topic-input" rows="3" class="w-full bg-transparent text-xs text-white focus:outline-none resize-none placeholder-slate-600" placeholder="Écrivez le sujet que vous souhaitez qu'ils débattent...">Est-ce que l'économie libre ou le contrôle de l'État garantit un meilleur avenir ?</textarea>
                     </div>
                 </div>
 
                 <!-- Langue et Tours -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Lang</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Langue</label>
                         <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2">
                             <select id="language-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
                                 <option class="bg-darkCard text-white" value="French">Français</option>
-                                <option class="bg-darkCard text-white" value="Creole">Kreyòl</option>
+                                <option class="bg-darkCard text-white" value="Creole">Créole</option>
                                 <option class="bg-darkCard text-white" value="English">English</option>
                                 <option class="bg-darkCard text-white" value="Spanish">Español</option>
                             </select>
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Replik (Tours)</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Répliques (Tours)</label>
                         <div class="neon-glow-border bg-darkCard rounded-xl px-3 py-2">
                             <select id="turns-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                                <option class="bg-darkCard text-white" value="4">4 Replik</option>
-                                <option class="bg-darkCard text-white" value="6">6 Replik</option>
-                                <option class="bg-darkCard text-white" value="8">8 Replik</option>
+                                <option class="bg-darkCard text-white" value="4">4 Répliques</option>
+                                <option class="bg-darkCard text-white" value="6">6 Répliques</option>
+                                <option class="bg-darkCard text-white" value="8">8 Répliques</option>
                             </select>
                         </div>
                     </div>
@@ -187,13 +187,13 @@
                 <!-- Bouton kòmanse -->
                 <button id="start-btn" onclick="startDebate()" class="w-full py-3.5 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.15)] hover:shadow-[0_0_25px_rgba(204,255,0,0.4)]">
                     <i class="fa-solid fa-play"></i>
-                    <span>LANSE DEBA A</span>
+                    <span>LANCER LE DÉBAT</span>
                 </button>
 
                 <!-- Bouton arête -->
                 <button id="stop-btn" onclick="stopDebate()" class="w-full py-3.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-display font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-2 border border-red-500/20 hidden">
                     <i class="fa-solid fa-stop"></i>
-                    <span>KANPE DEBA A</span>
+                    <span>ARRÊTER LE DÉBAT</span>
                 </button>
             </div>
         </aside>
@@ -205,10 +205,10 @@
             <div class="px-6 py-4 bg-darkCard/20 border-b border-white/5 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-2.5">
                     <span id="arena-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-                    <span id="arena-status-text" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Arèn San Aktivite</span>
+                    <span id="arena-status-text" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Arène Inactive</span>
                 </div>
                 <div class="text-[10px] text-slate-500 font-mono">
-                    Istwa: <span id="history-counter">0/0</span> mesaj
+                    Historique : <span id="history-counter">0/0</span> messages
                 </div>
             </div>
 
@@ -220,9 +220,9 @@
                         <i class="fa-solid fa-comments"></i>
                     </div>
                     <div class="space-y-1">
-                        <h3 class="font-display font-bold text-lg text-white">Byenveni nan Arèn Eksperimantal la</h3>
+                        <h3 class="font-display font-bold text-lg text-white">Bienvenue dans l'Arène Expérimentale</h3>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            Mete kle API w la sou bò gòch la, chwazi de "Entel", ekri yon sijè, epi gade kijan yo ap reponn epi kontredi youn lòt an tan reyèl ak gwo sèvo Gemini API a!
+                            Saisissez votre clé API sur la gauche, choisissez deux "Entels", écrivez un sujet et observez comment ils se répondent et se contredisent en temps réel grâce à la puissance de l'API Gemini !
                         </p>
                     </div>
                 </div>
@@ -237,7 +237,7 @@
                 <div class="space-y-1">
                     <span id="typing-name" class="block text-[10px] font-bold text-white font-mono"></span>
                     <div class="flex items-center gap-1">
-                        <span class="text-[10px] text-slate-500">ap kalkile replik li</span>
+                        <span class="text-[10px] text-slate-500">calcule sa réplique</span>
                         <span class="flex gap-0.5 ml-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-neonGreen animate-bounce" style="animation-delay: 0ms"></span>
                             <span class="w-1.5 h-1.5 rounded-full bg-neonGreen animate-bounce" style="animation-delay: 150ms"></span>
@@ -320,56 +320,56 @@
         let activeDebate = null;
         let shouldStop = false;
 
-        // Verifye epi chaje kle a depi nan localStorage lè paj la louvri
+        // Vérifier et charger la clé depuis le localStorage à l'ouverture de la page
         window.addEventListener('DOMContentLoaded', () => {
             const savedKey = localStorage.getItem('veltrix_gemini_api_key');
             if (savedKey) {
                 document.getElementById('api-key-input').value = savedKey;
-                showToast("Nou chaje kle API ou a otomatikman depi nan navigatè a !", "success");
+                showToast("Nous avons chargé votre clé API automatiquement depuis le navigateur !", "success");
             }
         });
 
-        // Efase kle a nan navigatè a
+        // Effacer la clé du navigateur
         function clearApiKey() {
             const input = document.getElementById('api-key-input');
             if (input.value) {
                 input.value = '';
                 localStorage.removeItem('veltrix_gemini_api_key');
-                showToast("Kle API a efase nan memwa navigatè sa a.", "success");
+                showToast("La clé API a été effacée de la mémoire de ce navigateur.", "success");
             } else {
-                showToast("Bwat la vid deja !", "error");
+                showToast("Le champ est déjà vide !", "error");
             }
         }
 
-        // Kouri dyagnostik kle API a an dirèk ak Google
+        // Exécuter le diagnostic de clé API en direct avec Google
         async function runDiagnostics() {
             const apiKey = document.getElementById('api-key-input').value.trim();
             if (!apiKey) {
-                showToast("Tanpri antre yon kle API anvan pou w ka fè dyagnostik la.", "error");
+                showToast("Veuillez d'abord saisir une clé API pour exécuter le diagnostic.", "error");
                 return;
             }
 
-            // Tcheke si se yon kle egzanp/placeholder
+            // Vérifier s'il s'agit d'une clé d'exemple
             if (apiKey === "VOTRE_CLE_API_GEMINI_ICI" || apiKey.toLowerCase().includes("votre_cle") || apiKey.toLowerCase().includes("your_api") || apiKey === "your_key") {
-                showToast("Erè : Sa a se yon kle egzanp !", "error");
+                showToast("Erreur : Ceci est une clé d'exemple !", "error");
                 const chatContainer = document.getElementById('chat-messages-container');
                 chatContainer.innerHTML = `
                     <div class="p-5 bg-darkCard border border-red-500/30 rounded-2xl max-w-md mx-auto space-y-3">
                         <div class="flex items-center gap-2 text-red-500 font-bold text-xs">
-                            <i class="fa-solid fa-triangle-exclamation"></i> KÒD EGZANP DETEKTE
+                            <i class="fa-solid fa-triangle-exclamation"></i> CLÉ D'EXEMPLE DÉTECTÉE
                         </div>
-                        <p class="text-xs text-slate-300">Ou antre kle egzanp lan <strong>"${apiKey}"</strong>.</p>
+                        <p class="text-xs text-slate-300">Vous avez saisi la clé d'exemple <strong>"${apiKey}"</strong>.</p>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            Ou bezwen klike sou lyen <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline font-bold">Google AI Studio <i class="fa-solid fa-up-right-from-square text-[9px]"></i></a> pou w jwenn pwòp kle pèsonèl ou ki kòmanse ak <strong class="text-white">"AIzaSy..."</strong>.
+                            Vous devez cliquer sur le lien <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline font-bold">Google AI Studio <i class="fa-solid fa-up-right-from-square text-[9px]"></i></a> pour obtenir votre propre clé personnelle commençant par <strong class="text-white">"AIzaSy..."</strong>.
                         </p>
                     </div>
                 `;
                 return;
             }
 
-            showToast("Verifikasyon kle a an dirèk ak Google...", "success");
+            showToast("Vérification de la clé en direct avec Google...", "success");
 
-            // Nou teste toujou ak v1beta pou asire tout modèl yo parèt
+            // Nous testons toujours avec v1beta pour s'assurer que tous les modèles apparaissent
             const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
             
             try {
@@ -377,59 +377,59 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error?.message || "Erè enkoni nan Google.");
+                    throw new Error(data.error?.message || "Erreur inconnue de Google.");
                 }
 
                 const models = data.models || [];
                 const modelNames = models.map(m => m.name.replace('models/', ''));
                 
-                // Afiche rezilta a nan chat la pou itilizatè a ka wè l
+                // Afficher le résultat dans le chat pour que l'utilisateur puisse le voir
                 const chatContainer = document.getElementById('chat-messages-container');
                 chatContainer.innerHTML = `
                     <div class="p-5 bg-darkCard border border-neonGreen/30 rounded-2xl max-w-md mx-auto space-y-3 shadow-[0_0_30px_rgba(204,255,0,0.1)]">
                         <div class="flex items-center gap-2 text-neonGreen font-bold text-xs">
-                            <i class="fa-solid fa-circle-check"></i> DYAGNOSTIK REUSSI !
+                            <i class="fa-solid fa-circle-check"></i> DIAGNOSTIC RÉUSSI !
                         </div>
-                        <p class="text-xs text-slate-300">Kle API ou a <strong>aktif ak valab</strong> sou sèvè Google.</p>
+                        <p class="text-xs text-slate-300">Votre clé API est <strong>active et valide</strong> sur les serveurs Google.</p>
                         <div class="text-[10px] text-slate-400 space-y-1">
-                            <span class="block font-semibold">Modèl kle sa a gen dwa itilize :</span>
+                            <span class="block font-semibold">Modèles autorisés pour cette clé :</span>
                             <div class="max-h-32 overflow-y-auto custom-scrollbar p-2 bg-darkBg border border-white/5 rounded font-mono text-[9px] text-slate-500">
                                 ${modelNames.map(name => `● ${name}`).join('<br>')}
                             </div>
                         </div>
                         <p class="text-[10px] text-slate-500 leading-relaxed">
-                            Koulye a, asire w ou chwazi <strong class="text-white">Gemini 1.5 Flash</strong> epi klike sou "Lanse Deba a" pou w kòmanse !
+                            Maintenant, assurez-vous de choisir <strong class="text-white">Gemini 1.5 Flash</strong> ou supérieur et cliquez sur "Lancer le Débat" pour commencer !
                         </p>
                     </div>
                 `;
-                showToast("Kle a fonksyone parfe !", "success");
+                showToast("La clé fonctionne parfaitement !", "success");
 
             } catch (error) {
                 const chatContainer = document.getElementById('chat-messages-container');
                 chatContainer.innerHTML = `
                     <div class="p-5 bg-darkCard border border-red-500/30 rounded-2xl max-w-md mx-auto space-y-3">
                         <div class="flex items-center gap-2 text-red-500 font-bold text-xs">
-                            <i class="fa-solid fa-circle-xmark"></i> DYAGNOSTIK ECHOUE
+                            <i class="fa-solid fa-circle-xmark"></i> DIAGNOSTIC ÉCHOUÉ
                         </div>
-                        <p class="text-xs text-slate-300">Google refize kle API sa a.</p>
+                        <p class="text-xs text-slate-300">Google a refusé cette clé API.</p>
                         <div class="p-3 bg-darkBg border border-white/5 rounded text-[10px] text-red-400 font-mono">
-                            Erè: ${error.message}
+                            Erreur : ${error.message}
                         </div>
                         <p class="text-[10px] text-slate-500 leading-relaxed">
-                            Asire w ou pa gen okenn espas anplis nan kle a, epi kle a soti nan <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline">Google AI Studio</a>.
+                            Assurez-vous de n'avoir aucun espace supplémentaire dans la clé, et que celle-ci provienne bien de <a href="https://aistudio.google.com/" target="_blank" class="text-neonGreen hover:underline">Google AI Studio</a>.
                         </p>
                     </div>
                 `;
-                showToast("Kle API a pa valab.", "error");
+                showToast("La clé API n'est pas valide.", "error");
             }
         }
 
-        // Mizajou nan header
+        // Mise à jour du modèle dans le header
         function updateHeaderModel(value) {
             document.getElementById('header-model-display').textContent = value;
         }
 
-        // Klas pou jere deba a an tan reyèl ak API a
+        // Classe pour gérer le débat en temps réel avec l'API
         class LiveDebateOrchestrator {
             constructor(apiKey, entelAName, entelBName, topic, language, modelName) {
                 this.apiKey = apiKey;
@@ -441,9 +441,9 @@
                 this.history = [];
             }
 
-            // Rele API a ak sistèm sekirite Retry ak Exponential Backoff
+            // Appel de l'API avec mécanisme de Retry et Exponential Backoff
             async callGeminiWithRetry(payload, delay = 1000, retries = 5) {
-                // Nou fòse v1beta pou tout modèl yo pou nou ka itilize systemInstruction nòmalman !
+                // Nous forçons v1beta pour tous les modèles afin d'utiliser systemInstruction normalement !
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.modelName}:generateContent?key=${this.apiKey}`;
                 
                 try {
@@ -469,7 +469,7 @@
                 }
             }
 
-            // Bati kontèks la pou modèl AI a ka konnen istwa a
+            // Construire le prompt de contexte pour que le modèle IA connaisse l'historique
             buildContextPrompt(current, other) {
                 let context = `This is a live debate on the topic: "${this.topic}".\n`;
                 context += `You must speak fluently in ${this.language}.\n\n`;
@@ -487,7 +487,7 @@
                 return context;
             }
 
-            // Kouri yon vire (turn)
+            // Exécuter un tour
             async runTurn(speakerName) {
                 const current = speakerName === this.entelA.name ? this.entelA : this.entelB;
                 const other = speakerName === this.entelA.name ? this.entelB : this.entelA;
@@ -507,7 +507,7 @@
                 const rawResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
                 if (!rawResponse) {
-                    throw new Error("API a pa t tounen okenn tèks valid.");
+                    throw new Error("L'API n'a retourné aucun texte valide.");
                 }
 
                 const cleanText = rawResponse.trim();
@@ -521,7 +521,7 @@
             }
         }
 
-        // Kòmanse Deba a
+        // Lancer le Débat
         async function startDebate() {
             const apiKey = document.getElementById('api-key-input').value.trim();
             const entelAName = document.getElementById('entel-a-select').value;
@@ -532,26 +532,26 @@
             const modelName = document.getElementById('model-select').value;
 
             if (!apiKey) {
-                showToast("Tanpri mete kle API Gemini ou a pou w ka testel.", "error");
+                showToast("Veuillez saisir votre clé API Gemini pour pouvoir tester.", "error");
                 return;
             }
 
-            // Tcheke si se yon kle egzanp/placeholder
+            // Vérifier s'il s'agit d'une clé d'exemple
             if (apiKey === "VOTRE_CLE_API_GEMINI_ICI" || apiKey.toLowerCase().includes("votre_cle") || apiKey.toLowerCase().includes("your_api") || apiKey === "your_key") {
-                showToast("Oops ! Se yon kle egzanp, antre yon kle reyèl.", "error");
-                runDiagnostics(); // Rele dyagnostik otomatikman pou montre eksplikatyon an
+                showToast("Oups ! C'est une clé d'exemple, veuillez entrer une clé réelle.", "error");
+                runDiagnostics(); // Lancer le diagnostic automatiquement pour afficher l'explication
                 return;
             }
 
             localStorage.setItem('veltrix_gemini_api_key', apiKey);
 
             if (entelAName === entelBName) {
-                showToast("Tanpri chwazi de (2) Entel diferan pou deba a ka fèt.", "error");
+                showToast("Veuillez choisir deux (2) Entels différents pour que le débat puisse avoir lieu.", "error");
                 return;
             }
 
             if (!topic) {
-                showToast("Tanpri antre yon sijè pou yo debat.", "error");
+                showToast("Veuillez saisir un sujet de débat.", "error");
                 return;
             }
 
@@ -562,7 +562,7 @@
             document.getElementById('stop-btn').classList.remove('hidden');
             
             document.getElementById('arena-status-dot').className = "w-2.5 h-2.5 rounded-full bg-neonGreen animate-pulse shadow-[0_0_8px_#CCFF00]";
-            document.getElementById('arena-status-text').textContent = "Deba ap dewoule";
+            document.getElementById('arena-status-text').textContent = "Débat en cours";
             document.getElementById('arena-status-text').className = "text-xs font-bold text-neonGreen uppercase tracking-wider neon-text-glow";
             
             document.getElementById('history-counter').textContent = `0/${maxTurns}`;
@@ -580,7 +580,7 @@
                     
                     showTypingIndicator(speaker);
 
-                    // Premye poz (refleksyon/generation start)
+                    // Première pause (début de la réflexion)
                     await new Promise(resolve => setTimeout(resolve, 2000));
 
                     if (shouldStop) break;
@@ -590,63 +590,63 @@
 
                     hideTypingIndicator();
 
-                    // Nou itilize AWAIT kounye a sou appendMessage paske li tounen yon Promise !
-                    // Bouk la ap sispann la a jiskaske Typewriter la fini ekri nèt.
+                    // Nous utilisons AWAIT sur appendMessage car il retourne une Promesse !
+                    // La boucle s'arrêtera ici jusqu'à ce que l'effet d'écriture soit entièrement terminé.
                     await appendMessage(speaker, messageText);
                     
                     document.getElementById('history-counter').textContent = `${turn}/${maxTurns}`;
 
                     if (shouldStop) break;
 
-                    // Poz lekti (3 segonn) apre ekriti a fin konplè
+                    // Pause de lecture (3 secondes) après la fin de l'écriture
                     await new Promise(resolve => setTimeout(resolve, 3000));
 
                     nextSpeakerName = nextSpeakerName === entelAName ? entelBName : entelAName;
                 }
 
                 if (!shouldStop) {
-                    showToast("Deba a fini ak siksè !");
+                    showToast("Le débat s'est terminé avec succès !");
                     resetInterface();
                 }
 
             } catch (error) {
                 hideTypingIndicator();
                 resetInterface();
-                showToast(error.message || "Erè koneksyon API.", "error");
+                showToast(error.message || "Erreur de connexion API.", "error");
                 
                 chatContainer.innerHTML += `
                     <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-xs text-red-400 space-y-2 max-w-md mx-auto">
                         <div class="font-bold flex items-center gap-2">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Erè API Gemini
+                            <i class="fa-solid fa-triangle-exclamation"></i> Erreur API Gemini
                         </div>
-                        <p>${error.message}. Asire w ke kle API w la kòrèk, epi modèl ou chwazi a aktif nan zòn ou an.</p>
+                        <p>${error.message}. Assurez-vous que votre clé API est correcte et que le modèle choisi est actif dans votre région.</p>
                         <button onclick="runDiagnostics()" class="px-3 py-1.5 bg-red-500/20 hover:bg-red-500 text-white font-bold rounded-lg text-[10px] transition-all">
-                            Lanse dyagnostik kle API a kounye a
+                            Lancer le diagnostic de clé API maintenant
                         </button>
                     </div>
                 `;
             }
         }
 
-        // Kanpe Deba a
+        // Arrêter le Débat
         function stopDebate() {
             shouldStop = true;
             hideTypingIndicator();
             resetInterface();
-            showToast("Yo kanpe deba a.");
+            showToast("Le débat a été arrêté.");
         }
 
-        // Reyajiste bouton yo nan eta inisyal la
+        // Réinitialiser les boutons à l'état initial
         function resetInterface() {
             document.getElementById('start-btn').classList.remove('hidden');
             document.getElementById('stop-btn').classList.add('hidden');
             
             document.getElementById('arena-status-dot').className = "w-2.5 h-2.5 rounded-full bg-slate-600";
-            document.getElementById('arena-status-text').textContent = "Arèn San Aktivite";
+            document.getElementById('arena-status-text').textContent = "Arène Inactive";
             document.getElementById('arena-status-text').className = "text-xs font-semibold text-slate-400 uppercase tracking-wider";
         }
 
-        // Afiche "Typing Indicator"
+        // Afficher le "Typing Indicator"
         function showTypingIndicator(speaker) {
             document.getElementById('typing-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${speaker.avatarSeed}&backgroundColor=090b11`;
             document.getElementById('typing-name').textContent = speaker.name;
@@ -656,12 +656,12 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Kache "Typing Indicator"
+        // Cacher le "Typing Indicator"
         function hideTypingIndicator() {
             document.getElementById('typing-indicator').classList.add('hidden');
         }
 
-        // Ajoute mesaj la nan koòdone a ak typewriter sync (Promise)
+        // Ajouter le message dans l'interface avec l'effet d'écriture (Promise)
         function appendMessage(speaker, text) {
             return new Promise((resolve) => {
                 const chatContainer = document.getElementById('chat-messages-container');
@@ -695,7 +695,7 @@
                 
                 function typeWriter() {
                     if (shouldStop) {
-                        resolve(); // Resolve imedyatman si itilizatè klike Stop
+                        resolve(); // Résoudre immédiatement si l'utilisateur clique sur Stop
                         return;
                     }
                     if (index < text.length) {
@@ -704,7 +704,7 @@
                         chatContainer.scrollTop = chatContainer.scrollHeight;
                         setTimeout(typeWriter, 25);
                     } else {
-                        resolve(); // Rezoud pwomès la sèlman lè Typewriter la fini nèt
+                        resolve(); // Résoudre la promesse uniquement quand l'effet d'écriture est entièrement terminé
                     }
                 }
                 
