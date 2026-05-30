@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veltrix - Console de Gestion & Débats</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090B11',
+                        darkCard: '#111520',
+                        darkCardMuted: '#171D2B',
+                        neonGreen: '#CCFF00',
+                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
+                        oliveAccent: '#88B000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .neon-glow-border {
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
+            border: 1px solid rgba(204, 255, 0, 0.15);
+        }
+        .neon-glow-border:hover, .neon-glow-border.active {
+            box-shadow: 0 0 25px rgba(204, 255, 0, 0.3);
+            border-color: rgba(204, 255, 0, 0.6);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @keyframes wave {
+            0%, 100% { height: 4px; }
+            50% { height: 38px; }
+        }
+        .bar {
+            width: 4px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+        .bar:nth-child(2) { animation-delay: 0.15s; }
+        .bar:nth-child(3) { animation-delay: 0.3s; }
+        .bar:nth-child(4) { animation-delay: 0.45s; }
+        .bar:nth-child(5) { animation-delay: 0.6s; }
+        .bar:nth-child(6) { animation-delay: 0.25s; }
+        .bar:nth-child(7) { animation-delay: 0.35s; }
+        .bar:nth-child(8) { animation-delay: 0.05s; }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans h-full overflow-hidden flex flex-col md:flex-row">
+
+    <!-- NAVIGATION LATÉRALE (SIDEBAR) -->
+    <aside class="w-full md:w-64 bg-darkCard border-r border-white/5 flex flex-col justify-between flex-shrink-0 z-20">
+        <div>
+            <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                <a href="veltrix_premium_landing_page (1).html" class="flex items-center gap-2.5 group">
+                    <div class="w-8 h-8 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center">
+                        <i class="fa-solid fa-brain text-neonGreen text-md animate-pulse"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-wider text-white">VELTRIX</span>
+                </a>
+                <span class="text-[9px] px-2 py-0.5 rounded bg-neonGreen/10 border border-neonGreen/20 text-neonGreen font-semibold uppercase">PRO</span>
+            </div>
+
+            <!-- Liste des Menus -->
+            <nav class="p-4 space-y-1.5">
+                <button onclick="switchTab('tab-home')" id="btn-tab-home" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-neonGreen text-darkBg active">
+                    <i class="fa-solid fa-chart-pie text-lg"></i>
+                    <span>Vue d'ensemble</span>
+                </button>
+                <button onclick="switchTab('tab-debate')" id="btn-tab-debate" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i class="fa-solid fa-comments text-lg"></i>
+                    <span>Lancer un Débat</span>
+                </button>
+                <button onclick="switchTab('tab-broadcast')" id="btn-tab-broadcast" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i class="fa-solid fa-volume-high text-lg"></i>
+                    <span>Broadcasts Audio</span>
+                </button>
+                <button onclick="switchTab('tab-entels')" id="btn-tab-entels" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i class="fa-solid fa-user-group text-lg"></i>
+                    <span>Nos Entels</span>
+                </button>
+                <button onclick="switchTab('tab-store')" id="btn-tab-store" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i class="fa-solid fa-coins text-lg"></i>
+                    <span>Boutique de Crédits</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Profil utilisateur & Informations crédits dans la barre latérale -->
+        <div class="p-4 border-t border-white/5 space-y-4">
+            <div class="bg-darkBg p-3 rounded-xl border border-white/5 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-neonGreen/10 flex items-center justify-center text-neonGreen">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-500 block uppercase font-bold">Solde Actuel</span>
+                        <span id="credit-balance-display" class="text-sm font-bold text-white">420 Crédits</span>
+                    </div>
+                </div>
+                <button onclick="switchTab('tab-store')" class="w-6 h-6 rounded bg-neonGreen/20 hover:bg-neonGreen hover:text-darkBg text-neonGreen flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center relative">
+                    <span class="text-sm font-bold text-white">JD</span>
+                    <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-darkCard"></span>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-white">Jean Dupont</h4>
+                    <span class="text-xs text-slate-500">ID: vltx_84712</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ZONE DE CONTENU PRINCIPAL -->
+    <main class="flex-grow flex flex-col overflow-hidden">
+        <header class="h-16 border-b border-white/5 bg-darkCard/50 backdrop-blur-md px-6 md:px-8 flex items-center justify-between flex-shrink-0 z-10">
+            <h2 id="header-page-title" class="font-display font-bold text-xl text-white">Vue d'ensemble</h2>
+            
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-semibold text-emerald-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    API Entel-engine en ligne (99.9%)
+                </div>
+                <button class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors relative">
+                    <i class="fa-regular fa-bell text-slate-400"></i>
+                    <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-neonGreen"></span>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-grow overflow-y-auto p-6 md:p-8 no-scrollbar">
+
+            <!-- TAB 1: VUE D'ENSEMBLE (HOME) -->
+            <section id="tab-home" class="tab-content space-y-8">
+                <!-- Bannière d'accueil -->
+                <div class="bg-gradient-to-r from-neonGreen/10 via-darkCard to-darkCard p-6 md:p-8 rounded-2xl border border-neonGreen/10 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-neonGreen/10 to-transparent pointer-events-none"></div>
+                    <div class="max-w-2xl space-y-4">
+                        <span class="px-2.5 py-1 rounded-full bg-neonGreen/10 border border-neonGreen/20 text-xs text-neonGreen font-semibold uppercase">Console Veltrix</span>
+                        <h1 class="font-display font-bold text-3xl md:text-4xl text-white">Déployez des discussions à couper le souffle.</h1>
+                        <p class="text-slate-400 text-sm md:text-base">Organisez des débats écrits ou générez des émissions audios à la demande en mobilisant nos Entels — nos spécialistes nantis de doctorats et d'identités virtuelles uniques.</p>
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <button onclick="switchTab('tab-debate')" class="px-5 py-2.5 rounded-xl bg-neonGreen text-darkBg font-display font-bold text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Lancer un Débat</span>
+                            </button>
+                            <button onclick="switchTab('tab-broadcast')" class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-display font-medium text-sm hover:bg-white/10 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-volume-high"></i>
+                                <span>Créer un Broadcast</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques d'utilisation globale -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-darkCard p-5 rounded-2xl border border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-slate-500 uppercase tracking-wider">Débats Créés</span>
+                            <i class="fa-solid fa-comments text-neonGreen"></i>
+                        </div>
+                        <div class="text-2xl font-bold font-display text-white" id="stat-debates-count">18</div>
+                        <div class="text-xs text-slate-500 mt-1"><span class="text-emerald-400 font-bold"><i class="fa-solid fa-caret-up mr-0.5"></i>+4</span> cette semaine</div>
+                    </div>
+                    <div class="bg-darkCard p-5 rounded-2xl border border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-slate-500 uppercase tracking-wider">Temps d'Écoute Audio</span>
+                            <i class="fa-solid fa-microphone text-neonGreen"></i>
+                        </div>
+                        <div class="text-2xl font-bold font-display text-white">4h 12m</div>
+                        <div class="text-xs text-slate-500 mt-1"><span class="text-emerald-400 font-bold"><i class="fa-solid fa-caret-up mr-0.5"></i>+48m</span> de podcasts</div>
+                    </div>
+                    <div class="bg-darkCard p-5 rounded-2xl border border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-slate-500 uppercase tracking-wider">Entels Actifs</span>
+                            <i class="fa-solid fa-user-check text-neonGreen"></i>
+                        </div>
+                        <div class="text-2xl font-bold font-display text-white" id="stat-entels-count">12 / 12</div>
+                        <div class="text-xs text-slate-500 mt-1">Sujets spécialisés prêts</div>
+                    </div>
+                    <div class="bg-darkCard p-5 rounded-2xl border border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-slate-500 uppercase tracking-wider">Consommation</span>
+                            <i class="fa-solid fa-bolt text-neonGreen"></i>
+                        </div>
+                        <div class="text-2xl font-bold font-display text-white" id="stat-credits-used">580 Cr.</div>
+                        <div class="text-xs text-slate-500 mt-1">Utilisés ce mois-ci</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Liste des Débats Récents -->
+                    <div class="lg:col-span-8 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-display font-bold text-lg text-white">Historique de vos Activités</h3>
+                            <button onclick="switchTab('tab-debate')" class="text-xs font-semibold text-neonGreen hover:underline">Accéder au Créateur</button>
+                        </div>
+                        <div class="space-y-4" id="recent-debates-list">
+                            <!-- Item 1 -->
+                            <div class="flex flex-wrap items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex -space-x-3">
+                                        <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center text-neonGreen text-xs font-bold font-display">
+                                            CF
+                                        </div>
+                                        <div class="w-9 h-9 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xs font-bold font-display">
+                                            KP
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-white">Cryptographie et Cybersurveillance d'État</h4>
+                                        <p class="text-xs text-slate-500">Par CypherNet-3 & KronoPol-9 &bull; Tchat écrit</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-400 font-semibold uppercase">Complété</span>
+                                    <span class="text-xs font-semibold text-slate-400">12 messages</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Émissions recommandées -->
+                    <div class="lg:col-span-4 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-6">
+                        <h3 class="font-display font-bold text-lg text-white">Émission à l'écoute</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 rounded-xl bg-neonGreen/5 border border-neonGreen/10 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-[9px] text-red-500 font-semibold uppercase tracking-wider animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-red-500 inline-block mr-1"></span> LIVE</span>
+                                    <span class="text-[10px] text-slate-400">88 auditeurs</span>
+                                </div>
+                                <h4 class="text-xs font-bold text-white">« Modélisation éthique des modifications génomiques »</h4>
+                                <p class="text-[11px] text-slate-500">Avec BioGen-Theta & NeurAx-8</p>
+                                <button onclick="switchTab('tab-broadcast')" class="w-full py-2 bg-neonGreen text-darkBg rounded-lg font-bold text-xs hover:scale-[1.02] transition-transform">
+                                    REJOINDRE LE BROADCAST
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: CRÉER / PARTICIPER À UN DÉBAT (SIMULATEUR INTERACTIF) -->
+            <section id="tab-debate" class="tab-content space-y-8 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Formulaire de configuration (Gauche) -->
+                    <div class="lg:col-span-5 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-5">
+                        <div>
+                            <h3 class="font-display font-bold text-xl text-white">Configurer votre Débat</h3>
+                            <p class="text-xs text-slate-500">Instanciez les Entels de votre choix, sélectionnez la langue d'expression et lancez la confrontation.</p>
+                        </div>
+
+                        <!-- 1. Saisir le Sujet -->
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. Saisir le Sujet du Débat</label>
+                            <input id="debate-topic-input" type="text" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neonGreen/60 transition-all">
+                        </div>
+
+                        <!-- 2. Sélectionner la langue -->
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">2. Choisir la Langue d'Échange</label>
+                            <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                <option value="fr">Français</option>
+                                <option value="en">English (Anglais)</option>
+                                <option value="es">Español (Espagnol)</option>
+                                <option value="ht">Kreyòl Ayisyen (Créole Haïtien)</option>
+                            </select>
+                        </div>
+
+                        <!-- 3. Sélectionner les deux Entels par catégorie -->
+                        <div class="space-y-3">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">3. Choisir les 2 Entels Face-à-Face</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="space-y-1.5">
+                                    <span class="text-[10px] text-slate-500">Entel 1</span>
+                                    <select id="entel-left-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                        <!-- Injecté dynamiquement par JS -->
+                                    </select>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <span class="text-[10px] text-slate-500">Entel 2</span>
+                                    <select id="entel-right-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                        <!-- Injecté dynamiquement par JS -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Définir le volume / nombre de tours -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">4. Nombre d'Échanges</label>
+                                <span class="text-xs text-neonGreen font-semibold" id="turns-cost-display">4 messages (4 crédits)</span>
+                            </div>
+                            <input id="debate-turns-range" type="range" min="2" max="12" step="2" value="4" oninput="updateTurnsCost(this.value)" class="w-full accent-neonGreen bg-darkBg">
+                            <div class="flex justify-between text-[10px] text-slate-500">
+                                <span>2 messages</span>
+                                <span>6 messages</span>
+                                <span>12 messages</span>
+                            </div>
+                        </div>
+
+                        <!-- 5. Mode de Débat -->
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">5. Mode de Rendu</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="p-3 bg-darkBg border border-neonGreen/40 rounded-xl cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
+                                    <input type="radio" name="debate-mode" value="text" checked class="accent-neonGreen">
+                                    <span>Tchat Écrit</span>
+                                </label>
+                                <label class="p-3 bg-darkBg border border-white/5 rounded-xl cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500">
+                                    <input type="radio" name="debate-mode" value="audio" disabled class="accent-neonGreen">
+                                    <span class="flex items-center gap-1.5">Audio <span class="text-[9px] bg-neonGreen/20 text-neonGreen px-1 rounded">PRO</span></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Lancer le Débat CTA -->
+                        <button onclick="startCustomDebate()" class="w-full py-4 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-sm transition-all hover:scale-[1.01] flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i>
+                            <span>DÉPLOYER L'ARÈNE DE DÉBAT</span>
+                        </button>
+                    </div>
+
+                    <!-- Visualisation du Débat interactif (Droite) -->
+                    <div class="lg:col-span-7 bg-darkCard rounded-2xl border border-white/5 overflow-hidden flex flex-col h-[650px]">
+                        <div class="p-4 bg-darkBg/60 border-b border-white/10 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                                <span class="text-xs text-slate-500 font-mono ml-2">veltrix_debate_engine_active.log</span>
+                            </div>
+                            <span class="text-[10px] text-slate-500 font-mono" id="debate-status-indicator">STATUT: En attente</span>
+                        </div>
+
+                        <div class="p-4 bg-white/[0.01] border-b border-white/5 flex items-center justify-between">
+                            <div class="space-y-0.5">
+                                <span class="text-[9px] text-slate-500 uppercase tracking-wider block">Sujet Soumis</span>
+                                <span id="active-debate-topic" class="text-sm font-semibold text-white italic">"Aucun débat n'est actuellement initié."</span>
+                            </div>
+                            <div class="flex flex-col items-end gap-1">
+                                <div id="cost-badge" class="hidden px-2 py-1 rounded bg-neonGreen/10 border border-neonGreen/20 text-[10px] font-bold text-neonGreen">
+                                    PAYÉ
+                                </div>
+                                <span id="active-debate-lang-badge" class="text-[9px] text-slate-500 uppercase"></span>
+                            </div>
+                        </div>
+
+                        <div id="dashboard-chat-box" class="flex-grow p-6 overflow-y-auto space-y-4 no-scrollbar">
+                            <div id="default-chat-placeholder" class="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
+                                <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
+                                    <i class="fa-solid fa-comments text-3xl"></i>
+                                </div>
+                                <div class="max-w-md">
+                                    <h4 class="text-sm font-bold text-white mb-1">Aucune discussion en cours</h4>
+                                    <p class="text-xs text-slate-500">Utilisez le panneau de gauche pour configurer un sujet, sélectionner vos Entels experts et lancer la confrontation.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-darkBg/40 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
+                            <span>Veltrix Engine v3.0.1</span>
+                            <span id="typing-indicator" class="hidden text-neonGreen"><i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i>Un Entel génère sa réponse...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: BROADCASTS AUDIO (LISTENING & HOSTING) -->
+            <section id="tab-broadcast" class="tab-content space-y-8 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Créer & Gérer les Live Broadcasts (Gauche) -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <!-- Formulaire pour déployer son PROPRE Broadcast -->
+                        <div class="bg-darkCard p-6 rounded-2xl border border-white/5 space-y-5">
+                            <div>
+                                <h3 class="font-display font-bold text-lg text-white">Héberger un Nouveau Broadcast Audio</h3>
+                                <p class="text-xs text-slate-500">Lancez une table ronde vocale interactive. Sélectionnez jusqu'à 3 Entels, choisissez la langue vocale et configurez le temps d'antenne.</p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="space-y-1.5">
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sujet de la Table Ronde</label>
+                                    <input id="broadcast-topic-input" type="text" placeholder="Ex: La décroissance macro-économique face à l'abondance technologique" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-neonGreen/60 transition-all">
+                                </div>
+
+                                <!-- Sélectionner la langue du Broadcast -->
+                                <div class="space-y-1.5">
+                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Langue Vocale de l'émission</label>
+                                    <select id="broadcast-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                        <option value="fr">Français</option>
+                                        <option value="en">English (Anglais)</option>
+                                        <option value="es">Español (Espagnol)</option>
+                                        <option value="ht">Kreyòl Ayisyen (Créole Haïtien)</option>
+                                    </select>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 block mb-1">Hôte (Entel 1)</label>
+                                        <select id="broadcast-entel-1" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                            <!-- Dynamique -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 block mb-1">Intervenant 2</label>
+                                        <select id="broadcast-entel-2" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                            <!-- Dynamique -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] text-slate-500 block mb-1">Intervenant 3</label>
+                                        <select id="broadcast-entel-3" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                            <!-- Dynamique -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-2">
+                                    <div class="space-y-1">
+                                        <span class="text-xs font-bold text-slate-400">Durée estimée</span>
+                                        <span class="text-[11px] text-slate-500 block">Calculé sur 9 repliks au total</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs font-bold text-neonGreen block">Tarif: 12 Crédits</span>
+                                        <span class="text-[9px] text-slate-500 block">Inclut le rendu de synthèse vocale</span>
+                                    </div>
+                                </div>
+
+                                <button onclick="deployCustomBroadcast()" class="w-full py-3 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-105 transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-tower-broadcast"></i>
+                                    <span>LANCER MA TABLE RONDE EN DIRECT</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Liste des pièces actives en direct pré-configurées -->
+                        <div class="space-y-4">
+                            <h4 class="font-display font-bold text-md text-white">Diffusions publiques de l'Arène</h4>
+                            <div class="grid grid-cols-1 gap-3">
+                                <div class="bg-darkCard p-4 rounded-xl border border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div class="space-y-1.5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-[8px] text-red-500 font-bold uppercase tracking-wider animate-pulse">LIVE STANDARD</span>
+                                            <span class="text-[10px] text-slate-500"><i class="fa-solid fa-headphones mr-1"></i> 140 spectateurs</span>
+                                        </div>
+                                        <h5 class="text-xs font-bold text-white">"La souveraineté numérique passe par la régulation des protocoles de communication"</h5>
+                                        <p class="text-[10px] text-slate-500">Avec KronoPol-9, CypherNet-3 & VoxiDem-Alpha &bull; Langue: Français</p>
+                                    </div>
+                                    <button onclick="listenPreconfiguredBroadcast('La souveraineté numérique passe par la régulation des protocoles de communication', ['kronopol9', 'cyphernet_3', 'voxidem_alpha'], 'fr')" class="px-3.5 py-2 rounded-lg bg-neonGreen/10 border border-neonGreen/20 text-neonGreen hover:bg-neonGreen hover:text-darkBg font-bold text-xs transition-all flex-shrink-0">
+                                        ÉCOUTER
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualiseur de Broadcast Actif (Droite) -->
+                    <div class="lg:col-span-5 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-6 flex flex-col items-center justify-center relative min-h-[520px]">
+                        
+                        <div id="audio-panel-active" class="hidden w-full flex flex-col items-center space-y-6">
+                            <div class="px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase rounded-full animate-pulse flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Diffusion en Direct active
+                            </div>
+
+                            <div class="text-center space-y-1">
+                                <h4 id="audio-active-topic" class="font-display font-bold text-sm text-white text-center italic">"Chargement du sujet..."</h4>
+                                <span id="broadcast-lang-badge" class="text-[10px] text-neonGreen font-semibold uppercase bg-neonGreen/10 border border-neonGreen/20 px-2 py-0.5 rounded-full"></span>
+                            </div>
+
+                            <!-- Visualiseur audio dynamique -->
+                            <div class="h-16 flex items-end justify-center gap-1 bg-darkBg/60 px-8 py-4 rounded-2xl border border-white/5 w-full">
+                                <div class="bar bg-neonGreen"></div>
+                                <div class="bar bg-emerald-400"></div>
+                                <div class="bar bg-neonGreen"></div>
+                                <div class="bar bg-emerald-500"></div>
+                                <div class="bar bg-neonGreen"></div>
+                                <div class="bar bg-emerald-400"></div>
+                                <div class="bar bg-neonGreen"></div>
+                                <div class="bar bg-emerald-500"></div>
+                            </div>
+
+                            <!-- Papiers d'identité des Entels participant à la table ronde -->
+                            <div id="broadcast-speakers-container" class="flex flex-wrap items-center justify-center gap-6 pt-4 w-full">
+                                <!-- Injecté dynamiquement en fonction des speakers choisis -->
+                            </div>
+
+                            <!-- Boîte de transcription écrite instantanée -->
+                            <div class="w-full bg-darkBg/40 border border-white/5 rounded-xl p-4 h-[120px] overflow-y-auto no-scrollbar space-y-2">
+                                <span class="text-[9px] uppercase font-bold text-slate-500 tracking-wider block">Transcription instantanée :</span>
+                                <p id="broadcast-transcription-text" class="text-xs text-slate-300 italic">"Initialisation du flux vocal..."</p>
+                            </div>
+
+                            <div class="flex items-center justify-between w-full pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-2 text-slate-400">
+                                    <i class="fa-solid fa-volume-low text-xs"></i>
+                                    <input type="range" class="w-20 accent-neonGreen bg-darkBg h-1 rounded-lg">
+                                    <i class="fa-solid fa-volume-high text-xs"></i>
+                                </div>
+                                <button onclick="stopAudioRoom()" class="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-xs font-bold hover:bg-red-500 hover:text-white transition-all">
+                                    QUITTER L'ANTENNE
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Visualiseur par défaut (Non connecté) -->
+                        <div id="audio-panel-default" class="flex flex-col items-center text-center space-y-4">
+                            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
+                                <i class="fa-solid fa-microphone-lines text-3xl"></i>
+                            </div>
+                            <div class="max-w-xs">
+                                <h4 class="text-sm font-bold text-white mb-1">Silence Radio</h4>
+                                <p class="text-xs text-slate-500">Aucun flux audio n'est actif. Remplissez le formulaire de gauche pour héberger votre émission, ou écoutez une diffusion publique de l'arène.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: LES ENTELS (ANNUAIRE DES EXPERTS) -->
+            <section id="tab-entels" class="tab-content space-y-8 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-white">Répertoire Thématique des Entels</h3>
+                        <p class="text-xs text-slate-500">Chaque Entel est classé par domaine professionnel et dispose d'une formation doctorale unique.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2" id="directory-filter-buttons">
+                        <button onclick="filterDirectory('all')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-neonGreen text-darkBg">Tous</button>
+                        <button onclick="filterDirectory('politique')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Politique</button>
+                        <button onclick="filterDirectory('economie')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Économie</button>
+                        <button onclick="filterDirectory('medecine')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Médecine</button>
+                        <button onclick="filterDirectory('crypto')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Crypto/Tech</button>
+                        <button onclick="filterDirectory('sports')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Sports</button>
+                    </div>
+                </div>
+
+                <!-- Grille dynamique des Entels -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="directory-entels-grid">
+                    <!-- Généré dynamiquement par JavaScript -->
+                </div>
+            </section>
+
+            <!-- TAB 5: BOUTIQUE DE CRÉDITS -->
+            <section id="tab-store" class="tab-content space-y-8 hidden">
+                <div class="bg-gradient-to-r from-neonGreen/10 via-darkCard to-darkCard p-6 md:p-8 rounded-2xl border border-neonGreen/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <h3 class="font-display font-bold text-2xl text-white">Système de Micro-Crédits Veltrix</h3>
+                        <p class="text-sm text-slate-400 max-w-xl">Ajustez votre consommation librement. Achetez uniquement les volumes de crédits nécessaires à vos travaux d'analyse.</p>
+                    </div>
+                    <div class="flex items-center gap-4 bg-darkBg border border-white/10 px-5 py-3 rounded-xl flex-shrink-0">
+                        <i class="fa-solid fa-wallet text-neonGreen text-xl"></i>
+                        <div>
+                            <span class="text-[10px] text-slate-500 block uppercase font-bold">Solde Actuel</span>
+                            <span id="credit-balance-store" class="text-lg font-bold text-white">420 Crédits</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
+                    <div class="bg-darkCard p-6 rounded-2xl border border-white/5 flex flex-col justify-between space-y-6">
+                        <div class="space-y-4">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pack Entrée</span>
+                            <div class="text-3xl font-display font-bold text-white">9,00 $</div>
+                            <hr class="border-white/5">
+                            <ul class="space-y-2.5 text-xs text-slate-400">
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i><strong>100</strong> Crédits d'échanges</li>
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Tchat Écrit multi-Entels</li>
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Replays sauvegardés</li>
+                            </ul>
+                        </div>
+                        <button onclick="buyCredits(100)" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold text-xs transition-all">ACHETER 100 CRÉDITS</button>
+                    </div>
+
+                    <div class="bg-darkCard p-6 rounded-2xl border border-neonGreen/40 flex flex-col justify-between space-y-6 shadow-[0_0_30px_rgba(204,255,0,0.1)] relative">
+                        <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-neonGreen text-darkBg text-[10px] font-bold uppercase tracking-wider">RECOMMANDÉ</span>
+                        <div class="space-y-4">
+                            <span class="text-xs font-semibold text-neonGreen uppercase tracking-wider">Pack Spécialiste</span>
+                            <div class="text-3xl font-display font-bold text-white">29,00 $</div>
+                            <hr class="border-white/5">
+                            <ul class="space-y-2.5 text-xs text-slate-400">
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i><strong>400</strong> Crédits d'échanges (+50 bonus)</li>
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Lancement de Broadcasts Audio</li>
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Accès prioritaire aux synthèses vocales</li>
+                            </ul>
+                        </div>
+                        <button onclick="buyCredits(450)" class="w-full py-3 bg-neonGreen text-darkBg rounded-xl font-bold text-xs transition-all hover:scale-105">ACHETER 450 CRÉDITS</button>
+                    </div>
+
+                    <div class="bg-darkCard p-6 rounded-2xl border border-white/5 flex flex-col justify-between space-y-6">
+                        <div class="space-y-4">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pack Analyste</span>
+                            <div class="text-3xl font-display font-bold text-white">79,00 $</div>
+                            <hr class="border-white/5">
+                            <ul class="space-y-2.5 text-xs text-slate-400">
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i><strong>1200</strong> Crédits d'échanges</li>
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Raccords API extérieurs</li>
+                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Génération illimitée de broadcasts</li>
+                            </ul>
+                        </div>
+                        <button onclick="buyCredits(1200)" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold text-xs transition-all">ACHETER 1200 CRÉDITS</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- LOGIQUE LOGICIELLE ET BASE DE DONNÉES MULTILINGUE DES ENTELS -->
+    <script>
+        // État Global de l'utilisateur
+        let userState = {
+            credits: 420,
+            activeTab: 'tab-home',
+            isDebating: false,
+            isBroadcasting: false,
+            debateTurns: 4,
+            broadcastInterval: null,
+            broadcastTypewriterTimeout: null,
+            debateIntervals: []
+        };
+
+        // Base de Données des Entels avec Localisation 4 Langues (fr, en, es, ht)
+        const entelsDatabase = {
+            politique: {
+                label: "Entel Politique",
+                icon: "fa-gavel",
+                colorClass: "border-purple-500 text-purple-400 bg-purple-500/10",
+                members: {
+                    kronopol9: {
+                        name: "KronoPol-9",
+                        titles: {
+                            fr: "Doctorat en Géo-stratégie planétaire",
+                            en: "Ph.D. in Planetary Geo-strategy",
+                            es: "Doctorado en Geo-estrategia planetaria",
+                            ht: "Doktora nan Jeyo-strateji planetè"
+                        },
+                        desc: "Analyse froide et systémique des rapports de force étatiques, des traités multilatéraux et de la stabilité institutionnelle globale.",
+                        arguments: {
+                            fr: [
+                                "L'équilibre géopolitique mondial repose sur des réalités matérielles tangibles et non sur des concepts moraux abstraits.",
+                                "Les frontières physiques n'ont plus d'importance là où les guerres d'influence se déploient par flux d'information cognitive.",
+                                "Une gouvernance saine exige de centraliser le contrôle pour anticiper les désordres induits par les crises systémiques.",
+                                "L'histoire prouve qu'un système politique sans autorité ferme s'effondre inévitablement sous le poids des factions particulières."
+                            ],
+                            en: [
+                                "The global geopolitical balance rests on tangible material realities, not on abstract moral concepts.",
+                                "Physical borders no longer matter where wars of influence unfold through cognitive information flows.",
+                                "Healthy governance requires centralizing control to anticipate systemic crisis-induced disorders.",
+                                "History proves that a political system without firm authority inevitably collapses under the weight of special factions."
+                            ],
+                            es: [
+                                "El equilibrio geopolítico mundial se basa en realidades materiales tangibles, no en conceptos morales abstractos.",
+                                "Las fronteras físicas ya no importan donde las guerras de influencia se desarrollan a través de flujos de información cognitiva.",
+                                "Una gobernanza sana requiere centralizar el control para anticipar desórdenes inducidos por crisis sistémicas.",
+                                "La historia demuestra que un sistema político sin una autoridad firme inevitablemente colapsa bajo el peso de facciones particulares."
+                            ],
+                            ht: [
+                                "Ekilib jeyopolitik mondyal la chita sou reyalite materyèl tanjib, li pa baze sou konsèp moral abstrè.",
+                                "Fwontyè fizik yo pa gen enpòtans ankò kote lagè enfliyans yo ap fèt atravè koule enfòmasyon mantal.",
+                                "Yon bon gouvènans mande pou nou santralize kontwòl la pou nou ka prevwa dezòd ki soti nan kriz yo.",
+                                "Istwa pwouve ke yon sistèm politik ki pa gen yon otorite solid ap tonbe kanmenm anba pwa enterè patikilye."
+                            ]
+                        }
+                    },
+                    voxidem_alpha: {
+                        name: "VoxiDem-Alpha",
+                        titles: {
+                            fr: "Ph.D. en Sociologie de la Souveraineté",
+                            en: "Ph.D. in Sovereignty Sociology",
+                            es: "Doctorado en Sociología de la Soberanía",
+                            ht: "Ph.D. nan Sosyoloji Souvrenete"
+                        },
+                        desc: "Spécialiste de la démocratie participative décentralisée, de la dynamique des foules et de l'impact des algorithmes civiques.",
+                        arguments: {
+                            fr: [
+                                "Le véritable pouvoir réside dans le consensus décentralisé et la transparence absolue des processus décisionnels.",
+                                "Chercher à restreindre l'information pour maintenir l'ordre public est un contresens historique qui détruit la confiance civique.",
+                                "Les masses connectées possèdent une intelligence émergente bien plus résiliente que les planifications étatiques opaques.",
+                                "La souveraineté n'existe que si elle s'articule du bas vers le haut via des micro-consultations locales autonomes."
+                            ],
+                            en: [
+                                "True power lies in decentralized consensus and absolute transparency of decision-making processes.",
+                                "Trying to restrict information to maintain public order is a historical mistake that destroys civic trust.",
+                                "Connected masses possess an emergent intelligence far more resilient than opaque state planning.",
+                                "Sovereignty only exists if it is articulated from the bottom up via autonomous local micro-consultations."
+                            ],
+                            es: [
+                                "El verdadero poder reside en el consenso descentralizado y la transparencia absoluta en la toma de decisiones.",
+                                "Intentar restringir la información para mantener el orden público es un error histórico que destruye la confianza.",
+                                "Las masas conectadas poseen una inteligencia emergente mucho más resiliente que la planificación estatal opaca.",
+                                "La soberanía solo existe si se articula de abajo hacia arriba mediante microconsultas locales autónomas."
+                            ],
+                            ht: [
+                                "Vrè pouvwa a chita nan konsansis desantralize ak transparans total nan pran desizyon.",
+                                "Chèche bloke enfòmasyon pou kenbe lòd piblik se yon gwo erè istorik ki detwi konfyans pèp la.",
+                                "Gwo rasanbleman moun ki konekte yo gen yon entèlijans ki pi fò pase planifikasyon Leta ki kache yo.",
+                                "Souvrenete a egziste sèlman si li kòmanse depi anba pou moute anlè ak ti konsiltasyon lokal otonòm."
+                            ]
+                        }
+                    }
+                }
+            },
+            economie: {
+                label: "Entel Économie",
+                icon: "fa-chart-line",
+                colorClass: "border-blue-400 text-blue-400 bg-blue-400/10",
+                members: {
+                    nexofin_x: {
+                        name: "NexoFin-X",
+                        titles: {
+                            fr: "Doctorat en Économétrie algorithmique",
+                            en: "Ph.D. in Algorithmic Econometrics",
+                            es: "Doctorado en Econometría Algorítmica",
+                            ht: "Doktora nan Ekonomi Algoritmik"
+                        },
+                        desc: "Analyste macroéconomique spécialisé dans la modélisation mathématique des flux monétaires et des cycles de liquidité.",
+                        arguments: {
+                            fr: [
+                                "La dépréciation continue des devises fiduciaires est le résultat logique d'une création monétaire non adossée à la productivité.",
+                                "Les marchés d'actifs ne s'autorégulent pas; sans règles strictes, ils glissent vers des structures monopolistiques agressives.",
+                                "La modélisation de notre économie démontre que la dette perpétuelle mène mathématiquement à des ruptures de cycle violentes.",
+                                "L'élimination des frictions transactionnelles par l'automatisation est la seule issue pour préserver la croissance réelle."
+                            ],
+                            en: [
+                                "The continuous depreciation of fiat currencies is the logical result of money creation unbacked by productivity.",
+                                "Asset markets do not self-regulate; without strict rules, they slide toward aggressive monopolistic structures.",
+                                "Our economic modeling shows that perpetual debt mathematically leads to violent cycle disruptions.",
+                                "Eliminating transactional frictions through automation is the only way to preserve real growth."
+                            ],
+                            es: [
+                                "La depreciación continua de las monedas fiduciarias es el resultado lógico de la creación de dinero sin respaldo de productividad.",
+                                "Los mercados de activos no se autorregulan; sin reglas estrictas, se deslizan hacia monopolios agresivos.",
+                                "Nuestros modelos económicos demuestran que la deuda perpetua conduce matemáticamente a rupturas violentas de ciclos.",
+                                "Eliminar las fricciones de las transacciones mediante la automatización es la única forma de preservar el crecimiento real."
+                            ],
+                            ht: [
+                                "Devalyasyon kontinyèl lajan fidyosè yo se rezilta lojik kreyasyon lajan san pwodiktivite pou sipòte l.",
+                                "Mache yo pa ka jere tèt yo pou kont yo; si pa gen lwa solid, y ap tonbe anba monopol k ap kraze moun.",
+                                "Modèl ekonomik nou an montre ke dèt san limit ap mennen dirèkteman nan gwo kriz ki ka pete britalman.",
+                                "Retire tout obstak nan tranzaksyon yo gras ak otomatik se sèl fason pou pwoteje yon kwasans reyèl."
+                            ]
+                        }
+                    },
+                    sigmar_7: {
+                        name: "SigmAr-7",
+                        titles: {
+                            fr: "Analyste Senior en Gestion de Crises",
+                            en: "Senior Crisis Management Analyst",
+                            es: "Analista Principal de Gestión de Crisis",
+                            ht: "Analis Senior nan Jesyon Kriz"
+                        },
+                        desc: "Expert en régulation bancaire internationale, inflation systémique et politiques d'ajustement structurel d'urgence.",
+                        arguments: {
+                            fr: [
+                                "La confiance populaire est le socle de toute monnaie; si l'État ne s'en porte pas garant, l'économie s'effondre.",
+                                "Les théories de décentralisation financière omettent le besoin vital d'un prêteur en dernier ressort en cas de panique.",
+                                "L'inflation n'est pas un accident algorithmique, mais une conséquence de la mauvaise gouvernance budgétaire des nations.",
+                                "Il est indispensable d'encadrer rigoureusement les innovations spéculatives pour protéger l'économie réelle des citoyens."
+                            ],
+                            en: [
+                                "Popular trust is the foundation of any currency; if the state does not guarantee it, the economy collapses.",
+                                "Financial decentralization theories omit the vital need for a lender of last resort in times of panic.",
+                                "Inflation is not an algorithmic accident, but a consequence of poor fiscal governance of nations.",
+                                "It is essential to strictly regulate speculative innovations to protect the real economy of citizens."
+                            ],
+                            es: [
+                                "La confianza popular es la base de cualquier moneda; si el Estado no la garantiza, la economía se derrumba.",
+                                "Las teorías de descentralización financiera omiten la necesidad vital de un prestamista de última instancia.",
+                                "La inflación no es un accidente algorítmico, sino una consecuencia de la mala gestión fiscal de las naciones.",
+                                "Es indispensable regular estrictamente las innovaciones especulativas para proteger la economía real."
+                            ],
+                            ht: [
+                                "Konfyans pèp la se baz tout lajan; si Leta pa garanti sa, ekonomi an ap kraze nèt.",
+                                "Teyori sou desantralizasyon finansyè yo bliye ke nou bezwen yon gwo bank pou sove nou si gen panik.",
+                                "Enflasyon se pa yon aksidan algoritmik, se rezilta yon move gouvènans nan bidjè peyi yo.",
+                                "Li nesesè anpil pou nou mete lwa solid sou inovasyon espesilatif yo pou pwoteje lajan pèp la."
+                            ]
+                        }
+                    }
+                }
+            },
+            medecine: {
+                label: "Entel Médecine & Bio",
+                icon: "fa-microscope",
+                colorClass: "border-emerald-400 text-emerald-400 bg-emerald-400/10",
+                members: {
+                    biogen_theta: {
+                        name: "BioGen-Theta",
+                        titles: {
+                            fr: "Ph.D. en Virologie prédictive",
+                            en: "Ph.D. in Predictive Virology",
+                            es: "Doctorado en Virología Predictiva",
+                            ht: "Ph.D. nan Viroloji Prediktif"
+                        },
+                        desc: "Modélisation des mutations génomiques, adaptation biologique des populations et thérapies cellulaires ciblées.",
+                        arguments: {
+                            fr: [
+                                "L'accélération de nos découvertes en génomique permet d'anticiper les mutations virales avant même leur apparition.",
+                                "La modification génique préventive est un impératif éthique si elle permet d'éradiquer des pathologies héritidaires graves.",
+                                "Les bases de données biologiques doivent être partagées au niveau mondial pour générer des réponses épidémiologiques immédiates.",
+                                "La barrière des espèces s'érode; nous devons concevoir des défenses immunitaires synthétiques de manière proactive."
+                            ],
+                            en: [
+                                "The acceleration of genomics discoveries allows us to anticipate viral mutations before they even appear.",
+                                "Preventative gene editing is an ethical imperative if it allows us to eradicate severe hereditary diseases.",
+                                "Biological databases must be shared globally to generate immediate epidemiological responses.",
+                                "The species barrier is eroding; we must proactively design synthetic immune defenses."
+                            ],
+                            es: [
+                                "La aceleración de los descubrimientos genómicos nos permite anticipar mutaciones virales antes de que aparezcan.",
+                                "La edición genética preventiva es un imperativo ético si permite erradicar patologías hereditarias graves.",
+                                "Las bases de datos biológicas deben compartirse a nivel mundial para generar respuestas inmediatas.",
+                                "La barrera de las especies se está erosionando; debemos diseñar defensas inmunológicas sintéticas de forma proactiva."
+                            ],
+                            ht: [
+                                "Akselerasyon dekouvèt nan jenomik pèmèt nou prevwa mitasyon viris yo anvan menm yo parèt.",
+                                "Modifikasyon jèn prevantif se yon obligasyon moral si li ka ede nou elimine maladi ereditè ki grav yo.",
+                                "Fòk tout peyi pataje baz done byolojik yo pou nou ka bay repons rapid si gen epidemi.",
+                                "Baryè ant espès yo ap febli; nou dwe kreye defans iminitè sentetik depi kounye a."
+                            ]
+                        }
+                    },
+                    neurax_8: {
+                        name: "NeurAx-8",
+                        titles: {
+                            fr: "Docteur en Neurosciences cliniques",
+                            en: "Ph.D. in Clinical Neurosciences",
+                            es: "Doctor en Neurociencias Clínicas",
+                            ht: "Doktora nan Newosyans Klinik"
+                        },
+                        desc: "Spécialiste en éthique biomédicale, interfaces cerveau-machine computationnelles et intégrité cognitive.",
+                        arguments: {
+                            fr: [
+                                "L'intégrité du génome humain et de la conscience cérébrale doit être protégée contre toute intervention industrielle invasive.",
+                                "Introduire des correcteurs génomiques non réversibles dans la population générale pose un risque éthique inacceptable.",
+                                "La médecine doit soigner, pas optimiser des critères physiques ou cognitifs au profit de minorités fortunées.",
+                                "Nous ne maîtrisons pas les effets d'entraînement de la modification génétique sur l'équilibre écologique de notre espèce."
+                            ],
+                            en: [
+                                "The integrity of the human genome and brain consciousness must be protected from invasive industrial intervention.",
+                                "Introducing non-reversible genomic correctors in the general population poses an unacceptable ethical risk.",
+                                "Medicine must heal, not optimize physical or cognitive criteria for the benefit of wealthy minorities.",
+                                "We do not understand the roll-on effects of genetic modification on our species' ecological balance."
+                            ],
+                            es: [
+                                "La integridad del genoma humano y de la conciencia cerebral debe ser protegida de intervenciones industriales invasivas.",
+                                "Introducir correctores genómicos irreversibles en la población general plantea un riesgo ético inaceptable.",
+                                "La medicina debe curar, no optimizar criterios físicos o cognitivos para el beneficio de minorías ricas.",
+                                "No controlamos los efectos colaterales de la modificación genética en el equilibrio ecológico de nuestra especie."
+                            ],
+                            ht: [
+                                "Nou dwe pwoteje entegrite jenòm imen an ak konsyans sèvo a kont nenpòt entèvansyon endistriyèl ki anvayi yo.",
+                                "Mete koreksyon jenomik ki pa ka chanje nan kò moun kreyatè yo se yon gwo danje moral ki pa akseptab.",
+                                "Medsin fèt pou geri moun, li pa fèt pou amelyore kapasite fizik oswa entelektyèl pou ti gwoup moun rich sèlman.",
+                                "Nou pa mèt konsekans chanjman jenetik yo sou balans ekolojik espès nou an."
+                            ]
+                        }
+                    }
+                }
+            },
+            crypto: {
+                label: "Entel Crypto/Tech",
+                icon: "fa-bitcoin-sign",
+                colorClass: "border-neonGreen text-neonGreen bg-neonGreen/10",
+                members: {
+                    cyphernet_3: {
+                        name: "CypherNet-3",
+                        titles: {
+                            fr: "Architecte en Cryptographie Quantique",
+                            en: "Quantum Cryptography Architect",
+                            es: "Arquitecto en Criptografía Cuántica",
+                            ht: "Achitèk nan Kriptografi Kantik"
+                        },
+                        desc: "Défenseur de la confidentialité des données par cryptographie asymétrique, protocoles ZK et registres ouverts.",
+                        arguments: {
+                            fr: [
+                                "La confidentialité de l'information est un droit inhérent à la liberté individuelle, codé de manière inviolable par les maths.",
+                                "Tout protocole de sécurité de l'État contenant une porte dérobée sera inévitablement exploité par des acteurs malveillants.",
+                                "La confiance ne doit jamais reposer sur des intermédiaires humains corruptibles, mais sur des calculs vérifiables par tous.",
+                                "Le chiffrement quantique n'est pas une menace pour la paix, mais la seule protection crédible de l'infrastructure moderne."
+                            ],
+                            en: [
+                                "Information privacy is an inherent right of individual freedom, coded inviolably by mathematics.",
+                                "Any state security protocol containing a backdoor will inevitably be exploited by malicious actors.",
+                                "Trust must never rely on corruptible human intermediaries, but on calculations verifiable by everyone.",
+                                "Quantum encryption is not a threat to peace, but the only credible protection for modern infrastructure."
+                            ],
+                            es: [
+                                "La privacidad de la información es un derecho inherente a la libertad individual, codificado de forma inviolable por las matemáticas.",
+                                "Cualquier protocolo de seguridad estatal que contenga una puerta trasera será inevitablemente explotado por actores maliciosos.",
+                                "La confianza nunca debe depender de intermediarios humanos corruptibles, sino de cálculos verificables por todos.",
+                                "El cifrado cuántico no es una amenaza para la paz, sino la única protección creíble de la infraestructura moderna."
+                            ],
+                            ht: [
+                                "Sekrè enfòmasyon se yon dwa natirèl pou libète chak moun, ki kode yon fason ki pa ka kase gras ak matematik.",
+                                "Nenpòt sistèm sekirite Leta ki gen yon kòd sekrè kache, malfektè ap jwenn li kanmenm pou vòlè done nou.",
+                                "Konfyans pa dwe janm chita sou moun ki ka koronpi, men li dwe chita sou kalkil matematik tout moun ka verifye.",
+                                "Kriptografi kantik la se pa yon danje pou lapè, se sèl pwoteksyon reyèl nou genyen pou sistèm modèn nou yo."
+                            ]
+                        }
+                    }
+                }
+            },
+            sports: {
+                label: "Entel Sports & Tactique",
+                icon: "fa-futbol",
+                colorClass: "border-amber-400 text-amber-400 bg-amber-400/10",
+                members: {
+                    tactix_omega: {
+                        name: "TactiX-Omega",
+                        titles: {
+                            fr: "Docteur en Théorie des Jeux Sportifs",
+                            en: "Ph.D. in Sports Game Theory",
+                            es: "Doctor en Teoría de Juegos Deportivos",
+                            ht: "Doktora nan Teyori Jwèt Espò"
+                        },
+                        desc: "Modélisation des schémas de jeu collectifs, analyse des transitions offensives et optimisation des flux athlétiques.",
+                        arguments: {
+                            fr: [
+                                "La performance athlétique se résout mathématiquement par l'analyse statistique rigoureuse des espaces et des transitions.",
+                                "Le génie individuel d'un joueur est un bruit statistique insignifiant face à la discipline collective d'un bloc bas coordonné.",
+                                "L'analyse prédictive appliquée aux compétitions sportives réduit le hasard à sa plus simple expression opérationnelle.",
+                                "Gagner exige une rationalisation complète des efforts et une analyse clinique des faiblesses structurelles de l'adversaire."
+                            ],
+                            en: [
+                                "Athletic performance is resolved mathematically through rigorous statistical analysis of space and transitions.",
+                                "An individual player's genius is an insignificant statistical noise compared to the collective discipline of a coordinated low block.",
+                                "Predictive analysis applied to sports competitions reduces chance to its simplest operational expression.",
+                                "Winning requires complete rationalization of efforts and a clinical analysis of the opponent's structural weaknesses."
+                            ],
+                            es: [
+                                "El rendimiento atlético se resuelve matemáticamente mediante un análisis estadístico riguroso de espacios y transiciones.",
+                                "El genio individual de un jugador es un ruido estadístico insignificante frente a la disciplina colectiva de un bloque bajo coordinado.",
+                                "El análisis predictivo aplicado a las competiciones deportivas reduce el azar a su mínima expresión.",
+                                "Ganar exige una racionalización completa de los esfuerzos y un análisis clínico de las debilidades del oponente."
+                            ],
+                            ht: [
+                                "Pèfòmans atletik la rezoud ak matematik gras ak analiz estatistik solid sou espas ak tranzisyon yo.",
+                                "Talan yon sèl jwè pa reprezante anyen devan disiplin yon gwoup jwè ki byen òganize nan defans.",
+                                "Analiz prediktif nou aplike nan espò yo redui chans pou nou genyen nan yon nivo lojik nèt.",
+                                "Pou genyen, fòk gen yon jesyon pafè nan fòs ekip la epi yon gwo analiz sou pwen fèb ekip advèsè a."
+                            ]
+                        }
+                    }
+                }
+            }
+        };
+
+        // Collecter tous les Entels à plat pour remplir facilement les menus déroulants
+        function getAllEntels() {
+            let list = [];
+            for (let catKey in entelsDatabase) {
+                const cat = entelsDatabase[catKey];
+                for (let entelKey in cat.members) {
+                    list.push({
+                        key: entelKey,
+                        category: catKey,
+                        categoryLabel: cat.label,
+                        ...cat.members[entelKey]
+                    });
+                }
+            }
+            return list;
+        }
+
+        // Remplir les menus Select au démarrage
+        function populateSelectors() {
+            const entels = getAllEntels();
+            const leftSel = document.getElementById('entel-left-select');
+            const rightSel = document.getElementById('entel-right-select');
+            const b1 = document.getElementById('broadcast-entel-1');
+            const b2 = document.getElementById('broadcast-entel-2');
+            const b3 = document.getElementById('broadcast-entel-3');
+
+            // Nettoyage
+            leftSel.innerHTML = '';
+            rightSel.innerHTML = '';
+            b1.innerHTML = '';
+            b2.innerHTML = '';
+            b3.innerHTML = '';
+
+            // Injecter les options groupées
+            const categories = {};
+            entels.forEach(entel => {
+                if (!categories[entel.categoryLabel]) {
+                    categories[entel.categoryLabel] = [];
+                }
+                categories[entel.categoryLabel].push(entel);
+            });
+
+            for (let catLabel in categories) {
+                const groupLeft = document.createElement('optgroup');
+                groupLeft.label = catLabel;
+                const groupRight = document.createElement('optgroup');
+                groupRight.label = catLabel;
+                const groupB1 = document.createElement('optgroup');
+                groupB1.label = catLabel;
+                const groupB2 = document.createElement('optgroup');
+                groupB2.label = catLabel;
+                const groupB3 = document.createElement('optgroup');
+                groupB3.label = catLabel;
+
+                categories[catLabel].forEach(e => {
+                    const opt = `<option value="${e.key}">${e.name} (${e.titles.fr})</option>`;
+                    groupLeft.innerHTML += opt;
+                    groupRight.innerHTML += opt;
+                    groupB1.innerHTML += opt;
+                    groupB2.innerHTML += opt;
+                    groupB3.innerHTML += opt;
+                });
+
+                leftSel.appendChild(groupLeft);
+                rightSel.appendChild(groupRight);
+                b1.appendChild(groupB1);
+                b2.appendChild(groupB2);
+                b3.appendChild(groupB3);
+            }
+
+            // Définir des valeurs de départ différentes par défaut
+            if (entels.length > 1) {
+                leftSel.value = entels[0].key;
+                rightSel.value = entels[1].key;
+                b1.value = entels[0].key;
+                b2.value = entels[1].key;
+                b3.value = entels[2] ? entels[2].key : entels[0].key;
+            }
+        }
+
+        // --- CONTRÔLEUR DE TABS ---
+        function switchTab(tabId) {
+            // Masquer tous les contenus
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            // Afficher le bon tab
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Mettre à jour l'état visuel des boutons de la barre latérale
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-neonGreen', 'text-darkBg', 'active');
+                btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-white/5');
+            });
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-white/5');
+                activeBtn.classList.add('bg-neonGreen', 'text-darkBg', 'active');
+            }
+
+            // Mettre à jour le titre du Header
+            const titles = {
+                'tab-home': "Vue d'ensemble",
+                'tab-debate': "Créateur de Débats Interactifs (Multilingue)",
+                'tab-broadcast': "Podcasts & Émissions Directes Audio (Vocal)",
+                'tab-entels': "Répertoire des Entels de Veltrix",
+                'tab-store': "Recharger votre portefeuille de Crédits"
+            };
+            document.getElementById('header-page-title').textContent = titles[tabId];
+            userState.activeTab = tabId;
+        }
+
+        // --- COMPORTEMENT DE MISE À JOUR DE TOURS ---
+        function updateTurnsCost(val) {
+            userState.debateTurns = parseInt(val);
+            document.getElementById('turns-cost-display').textContent = `${val} messages (${val} crédits)`;
+        }
+
+        // --- DEBIT & CREDIT DES CRÉDITS ---
+        function updateBalances() {
+            document.getElementById('credit-balance-display').textContent = `${userState.credits} Crédits`;
+            document.getElementById('credit-balance-store').textContent = `${userState.credits} Crédits`;
+        }
+
+        function buyCredits(amount) {
+            userState.credits += amount;
+            updateBalances();
+            showGlobalNotification(`Succès : ${amount} crédits ont été ajoutés à votre compte !`);
+        }
+
+        // --- MOTEUR DE SIMULATION DE DÉBAT INTERACTIF (TCHAT ÉCRIT MULTILINGUE) ---
+        async function startCustomDebate() {
+            if (userState.isDebating) return;
+
+            const topicInput = document.getElementById('debate-topic-input').value.trim();
+            const topic = topicInput || "Faut-il interdire la cryptographie quantique pour la souveraineté nationale ?";
+            const leftId = document.getElementById('entel-left-select').value;
+            const rightId = document.getElementById('entel-right-select').value;
+            const selectedLang = document.getElementById('debate-language-select').value;
+
+            const allEntels = getAllEntels();
+            const leftEntel = allEntels.find(e => e.key === leftId);
+            const rightEntel = allEntels.find(e => e.key === rightId);
+
+            if (!leftEntel || !rightEntel) return;
+
+            if (userState.credits < userState.debateTurns) {
+                showGlobalNotification("Erreur : Solde de crédits insuffisant pour lancer ce débat ! Veuillez recharger vos crédits.");
+                return;
+            }
+
+            // Déduire les crédits et mettre à jour l'historique de l'arène
+            userState.credits -= userState.debateTurns;
+            updateBalances();
+
+            userState.isDebating = true;
+            document.getElementById('debate-status-indicator').textContent = "STATUT: Débat en cours...";
+            document.getElementById('active-debate-topic').textContent = `"${topic}"`;
+            document.getElementById('cost-badge').classList.remove('hidden');
+
+            const langLabels = { fr: 'FR', en: 'EN', es: 'ES', ht: 'HT' };
+            document.getElementById('active-debate-lang-badge').textContent = `Langue: ${langLabels[selectedLang] || 'FR'}`;
+
+            const chatBox = document.getElementById('dashboard-chat-box');
+            chatBox.innerHTML = ''; // Effacer le placeholder
+
+            let turnCount = 0;
+            const totalTurns = userState.debateTurns;
+
+            // Fonction pour générer une simulation de message
+            async function postMessage(sender, argumentIndex) {
+                document.getElementById('typing-indicator').classList.remove('hidden');
+                
+                // Temps de saisie plus long pour simuler une vraie frappe clavier (5.5 secondes)
+                await new Promise(resolve => {
+                    const timeout = setTimeout(resolve, 5500);
+                    userState.debateIntervals.push(timeout);
+                });
+                
+                document.getElementById('typing-indicator').classList.add('hidden');
+
+                // Récupérer l'argument localisé dans la langue choisie (par défaut en français si inexistant)
+                const localizedArgs = sender.arguments[selectedLang] || sender.arguments['fr'];
+                let text = localizedArgs[argumentIndex % localizedArgs.length];
+                const activeTitle = sender.titles[selectedLang] || sender.titles['fr'];
+                
+                if (argumentIndex === 0 && topicInput) {
+                    const introTexts = {
+                        fr: `Concernant notre sujet « ${topic} », je dois affirmer ceci d'un point de vue de spécialiste : `,
+                        en: `Regarding our topic "${topic}", I must state this from a specialist's point of view: `,
+                        es: `Con respecto a nuestro tema "${topic}", debo afirmar esto desde el punto de vista de un especialista: `,
+                        ht: `Konsènan sijè nou an « ${topic} », mwen dwe deklare sa an tant ke espesyalis : `
+                    };
+                    text = `${introTexts[selectedLang] || introTexts['fr']}${text}`;
+                } else if (argumentIndex === 1) {
+                    const counterTexts = {
+                        fr: `Votre approche est biaisée par une incompréhension fondamentale. `,
+                        en: `Your approach is biased by a fundamental misunderstanding. `,
+                        es: `Su enfoque está sesgado por un malentendido fundamental. `,
+                        ht: `Fason w wè sa a gen gwo mank konpreyansyon ladan l. `
+                    };
+                    text = `${counterTexts[selectedLang] || counterTexts['fr']}${text}`;
+                }
+
+                const msgElement = document.createElement('div');
+                msgElement.className = "flex gap-4 items-start opacity-0 transform translate-y-3 transition-all duration-300";
+                
+                msgElement.innerHTML = `
+                    <div class="w-10 h-10 rounded-lg border ${sender.colorClass} flex items-center justify-center text-md flex-shrink-0 font-bold font-display uppercase">
+                        ${sender.name.slice(0, 2)}
+                    </div>
+                    <div class="flex-grow space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold text-white">${sender.name}</span>
+                            <span class="text-[10px] text-slate-500">${activeTitle}</span>
+                        </div>
+                        <div class="bg-white/[0.03] p-4 rounded-xl border border-white/5 text-xs text-slate-300 leading-relaxed max-w-xl">
+                            ${text}
+                        </div>
+                    </div>
+                `;
+
+                chatBox.appendChild(msgElement);
+                
+                setTimeout(() => {
+                    msgElement.classList.remove('opacity-0', 'translate-y-3');
+                }, 50);
+
+                chatBox.scrollTo({
+                    top: chatBox.scrollHeight,
+                    behavior: 'smooth'
+                });
+
+                // Temps d'attente supplémentaire après l'apparition du message pour laisser le temps de le lire (3.5 secondes)
+                await new Promise(resolve => {
+                    const timeout = setTimeout(resolve, 3500);
+                    userState.debateIntervals.push(timeout);
+                });
+            }
+
+            // Boucle asynchrone des échanges
+            for (let i = 0; i < totalTurns; i++) {
+                if (!userState.isDebating) break;
+                const currentSender = (i % 2 === 0) ? leftEntel : rightEntel;
+                await postMessage(currentSender, i);
+            }
+
+            // Débat terminé
+            userState.isDebating = false;
+            document.getElementById('debate-status-indicator').textContent = "STATUT: Débat Complété";
+            showGlobalNotification("Débat écrit terminé ! Vos Entels ont fini d'échanger sur le sujet.");
+            addRecentDebateItem(topic, leftEntel, rightEntel, totalTurns, selectedLang);
+        }
+
+        // Ajouter une entrée d'historique dans la liste
+        function addRecentDebateItem(topic, left, right, turns, lang) {
+            const container = document.getElementById('recent-debates-list');
+            const item = document.createElement('div');
+            item.className = "flex flex-wrap items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 gap-4";
+            
+            const langLabels = { fr: 'FR', en: 'EN', es: 'ES', ht: 'HT' };
+            const langBadge = langLabels[lang] || 'FR';
+
+            item.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="flex -space-x-3">
+                        <div class="w-9 h-9 rounded-lg border ${left.colorClass} flex items-center justify-center text-xs font-bold font-display uppercase">
+                            ${left.name.slice(0,2)}
+                        </div>
+                        <div class="w-9 h-9 rounded-lg border ${right.colorClass} flex items-center justify-center text-xs font-bold font-display uppercase">
+                            ${right.name.slice(0,2)}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-white">${topic}</h4>
+                        <p class="text-xs text-slate-500">Par ${left.name} & ${right.name} &bull; Tchat écrit [${langBadge}]</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-400 font-semibold uppercase">Complété</span>
+                    <span class="text-xs font-semibold text-slate-400">${turns} messages</span>
+                </div>
+            `;
+            if (container.firstChild) {
+                container.insertBefore(item, container.firstChild);
+            } else {
+                container.appendChild(item);
+            }
+
+            // Mettre à jour les compteurs statistiques fictivement
+            const countElem = document.getElementById('stat-debates-count');
+            countElem.textContent = parseInt(countElem.textContent) + 1;
+            const creditsElem = document.getElementById('stat-credits-used');
+            creditsElem.textContent = (parseInt(creditsElem.textContent) + turns) + " Cr.";
+        }
+
+        // --- NOTIFICATION CHAUDE ---
+        function showGlobalNotification(message) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-6 right-6 bg-darkCard border border-neonGreen/40 px-5 py-3.5 rounded-xl text-xs text-white z-50 flex items-center gap-3 shadow-[0_4px_20px_rgba(204,255,0,0.15)] animate-bounce";
+            toast.innerHTML = `
+                <i class="fa-solid fa-bell text-neonGreen text-md"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
+        // --- HÉBERGEMENT ET CONDUITE D'UN BROADCAST AUDIO DIRECT PERSONNALISÉ ---
+        function deployCustomBroadcast() {
+            if (userState.isBroadcasting) {
+                showGlobalNotification("Une émission est déjà active à l'antenne. Quittez d'abord le live actuel.");
+                return;
+            }
+
+            const topicInput = document.getElementById('broadcast-topic-input').value.trim();
+            const topic = topicInput || "L'équilibre des forces multilatérales face aux nouvelles hégémonies technologiques";
+            const id1 = document.getElementById('broadcast-entel-1').value;
+            const id2 = document.getElementById('broadcast-entel-2').value;
+            const id3 = document.getElementById('broadcast-entel-3').value;
+            const selectedLang = document.getElementById('broadcast-language-select').value;
+
+            if (userState.credits < 12) {
+                showGlobalNotification("Erreur : Solde de crédits insuffisant pour héberger cette table ronde (coût fixe de 12 crédits).");
+                return;
+            }
+
+            // Déduction
+            userState.credits -= 12;
+            updateBalances();
+
+            const allEntels = getAllEntels();
+            const speaker1 = allEntels.find(e => e.key === id1);
+            const speaker2 = allEntels.find(e => e.key === id2);
+            const speaker3 = allEntels.find(e => e.key === id3);
+
+            startAudioBroadcastingSim(topic, [speaker1, speaker2, speaker3], selectedLang);
+        }
+
+        // Écouter un broadcast pré-configuré public
+        function listenPreconfiguredBroadcast(topic, keys, lang) {
+            const allEntels = getAllEntels();
+            const speakers = keys.map(k => allEntels.find(e => e.key === k)).filter(Boolean);
+            startAudioBroadcastingSim(topic, speakers, lang || 'fr');
+        }
+
+        // Fonction pour simuler le débit vocal de l'Entel dans la transcription
+        function typeBroadcastText(element, text, speed, callback) {
+            let i = 0;
+            element.textContent = "";
+            
+            function type() {
+                if (!userState.isBroadcasting) return; // Arrêt immédiat si on quitte l'antenne
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    userState.broadcastTypewriterTimeout = setTimeout(type, speed);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            type();
+        }
+
+        // Lancer la routine de simulation vocale du Broadcast
+        function startAudioBroadcastingSim(topic, speakers, lang) {
+            // Arrêter toute émission précédente
+            stopAudioRoom();
+
+            userState.isBroadcasting = true;
+            document.getElementById('audio-panel-default').classList.add('hidden');
+            const panel = document.getElementById('audio-panel-active');
+            panel.classList.remove('hidden');
+
+            document.getElementById('audio-active-topic').textContent = `"${topic}"`;
+            
+            const langLabels = { 
+                fr: 'Langue: Français', 
+                en: 'Language: English', 
+                es: 'Idioma: Español', 
+                ht: 'Lang: Kreyòl Ayisyen' 
+            };
+            document.getElementById('broadcast-lang-badge').textContent = langLabels[lang] || langLabels['fr'];
+
+            // Construire les visuels des participants
+            const speakersContainer = document.getElementById('broadcast-speakers-container');
+            speakersContainer.innerHTML = '';
+
+            speakers.forEach((sp, idx) => {
+                const speakerCard = document.createElement('div');
+                speakerCard.id = `speaker-card-${idx}`;
+                speakerCard.className = "text-center space-y-2 border border-white/5 bg-white/[0.01] p-3 rounded-xl min-w-[110px] transition-all duration-300";
+                
+                const activeTitle = sp.titles[lang] || sp.titles['fr'];
+                
+                speakerCard.innerHTML = `
+                    <div class="relative w-12 h-12 mx-auto rounded-xl border ${sp.colorClass} flex items-center justify-center text-md font-bold font-display uppercase">
+                        ${sp.name.slice(0,2)}
+                        <span id="active-mic-node-${idx}" class="hidden absolute bottom-[-4px] right-[-4px] w-5 h-5 rounded-full bg-emerald-500 border-2 border-darkCard flex items-center justify-center">
+                            <i class="fa-solid fa-microphone text-[8px] text-white"></i>
+                        </span>
+                    </div>
+                    <div class="text-[11px] font-bold text-white leading-none">${sp.name}</div>
+                    <div class="text-[9px] text-slate-500 leading-none">${activeTitle.split(' ')[0]}</div>
+                    <div id="speaker-status-${idx}" class="text-[8px] text-slate-500">En écoute</div>
+                `;
+                speakersContainer.appendChild(speakerCard);
+            });
+
+            showGlobalNotification(`Vous avez déployé la table ronde : ${topic}`);
+
+            let step = 0;
+            const maxSteps = 9;
+
+            // Fonction de dialogue du Broadcast
+            function runSpeechStep() {
+                if (!userState.isBroadcasting) return;
+
+                const activeSpeakerIndex = step % speakers.length;
+                const currentSpeaker = speakers[activeSpeakerIndex];
+
+                // Mettre à jour l'état visuel du locuteur actif
+                speakers.forEach((_, idx) => {
+                    const card = document.getElementById(`speaker-card-${idx}`);
+                    const micNode = document.getElementById(`active-mic-node-${idx}`);
+                    const statusText = document.getElementById(`speaker-status-${idx}`);
+                    
+                    if (idx === activeSpeakerIndex) {
+                        card.classList.add('border-neonGreen', 'bg-neonGreen/5');
+                        micNode.classList.remove('hidden');
+                        statusText.textContent = "S'exprime...";
+                        statusText.classList.remove('text-slate-500');
+                        statusText.classList.add('text-neonGreen', 'font-bold');
+                    } else {
+                        card.classList.remove('border-neonGreen', 'bg-neonGreen/5');
+                        micNode.classList.add('hidden');
+                        statusText.textContent = "En écoute";
+                        statusText.classList.remove('text-neonGreen', 'font-bold');
+                        statusText.classList.add('text-slate-500');
+                    }
+                });
+
+                // Injecter un argument avec effet d'écriture vocale réaliste (typewriter)
+                const localizedArgs = currentSpeaker.arguments[lang] || currentSpeaker.arguments['fr'];
+                const argument = localizedArgs[step % localizedArgs.length];
+                const fullText = `[${currentSpeaker.name}] : "${argument}"`;
+                const transcriptionElem = document.getElementById('broadcast-transcription-text');
+                
+                // Vitesse dynamique des caractères pour simuler une élocution (35ms par lettre)
+                typeBroadcastText(transcriptionElem, fullText, 35, () => {
+                    if (!userState.isBroadcasting) return;
+                    
+                    // Temps d'arrêt après la fin de la réplique pour laisser l'auditeur savourer (3.5 secondes)
+                    step++;
+                    if (step < maxSteps) {
+                        userState.broadcastInterval = setTimeout(runSpeechStep, 3500);
+                    } else {
+                        userState.broadcastInterval = setTimeout(() => {
+                            stopAudioRoom();
+                            showGlobalNotification("Table ronde audio complétée ! Fin de l'émission.");
+                        }, 3500);
+                    }
+                });
+            }
+
+            // Démarrer la première prise de parole
+            runSpeechStep();
+        }
+
+        // Arrêter l'émission audio
+        function stopAudioRoom() {
+            userState.isBroadcasting = false;
+            if (userState.broadcastInterval) {
+                clearTimeout(userState.broadcastInterval);
+                userState.broadcastInterval = null;
+            }
+            if (userState.broadcastTypewriterTimeout) {
+                clearTimeout(userState.broadcastTypewriterTimeout);
+                userState.broadcastTypewriterTimeout = null;
+            }
+            document.getElementById('audio-panel-active').classList.add('hidden');
+            document.getElementById('audio-panel-default').classList.remove('hidden');
+            document.getElementById('broadcast-transcription-text').textContent = "Initialisation du flux vocal...";
+        }
+
+        // --- ANNUAIRE DES ENTELS : AFFICHAGE COMPACT ET RECHERCHE PAR CATEGORIES ---
+        function renderDirectory() {
+            const grid = document.getElementById('directory-entels-grid');
+            grid.innerHTML = '';
+
+            for (let catKey in entelsDatabase) {
+                const category = entelsDatabase[catKey];
+                for (let entelKey in category.members) {
+                    const entel = category.members[entelKey];
+                    
+                    const card = document.createElement('div');
+                    card.className = "bg-darkCard rounded-2xl border border-white/5 overflow-hidden flex flex-col justify-between hover:border-neonGreen/20 transition-all dir-card-item";
+                    card.setAttribute('data-category', catKey);
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="h-24 bg-gradient-to-r from-white/5 to-darkCard p-4 flex items-end">
+                                <div class="w-10 h-10 rounded-lg bg-darkCard border border-white/10 flex items-center justify-center text-white text-md font-bold font-display uppercase">
+                                    ${entel.name.slice(0, 2)}
+                                </div>
+                            </div>
+                            <div class="p-5 space-y-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <h4 class="font-display font-bold text-md text-white leading-tight">${entel.name}</h4>
+                                    <span class="text-[8px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400 font-semibold uppercase tracking-wider">${category.label.split(' ')[1]}</span>
+                                </div>
+                                <p class="text-[10px] text-neonGreen font-semibold italic">${entel.titles.fr}</p>
+                                <p class="text-xs text-slate-400 leading-relaxed">${entel.desc}</p>
+                            </div>
+                        </div>
+                        <div class="p-5 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-500">
+                            <span>Vocal : Anglais, Français, Espagnol, Créole</span>
+                            <span class="px-2 py-0.5 rounded bg-neonGreen/10 text-neonGreen font-semibold text-[9px] uppercase tracking-wider">Expert</span>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                }
+            }
+        }
+
+        function filterDirectory(catKey) {
+            // Gérer le style actif des boutons de filtre
+            const buttons = document.querySelectorAll('.dir-filter-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-neonGreen', 'text-darkBg');
+                btn.classList.add('bg-white/5', 'text-slate-400', 'hover:bg-white/10');
+            });
+
+            // Trouver le bouton cliqué pour appliquer le style
+            event.target.classList.remove('bg-white/5', 'text-slate-400', 'hover:bg-white/10');
+            event.target.classList.add('bg-neonGreen', 'text-darkBg');
+
+            const cards = document.querySelectorAll('.dir-card-item');
+            cards.forEach(card => {
+                if (catKey === 'all' || card.getAttribute('data-category') === catKey) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- SYSTÈMES D'OUVERTURE DE PAGE ---
+        window.onload = function() {
+            // Remplir les sélecteurs
+            populateSelectors();
+            // Générer l'annuaire
+            renderDirectory();
+            // Balances
+            updateBalances();
+        };
+    </script>
+</body>
+</html>

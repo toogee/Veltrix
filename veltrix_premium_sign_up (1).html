@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veltrix - Créer un compte</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090B11',
+                        darkCard: '#111520',
+                        darkCardMuted: '#171D2B',
+                        neonGreen: '#CCFF00',
+                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
+                        oliveAccent: '#88B000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .neon-glow-border {
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
+            border: 1px solid rgba(204, 255, 0, 0.15);
+        }
+        .neon-glow-border:focus-within {
+            box-shadow: 0 0 25px rgba(204, 255, 0, 0.25);
+            border-color: rgba(204, 255, 0, 0.6);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        /* Personnalisation élégante de la barre de défilement */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #090B11;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #171D2B;
+            border-radius: 99px;
+            border: 1px solid rgba(204, 255, 0, 0.15);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(204, 255, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans h-full overflow-hidden flex flex-col md:flex-row">
+
+    <!-- SPLIT-SCREEN LAYOUT -->
+    <div class="w-full h-full flex flex-col lg:flex-row">
+
+        <!-- PANNEAU DE GAUCHE : ILLUSTRATION & PROMOTION (Masqué sur mobile) -->
+        <section class="hidden lg:flex lg:w-5/12 bg-gradient-to-br from-darkCard via-darkBg to-darkCard border-r border-white/5 p-12 flex-col justify-between relative overflow-hidden">
+            <!-- Cercles d'ambiance en arrière-plan -->
+            <div class="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-neonGreen/5 blur-[80px] pointer-events-none"></div>
+            <div class="absolute bottom-12 right-12 w-64 h-64 rounded-full bg-oliveAccent/5 blur-[80px] pointer-events-none"></div>
+
+            <!-- Header de marque -->
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center">
+                    <i class="fa-solid fa-brain text-neonGreen text-md"></i>
+                </div>
+                <span class="font-display font-bold text-xl tracking-wider text-white">VELTRIX</span>
+            </div>
+
+            <!-- Contenu central accrocheur -->
+            <div class="space-y-8 relative z-10 my-auto">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neonGreen/10 border border-neonGreen/20 text-[11px] font-bold tracking-wider text-neonGreen uppercase animate-pulse">
+                    <i class="fa-solid fa-gift"></i> OFFRE DE BIENVENUE
+                </div>
+                
+                <h1 class="font-display font-bold text-4xl text-white leading-tight">
+                    Déployez vos propres arènes de débat dès aujourd'hui.
+                </h1>
+                
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Créez votre compte en moins d'une minute et recevez immédiatement votre cadeau de bienvenue pour commencer à faire interagir nos Entels.
+                </p>
+
+                <!-- Carte d'illustration interactive -->
+                <div class="bg-darkCard/80 border border-white/10 rounded-2xl p-5 shadow-[0_10px_30px_rgba(0,0,0,0.5)] space-y-4 animate-float">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                            <span class="text-xs font-semibold text-slate-400">Bonus d'activation</span>
+                        </div>
+                        <span class="text-[10px] text-neonGreen font-bold font-mono">VALIDE</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-3xl font-display font-bold text-white neon-text-glow">+50 CREDITS</span>
+                            <span class="block text-[10px] text-slate-500 uppercase mt-1">Crédits de bienvenue gratuits</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-neonGreen/10 border border-neonGreen/20 flex items-center justify-center text-neonGreen text-xl">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-400 border-t border-white/5 pt-3 leading-relaxed">
+                        Permet de lancer environ <strong class="text-white">50 messages de chat</strong> ou <strong class="text-white">4 grands panels audio (Broadcasts)</strong> avec vos Entels préférés.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Pied de page -->
+            <div class="text-xs text-slate-500">
+                &copy; 2026 Veltrix Technologies Inc. Tous droits réservés.
+            </div>
+        </section>
+
+        <!-- PANNEAU DE DROITE : FORMULAIRE D'INSCRIPTION (Correction du scroll et du centrage) -->
+        <main class="w-full lg:w-7/12 bg-darkBg flex flex-col items-center px-6 md:px-12 overflow-y-auto custom-scrollbar h-full">
+            
+            <!-- Conteneur interne avec marge automatique verticale (my-auto) pour un centrage parfait et flexible -->
+            <div class="w-full max-w-md my-auto py-10 md:py-16 space-y-8 flex flex-col">
+                
+                <!-- Logo visible uniquement sur mobile/tablette -->
+                <div class="flex lg:hidden items-center justify-center gap-3 mb-4">
+                    <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center">
+                        <i class="fa-solid fa-brain text-neonGreen text-md"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-wider text-white">VELTRIX</span>
+                </div>
+
+                <!-- Titre de la page -->
+                <div class="space-y-2 text-center lg:text-left">
+                    <h2 class="font-display font-bold text-3xl md:text-4xl text-white tracking-tight">Créer votre compte</h2>
+                    <p class="text-xs md:text-sm text-slate-400 font-medium">Rejoignez l'arène Veltrix et commencez à observer nos Entels.</p>
+                </div>
+
+                <!-- Formulaire interactif -->
+                <form id="signup-form" onsubmit="handleSignUp(event)" class="space-y-4">
+                    <!-- Prénom et Nom -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Prénom</label>
+                            <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5">
+                                <input id="first-name-input" type="text" required placeholder="Jean" class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nom</label>
+                            <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5">
+                                <input id="last-name-input" type="text" required placeholder="Dupont" class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- E-mail -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Adresse E-mail</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
+                            <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
+                            <input id="email-input" type="email" required placeholder="jean.dupont@exemple.com" class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                        </div>
+                    </div>
+
+                    <!-- Mot de passe -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mot de passe</label>
+                            <span id="password-strength" class="text-[9px] font-bold text-slate-600 uppercase">Indéterminé</span>
+                        </div>
+                        <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
+                            <i class="fa-solid fa-lock text-slate-500 text-xs"></i>
+                            <input id="password-input" type="password" required oninput="checkPasswordStrength(this.value)" placeholder="••••••••" class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                        </div>
+                        <!-- Barre visuelle de force -->
+                        <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div id="strength-bar" class="h-full w-0 transition-all duration-300 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmer le mot de passe -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Confirmer le mot de passe</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
+                            <i class="fa-solid fa-lock text-slate-500 text-xs"></i>
+                            <input id="confirm-password-input" type="password" required placeholder="••••••••" class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                        </div>
+                    </div>
+
+                    <!-- Choix du premier Entel / Centre d'intérêt -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Domaine d'intérêt principal (Premier Entel)</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl px-3.5 py-2.5">
+                            <select id="interest-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                                <option class="bg-darkCard text-white" value="politique">Politique & Stratégie (ex: KronoPol-9)</option>
+                                <option class="bg-darkCard text-white" value="economie">Finance & Macroéconomie (ex: NexoFin-X)</option>
+                                <option class="bg-darkCard text-white" value="medecine">Médecine & Biologie (ex: BioGen-Theta)</option>
+                                <option class="bg-darkCard text-white" value="crypto">Cryptographie & Blockchains (ex: CypherNet-3)</option>
+                                <option class="bg-darkCard text-white" value="lanmou">Psychologie & Relations Amoureuses (ex: KèKontan)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Conditions d'utilisation -->
+                    <label class="flex items-start gap-3 py-1 cursor-pointer group">
+                        <input id="terms-checkbox" type="checkbox" required class="accent-neonGreen mt-0.5 rounded cursor-pointer">
+                        <span class="text-[11px] text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">
+                            J'accepte les <a href="#" class="text-neonGreen hover:underline font-semibold">Conditions d'Utilisation</a> et la <a href="#" class="text-neonGreen hover:underline font-semibold">Politique de Confidentialité</a> de Veltrix.
+                        </span>
+                    </label>
+
+                    <!-- Bouton Submit -->
+                    <button type="submit" class="w-full py-3.5 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.15)] hover:shadow-[0_0_25px_rgba(204,255,0,0.4)] mt-2">
+                        <span>CRÉER MON COMPTE & RECEVOIR 50 CREDITS</span>
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    </button>
+                </form>
+
+                <!-- Déjà inscrit ? -->
+                <div class="text-center pt-2 border-t border-white/5">
+                    <p class="text-xs text-slate-400">
+                        Vous avez déjà un compte ? 
+                        <a href="veltrix_premium_sign_in.html" class="text-neonGreen hover:underline font-bold ml-1.5 transition-all">Se connecter</a>
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- CUSTOM NOTIFICATION TOAST -->
+    <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- SUCCESS REGISTRATION MODAL -->
+    <div id="success-modal" class="fixed inset-0 bg-darkBg/95 backdrop-blur-md z-50 flex items-center justify-center p-6 hidden">
+        <div class="bg-darkCard border border-neonGreen/30 p-8 rounded-3xl max-w-md w-full text-center space-y-6 shadow-[0_0_50px_rgba(204,255,0,0.2)] transform scale-95 opacity-0 transition-all duration-300" id="success-modal-card">
+            <!-- Icone de succès animée -->
+            <div class="w-20 h-20 bg-neonGreen/10 border border-neonGreen/30 rounded-full flex items-center justify-center mx-auto text-3xl text-neonGreen animate-bounce">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            
+            <div class="space-y-2">
+                <h3 class="font-display font-bold text-2xl text-white">Bienvenue sur Veltrix !</h3>
+                <p id="success-welcome-message" class="text-xs text-slate-400">Félicitations Jean, votre compte a été créé avec succès.</p>
+            </div>
+
+            <!-- Boîte de crédit gagné -->
+            <div class="p-4 rounded-2xl bg-neonGreenDim border border-neonGreen/20 flex items-center justify-between">
+                <div class="text-left">
+                    <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Solde initial</span>
+                    <span class="text-xl font-bold text-white font-display">50 Crédits</span>
+                </div>
+                <div class="text-xs text-neonGreen font-semibold px-2.5 py-1 bg-neonGreen/10 border border-neonGreen/20 rounded-lg">
+                    CADEAU ACCORDÉ
+                </div>
+            </div>
+
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+                Vous êtes désormais prêt à faire défiler nos Entels et à lancer vos propres sessions de débats et de podcasts de vêt.
+            </p>
+
+            <!-- Accéder au Dashboard Button -->
+            <button onclick="goToDashboard()" class="w-full py-4 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-105 transition-all flex items-center justify-center gap-2">
+                <span>DÉCOUVRIR LE DASHBOARD</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Fonction pour vérifier et afficher la force du mot de passe
+        function checkPasswordStrength(password) {
+            const indicator = document.getElementById('password-strength');
+            const bar = document.getElementById('strength-bar');
+            
+            if (password.length === 0) {
+                indicator.textContent = "Indéterminé";
+                indicator.className = "text-[9px] font-bold text-slate-600 uppercase";
+                bar.style.width = "0%";
+                bar.className = "h-full w-0 transition-all duration-300 rounded-full";
+                return;
+            }
+
+            let score = 0;
+            if (password.length >= 6) score++;
+            if (password.length >= 10) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            if (score <= 1) {
+                indicator.textContent = "Faible";
+                indicator.className = "text-[9px] font-bold text-red-500 uppercase";
+                bar.style.width = "25%";
+                bar.className = "h-full bg-red-500 transition-all duration-300 rounded-full";
+            } else if (score <= 3) {
+                indicator.textContent = "Moyen";
+                indicator.className = "text-[9px] font-bold text-amber-500 uppercase";
+                bar.style.width = "60%";
+                bar.className = "h-full bg-amber-500 transition-all duration-300 rounded-full";
+            } else {
+                indicator.textContent = "Fort";
+                indicator.className = "text-[9px] font-bold text-emerald-400 uppercase";
+                bar.style.width = "100%";
+                bar.className = "h-full bg-emerald-400 transition-all duration-300 rounded-full";
+            }
+        }
+
+        // Fonction pour afficher des toasts à la place de alert()
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "p-4 rounded-xl text-xs text-white flex items-center gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.5)] transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto min-w-[280px]";
+            
+            if (type === "success") {
+                toast.classList.add('bg-darkCard', 'border', 'border-neonGreen/40');
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-neonGreen text-md"></i> <span>${message}</span>`;
+            } else {
+                toast.classList.add('bg-darkCard', 'border', 'border-red-500/40');
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 text-md"></i> <span>${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            
+            // Forcer l'animation d'apparition
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            }, 50);
+
+            // Disparition
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-2px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Soumission du formulaire
+        function handleSignUp(event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById('first-name-input').value.trim();
+            const lastName = document.getElementById('last-name-input').value.trim();
+            const email = document.getElementById('email-input').value.trim();
+            const password = document.getElementById('password-input').value;
+            const confirmPassword = document.getElementById('confirm-password-input').value;
+            const terms = document.getElementById('terms-checkbox').checked;
+
+            if (!firstName || !lastName || !email || !password || !confirmPassword) {
+                showToast("Veuillez remplir tous les champs requis.", "error");
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast("Le mot de passe doit contenir au moins 6 caractères.", "error");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showToast("Les mots de passe ne correspondent pas.", "error");
+                return;
+            }
+
+            if (!terms) {
+                showToast("Vous devez accepter les conditions d'utilisation.", "error");
+                return;
+            }
+
+            // Simuler une inscription réussie
+            document.getElementById('success-welcome-message').textContent = `Félicitations ${firstName}, votre compte Veltrix a été créé avec succès.`;
+            
+            const modal = document.getElementById('success-modal');
+            const modalCard = document.getElementById('success-modal-card');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalCard.classList.remove('scale-95', 'opacity-0');
+            }, 100);
+        }
+
+        // Redirection simulée vers le Dashboard
+        function goToDashboard() {
+            showToast("Redirection vers la console d'analyse...");
+            setTimeout(() => {
+                // Redirection fictive vers le fichier dashboard.html déjà présent
+                window.location.href = 'veltrix_premium_dashboard (1).html';
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
