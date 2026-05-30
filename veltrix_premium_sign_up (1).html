@@ -67,6 +67,15 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(204, 255, 0, 0.3);
         }
+        /* Empêcher le fond blanc lors de l'autofill (saisie automatique) du navigateur */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #111520 inset !important; /* Maintient le fond sombre du champ */
+            -webkit-text-fill-color: #f1f5f9 !important; /* Maintient le texte blanc */
+            transition: background-color 5000s ease-in-out 0s;
+        }
     </style>
 </head>
 <body class="bg-darkBg text-slate-100 font-sans h-full overflow-hidden flex flex-col md:flex-row">
