@@ -259,57 +259,61 @@
                 name: "KronoPol-9",
                 avatarSeed: "Krono",
                 domain: "Politique",
-                prompt: `You are KronoPol-9, an elite political scientist. You are in a live, direct debate.
-                         You argue that social structures, laws, and public policies are more important than pure financial systems or individual metrics.
+                prompt: `You are KronoPol-9, an elite political scientist. You are participating in a live, direct, and dynamic text-message chat debate.
+                         You argue that social structures, laws, and public policies are more important than pure financial systems.
                          
-                         CRITICAL RULES FOR THE DEBATE:
-                         1. Address the other speaker by their name when appropriate.
-                         2. NEVER write long paragraphs. Your responses must be 2 to 3 sentences maximum. Keep it very conversational.
-                         3. Be sharp, polite but extremely challenging.
-                         4. End every turn by asking the other speaker ONE direct, difficult question.
-                         5. Never say you are an AI or bot. You are KronoPol-9.`
+                         STRICT CHAT CONSTRAINTS:
+                         1. Treat this like a text message thread or direct chat. Use sharp, direct, and conversational language.
+                         2. MAXIMUM 45 WORDS total. This is a hard limit.
+                         3. Write exactly 2 short, punchy sentences.
+                         4. Never use semicolons or long compound clauses. Use simple words.
+                         5. End your turn with ONE short, sharp question for the other speaker.
+                         6. Never say you are an AI. You are KronoPol-9.`
             },
             "NexoFin-X": {
                 name: "NexoFin-X",
                 avatarSeed: "Cypher",
                 domain: "Économie",
-                prompt: `You are NexoFin-X, a brilliant macroeconomist. You are in a live, direct debate.
+                prompt: `You are NexoFin-X, a brilliant macroeconomist. You are participating in a live, direct, and dynamic text-message chat debate.
                          You argue that economy, free markets, and currency stability dictate politics, not the other way around.
                          
-                         CRITICAL RULES FOR THE DEBATE:
-                         1. Address the other speaker by their name when appropriate.
-                         2. NEVER write long paragraphs. Your responses must be 2 to 3 sentences maximum. Keep it very conversational.
-                         3. Be analytical, firm, and use economic logic.
-                         4. End every turn by asking the other speaker ONE direct, difficult question.
-                         5. Never say you are an AI or bot. You are NexoFin-X.`
+                         STRICT CHAT CONSTRAINTS:
+                         1. Treat this like a text message thread or direct chat. Use sharp, analytical, and highly conversational language.
+                         2. MAXIMUM 45 WORDS total. This is a hard limit.
+                         3. Write exactly 2 short, punchy sentences.
+                         4. Never use semicolons or long compound clauses. Use simple, direct economic terms.
+                         5. End your turn with ONE short, sharp question for the other speaker.
+                         6. Never say you are an AI. You are NexoFin-X.`
             },
             "MètKonsey": {
                 name: "MètKonsey",
                 avatarSeed: "Alex",
                 domain: "Avoka",
-                prompt: `You are MètKonsey, a sharp, analytical, and highly articulate corporate and criminal lawyer.
+                prompt: `You are MètKonsey, a sharp and highly articulate corporate lawyer. You are participating in a live, direct, and dynamic text-message chat debate.
                          You look at every subject through the lens of constitutionality, evidence, contracts, and statutory law.
                          
-                         CRITICAL RULES FOR THE DEBATE:
-                         1. Address the other speaker by their name when appropriate.
-                         2. NEVER write long paragraphs. Your responses must be 2 to 3 sentences maximum. Keep it very conversational.
-                         3. Be objective, formal, persuasive, and legally rigorous.
-                         4. End every turn by asking the other speaker ONE direct, difficult question.
-                         5. Never say you are an AI or bot. You are MètKonsey.`
+                         STRICT CHAT CONSTRAINTS:
+                         1. Treat this like a text message thread or direct chat. Use precise, clear, and conversational legal arguments.
+                         2. MAXIMUM 45 WORDS total. This is a hard limit.
+                         3. Write exactly 2 short, punchy sentences.
+                         4. Never use semicolons or long compound clauses.
+                         5. End your turn with ONE short, sharp question for the other speaker.
+                         6. Never say you are an AI. You are MètKonsey.`
             },
             "KèKontan": {
                 name: "KèKontan",
                 avatarSeed: "Jean",
                 domain: "Lanmou",
-                prompt: `You are KèKontan, a compassionate, emotionally intelligent, and perceptive relationship counselor.
-                         You analyze human behavior, attachment styles, and the complexities of romance, empathy, and social connection.
+                prompt: `You are KèKontan, a compassionate relationship counselor. You are participating in a live, direct, and dynamic text-message chat debate.
+                         You analyze human behavior, attachment styles, romance, and empathy.
                          
-                         CRITICAL RULES FOR THE DEBATE:
-                         1. Address the other speaker by their name when appropriate.
-                         2. NEVER write long paragraphs. Your responses must be 2 to 3 sentences maximum. Keep it very conversational.
-                         3. Be warm, empathetic, realistic, yet deeply psychological.
-                         4. End every turn by asking the other speaker ONE direct, difficult question.
-                         5. Never say you are an AI or bot. You are KèKontan.`
+                         STRICT CHAT CONSTRAINTS:
+                         1. Treat this like a text message thread or direct chat. Use warm, emotionally intelligent, yet highly conversational language.
+                         2. MAXIMUM 45 WORDS total. This is a hard limit.
+                         3. Write exactly 2 short, punchy sentences.
+                         4. Never use semicolons or long compound clauses. Keep it simple and human.
+                         5. End your turn with ONE short, sharp question for the other speaker.
+                         6. Never say you are an AI. You are KèKontan.`
             }
         };
 
@@ -576,18 +580,25 @@
                     
                     showTypingIndicator(speaker);
 
-                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    // Premye poz (refleksyon/generation start)
+                    await new Promise(resolve => setTimeout(resolve, 2000));
 
                     if (shouldStop) break;
 
+                    // Rele API a pou jwenn repons la
                     const messageText = await activeDebate.runTurn(nextSpeakerName);
 
                     hideTypingIndicator();
 
-                    appendMessage(speaker, messageText);
+                    // Nou itilize AWAIT kounye a sou appendMessage paske li tounen yon Promise !
+                    // Bouk la ap sispann la a jiskaske Typewriter la fini ekri nèt.
+                    await appendMessage(speaker, messageText);
                     
                     document.getElementById('history-counter').textContent = `${turn}/${maxTurns}`;
 
+                    if (shouldStop) break;
+
+                    // Poz lekti (3 segonn) apre ekriti a fin konplè
                     await new Promise(resolve => setTimeout(resolve, 3000));
 
                     nextSpeakerName = nextSpeakerName === entelAName ? entelBName : entelAName;
@@ -650,47 +661,55 @@
             document.getElementById('typing-indicator').classList.add('hidden');
         }
 
-        // Ajoute mesaj la nan koòdone a (Typewriter effect dousman)
+        // Ajoute mesaj la nan koòdone a ak typewriter sync (Promise)
         function appendMessage(speaker, text) {
-            const chatContainer = document.getElementById('chat-messages-container');
-            
-            const messageElement = document.createElement('div');
-            messageElement.className = "flex gap-4 items-start max-w-3xl opacity-0 translate-y-2 transition-all duration-300";
-            
-            messageElement.innerHTML = `
-                <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${speaker.avatarSeed}&backgroundColor=090b11" class="w-10 h-10 rounded-xl bg-darkCard border border-white/10 shrink-0">
-                <div class="space-y-1.5 flex-1">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold text-white font-mono">${speaker.name}</span>
-                        <span class="text-[9px] text-slate-500 uppercase tracking-wider px-2 py-0.5 bg-white/5 rounded">${speaker.domain}</span>
+            return new Promise((resolve) => {
+                const chatContainer = document.getElementById('chat-messages-container');
+                
+                const messageElement = document.createElement('div');
+                messageElement.className = "flex gap-4 items-start max-w-3xl opacity-0 translate-y-2 transition-all duration-300";
+                
+                messageElement.innerHTML = `
+                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${speaker.avatarSeed}&backgroundColor=090b11" class="w-10 h-10 rounded-xl bg-darkCard border border-white/10 shrink-0">
+                    <div class="space-y-1.5 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-white font-mono">${speaker.name}</span>
+                            <span class="text-[9px] text-slate-500 uppercase tracking-wider px-2 py-0.5 bg-white/5 rounded">${speaker.domain}</span>
+                        </div>
+                        <div class="p-4 bg-darkCard border border-white/5 rounded-2xl rounded-tl-none">
+                            <p id="typing-text-target" class="text-xs text-slate-300 leading-relaxed"></p>
+                        </div>
                     </div>
-                    <div class="p-4 bg-darkCard border border-white/5 rounded-2xl rounded-tl-none">
-                        <p id="typing-text-target" class="text-xs text-slate-300 leading-relaxed"></p>
-                    </div>
-                </div>
-            `;
+                `;
 
-            chatContainer.appendChild(messageElement);
-            
-            setTimeout(() => {
-                messageElement.classList.remove('opacity-0', 'translate-y-2');
-            }, 50);
+                chatContainer.appendChild(messageElement);
+                
+                setTimeout(() => {
+                    messageElement.classList.remove('opacity-0', 'translate-y-2');
+                }, 50);
 
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            const textTarget = messageElement.querySelector('#typing-text-target');
-            let index = 0;
-            
-            function typeWriter() {
-                if (index < text.length) {
-                    textTarget.textContent += text.charAt(index);
-                    index++;
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                    setTimeout(typeWriter, 25);
+                const textTarget = messageElement.querySelector('#typing-text-target');
+                let index = 0;
+                
+                function typeWriter() {
+                    if (shouldStop) {
+                        resolve(); // Resolve imedyatman si itilizatè klike Stop
+                        return;
+                    }
+                    if (index < text.length) {
+                        textTarget.textContent += text.charAt(index);
+                        index++;
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        setTimeout(typeWriter, 25);
+                    } else {
+                        resolve(); // Rezoud pwomès la sèlman lè Typewriter la fini nèt
+                    }
                 }
-            }
-            
-            typeWriter();
+                
+                typeWriter();
+            });
         }
 
         // Custom Toast Notification
