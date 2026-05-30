@@ -67,6 +67,27 @@
         .bar:nth-child(6) { animation-delay: 0.25s; }
         .bar:nth-child(7) { animation-delay: 0.35s; }
         .bar:nth-child(8) { animation-delay: 0.05s; }
+        
+        /* Styles pour les Dropdowns Customs */
+        .custom-select-wrapper {
+            width: 100%;
+        }
+        .custom-select-trigger {
+            transition: all 0.3s ease;
+        }
+        .custom-select-trigger:hover {
+            box-shadow: 0 0 25px rgba(204, 255, 0, 0.25);
+            border-color: rgba(204, 255, 0, 0.6);
+        }
+        /* Style pour l'autofill des inputs du tableau de bord */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #111520 inset !important;
+            -webkit-text-fill-color: #f1f5f9 !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
     </style>
 </head>
 <body class="bg-darkBg text-slate-100 font-sans h-full overflow-hidden flex flex-col md:flex-row">
@@ -1533,6 +1554,16 @@
         window.onload = function() {
             // Remplir les sélecteurs
             populateSelectors();
+            
+            // Initialiser les versions customs de tous les sélecteurs
+            initCustomSelect('debate-language-select');
+            initCustomSelect('broadcast-language-select');
+            initCustomSelect('entel-left-select');
+            initCustomSelect('entel-right-select');
+            initCustomSelect('broadcast-entel-1');
+            initCustomSelect('broadcast-entel-2');
+            initCustomSelect('broadcast-entel-3');
+            
             // Générer l'annuaire
             renderDirectory();
             // Balances
@@ -1543,6 +1574,211 @@
                 switchTab('tab-store');
             }
         };
+
+        // --- DÉFINITION DU SYSTÈME DE SELECT CUSTOM HAUTE FIDÉLITÉ ---
+        function initCustomSelect(selectId, customClass = '') {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            
+            select.style.display = 'none';
+            
+            // Nettoyer l'ancien wrapper s'il existe
+            const oldWrapper = select.parentNode.querySelector(`.custom-select-wrapper[data-select="${selectId}"]`);
+            if (oldWrapper) oldWrapper.remove();
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = `custom-select-wrapper relative ${customClass}`;
+            wrapper.setAttribute('data-select', selectId);
+            
+            const activeOption = select.options[select.selectedIndex] || select.options[0];
+            
+            const trigger = document.createElement('div');
+            trigger.className = "custom-select-trigger neon-glow-border bg-darkCard rounded-xl px-4 py-2.5 flex items-center justify-between cursor-pointer text-xs text-white";
+            trigger.onclick = (e) => {
+                e.stopPropagation();
+                toggleDropdown(selectId);
+            };
+            
+            const labelSpan = document.createElement('span');
+            labelSpan.className = "custom-select-label flex items-center gap-2";
+            labelSpan.innerHTML = getOptionLabelHTML(activeOption);
+            
+            const arrowIcon = document.createElement('i');
+            arrowIcon.className = "fa-solid fa-chevron-down text-slate-500 text-[10px] transition-transform duration-300 custom-select-arrow";
+            
+            trigger.appendChild(labelSpan);
+            trigger.appendChild(arrowIcon);
+            
+            const dropdown = document.createElement('div');
+            dropdown.className = "custom-select-dropdown hidden absolute left-0 w-full mt-2 bg-darkCard border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-30 max-h-60 overflow-y-auto divide-y divide-white/5 opacity-0 transform scale-95 transition-all duration-200 custom-scrollbar";
+            
+            const groups = select.querySelectorAll('optgroup');
+            if (groups.length > 0) {
+                groups.forEach(group => {
+                    const groupHeader = document.createElement('div');
+                    groupHeader.className = "px-4 py-1.5 text-[9px] font-bold text-neonGreen/60 uppercase bg-white/[0.02] tracking-wider";
+                    groupHeader.textContent = group.label;
+                    dropdown.appendChild(groupHeader);
+                    
+                    group.querySelectorAll('option').forEach(opt => {
+                        dropdown.appendChild(createOptionItem(selectId, opt));
+                    });
+                });
+            } else {
+                Array.from(select.options).forEach(opt => {
+                    dropdown.appendChild(createOptionItem(selectId, opt));
+                });
+            }
+            
+            wrapper.appendChild(trigger);
+            wrapper.appendChild(dropdown);
+            select.parentNode.insertBefore(wrapper, select.nextSibling);
+        }
+        
+        function createOptionItem(selectId, opt) {
+            const item = document.createElement('div');
+            item.className = "px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors text-xs text-white";
+            item.setAttribute('data-value', opt.value);
+            item.innerHTML = getOptionLabelHTML(opt, true);
+            
+            item.onclick = (e) => {
+                e.stopPropagation();
+                const select = document.getElementById(selectId);
+                select.value = opt.value;
+                
+                const event = new Event('change', { bubbles: true });
+                select.dispatchEvent(event);
+                
+                closeDropdown(selectId);
+                
+                const wrapper = select.parentNode.querySelector(`.custom-select-wrapper[data-select="${selectId}"]`);
+                const label = wrapper.querySelector('.custom-select-label');
+                label.innerHTML = getOptionLabelHTML(opt);
+            };
+            
+            return item;
+        }
+        
+        function getOptionLabelHTML(option, showSubtitle = false) {
+            if (!option) return 'Sélectionner...';
+            
+            const text = option.text;
+            const value = option.value;
+            
+            const langIcons = {
+                fr: { icon: 'fa-earth-europe', color: 'text-blue-400', label: 'Français' },
+                en: { icon: 'fa-earth-americas', color: 'text-amber-400', label: 'English (Anglais)' },
+                es: { icon: 'fa-earth-americas', color: 'text-red-400', label: 'Español (Espagnol)' },
+                ht: { icon: 'fa-earth-caribbean', color: 'text-neonGreen', label: 'Kreyòl Ayisyen (Créole)' }
+            };
+            
+            if (langIcons[value]) {
+                return `<i class="fa-solid ${langIcons[value].icon} ${langIcons[value].color} text-xs"></i> <span>${langIcons[value].label}</span>`;
+            }
+            
+            const nameLower = text.toLowerCase();
+            let icon = 'fa-brain';
+            let color = 'text-neonGreen';
+            let title = text;
+            let subtitle = 'Spécialiste Veltrix';
+            
+            if (nameLower.includes('kriptomak') || nameLower.includes('cyphernet')) {
+                icon = 'fa-bitcoin-sign';
+                color = 'text-neonGreen';
+            } else if (nameLower.includes('finans') || nameLower.includes('nexofin')) {
+                icon = 'fa-building-columns';
+                color = 'text-blue-400';
+            } else if (nameLower.includes('konsey') || nameLower.includes('juris')) {
+                icon = 'fa-scale-balanced';
+                color = 'text-amber-400';
+            } else if (nameLower.includes('kontan') || nameLower.includes('psych')) {
+                icon = 'fa-heart-pulse';
+                color = 'text-pink-400';
+            } else if (nameLower.includes('biogen') || nameLower.includes('micro') || nameLower.includes('neurax')) {
+                icon = 'fa-microscope';
+                color = 'text-emerald-400';
+            } else if (nameLower.includes('tactix') || nameLower.includes('omega') || nameLower.includes('sports')) {
+                icon = 'fa-futbol';
+                color = 'text-amber-500';
+            } else if (nameLower.includes('kronopol') || nameLower.includes('strateg')) {
+                icon = 'fa-building-shield';
+                color = 'text-emerald-500';
+            } else if (nameLower.includes('voxidem') || nameLower.includes('democ')) {
+                icon = 'fa-users-line';
+                color = 'text-purple-400';
+            }
+            
+            if (text.includes('(')) {
+                const parts = text.split('(');
+                title = parts[0].trim();
+                subtitle = parts[1].replace(')', '').trim();
+            }
+            
+            if (showSubtitle) {
+                return `
+                    <i class="fa-solid ${icon} ${color} text-sm shrink-0"></i>
+                    <div class="text-left">
+                        <span class="block text-xs font-bold text-white leading-none">${title}</span>
+                        <span class="text-[9px] text-slate-500 mt-1 block">${subtitle}</span>
+                    </div>
+                `;
+            }
+            
+            return `<i class="fa-solid ${icon} ${color} text-xs"></i> <span>${title}</span>`;
+        }
+        
+        function toggleDropdown(selectId) {
+            const select = document.getElementById(selectId);
+            const wrapper = select.parentNode.querySelector(`.custom-select-wrapper[data-select="${selectId}"]`);
+            const dropdown = wrapper.querySelector('.custom-select-dropdown');
+            const arrow = wrapper.querySelector('.custom-select-arrow');
+            
+            document.querySelectorAll('.custom-select-dropdown').forEach(d => {
+                if (d !== dropdown && !d.classList.contains('hidden')) {
+                    d.classList.add('scale-95', 'opacity-0');
+                    d.parentElement.querySelector('.custom-select-arrow').classList.remove('rotate-180');
+                    setTimeout(() => d.classList.add('hidden'), 200);
+                }
+            });
+            
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                setTimeout(() => {
+                    dropdown.classList.remove('scale-95', 'opacity-0');
+                    arrow.classList.add('rotate-180');
+                }, 50);
+            } else {
+                dropdown.classList.add('scale-95', 'opacity-0');
+                arrow.classList.remove('rotate-180');
+                setTimeout(() => dropdown.classList.add('hidden'), 200);
+            }
+        }
+        
+        function closeDropdown(selectId) {
+            const select = document.getElementById(selectId);
+            const wrapper = select.parentNode.querySelector(`.custom-select-wrapper[data-select="${selectId}"]`);
+            const dropdown = wrapper.querySelector('.custom-select-dropdown');
+            const arrow = wrapper.querySelector('.custom-select-arrow');
+            
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('scale-95', 'opacity-0');
+                arrow.classList.remove('rotate-180');
+                setTimeout(() => dropdown.classList.add('hidden'), 200);
+            }
+        }
+        
+        // Fermer tous les dropdowns si on clique en dehors
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-select-wrapper')) {
+                document.querySelectorAll('.custom-select-dropdown').forEach(d => {
+                    if (!d.classList.contains('hidden')) {
+                        d.classList.add('scale-95', 'opacity-0');
+                        d.parentElement.querySelector('.custom-select-arrow').classList.remove('rotate-180');
+                        setTimeout(() => d.classList.add('hidden'), 200);
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
