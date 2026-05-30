@@ -106,7 +106,7 @@
                     </div>
                     <div class="overflow-hidden">
                         <h3 id="sidebar-username" class="text-sm font-bold text-white truncate">Jean Dupont</h3>
-                        <span class="text-[10px] text-neonGreen font-semibold tracking-wider font-mono uppercase bg-neonGreen/10 px-2 py-0.5 rounded-full">Abonnement Premium</span>
+                        <span id="sidebar-tier-badge" class="text-[10px] text-neonGreen font-semibold tracking-wider font-mono uppercase bg-neonGreen/10 px-2 py-0.5 rounded-full">Abonnement Premium</span>
                     </div>
                 </div>
 
@@ -501,6 +501,7 @@
             if (!activeProfile) return;
 
             const fullname = activeProfile.full_name || "Itilizatè Veltrix";
+            const tier = activeProfile.tier || 'STANDARD';
             const nameParts = fullname.split(' ');
             const firstName = nameParts[0] || "";
             const lastName = nameParts.slice(1).join(' ') || "";
@@ -516,6 +517,18 @@
 
             document.getElementById('sidebar-username').textContent = fullname;
             
+            // Met à jour le badge de tier (PRO/STANDARD)
+            const proBadge = document.getElementById('sidebar-tier-badge');
+            if (proBadge) {
+                if (tier === 'PRO') {
+                    proBadge.textContent = "Abonnement Premium (PRO)";
+                    proBadge.className = "text-[10px] text-neonGreen font-semibold tracking-wider font-mono uppercase bg-neonGreen/10 px-2 py-0.5 rounded-full";
+                } else {
+                    proBadge.textContent = "Membre Standard";
+                    proBadge.className = "text-[10px] text-slate-400 font-semibold tracking-wider font-mono uppercase bg-slate-500/10 px-2 py-0.5 rounded-full border border-slate-500/20";
+                }
+            }
+
             // Avatar seed
             const seed = activeProfile.avatar_url || firstName || "Veltrix";
             document.getElementById('current-avatar-preview').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
@@ -671,7 +684,7 @@
 
             const { error } = await supabase
                 .from('profiles')
-                .update({ credits: newCredits })
+                .update({ credits: newCredits, tier: 'PRO' })
                 .eq('id', activeUser.id);
 
             if (error) {
@@ -680,6 +693,7 @@
             }
 
             activeProfile.credits = newCredits;
+            activeProfile.tier = 'PRO';
             updateProfileUI();
             
             showToast("Pack de 100 crédits ajouté à votre compte avec succès ! +$10.00", "success");

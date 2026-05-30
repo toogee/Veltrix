@@ -11,21 +11,23 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name TEXT NOT NULL,
     avatar_url TEXT,
-    credits BIGINT NOT NULL DEFAULT 420 CHECK (credits >= 0),
+    credits BIGINT NOT NULL DEFAULT 50 CHECK (credits >= 0),
+    tier TEXT NOT NULL DEFAULT 'STANDARD',
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- 2. KREYE YON DEKLANCHE OTOMATIK (AUTOMATED TRIGGER) POU KREYE PROFILS YO
 -- Lè yon itilizatè enskri nan auth.users, sistèm nan ap otomatikman kreye
--- yon ranje (row) korespondan nan profiles la ak 420 Kredi kòm kado byenveni !
+-- yon ranje (row) korespondan nan profiles la ak 50 Kredi kòm kado byenveni !
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO public.profiles (id, full_name, credits)
+    INSERT INTO public.profiles (id, full_name, credits, tier)
     VALUES (
         new.id,
         COALESCE(new.raw_user_meta_data->>'full_name', 'Itilizatè Veltrix'),
-        420
+        50,
+        'STANDARD'
     );
     RETURN NEW;
 END;

@@ -106,7 +106,7 @@
                     </div>
                     <span class="font-display font-bold text-xl tracking-wider text-white">VELTRIX</span>
                 </a>
-                <span class="text-[9px] px-2 py-0.5 rounded bg-neonGreen/10 border border-neonGreen/20 text-neonGreen font-semibold uppercase">PRO</span>
+                <span id="sidebar-tier-badge" class="text-[9px] px-2 py-0.5 rounded bg-neonGreen/10 border border-neonGreen/20 text-neonGreen font-semibold uppercase">PRO</span>
             </div>
 
             <!-- Liste des Menus -->
@@ -1135,10 +1135,10 @@
 
             const newCredits = userState.credits + amount;
             
-            // Mizajou dirèk nan profiles la
+            // Mizajou dirèk nan profiles la - epi pase li nan PRO otomatikman!
             const { error } = await supabase
                 .from('profiles')
-                .update({ credits: newCredits })
+                .update({ credits: newCredits, tier: 'PRO' })
                 .eq('id', activeUser.id);
 
             if (error) {
@@ -1147,7 +1147,8 @@
             }
 
             userState.credits = newCredits;
-            updateBalances();
+            activeProfile.tier = 'PRO';
+            updateUIWithUserProfile();
             showGlobalNotification(`Succès : ${amount} crédits ont été ajoutés à votre compte !`);
         }
 
@@ -1647,6 +1648,7 @@
             if (!activeProfile) return;
             
             const fullname = activeProfile.full_name || "Itilizatè Veltrix";
+            const tier = activeProfile.tier || 'STANDARD';
             
             const nameParts = fullname.split(' ');
             let initials = "V";
@@ -1665,6 +1667,18 @@
             const idElem = document.getElementById('user-id-display');
             if (idElem) {
                 idElem.textContent = `ID: vltx_${activeProfile.id.slice(0, 8)}`;
+            }
+
+            // Met à jour le badge de tier (PRO/STANDARD)
+            const proBadge = document.getElementById('sidebar-tier-badge');
+            if (proBadge) {
+                if (tier === 'PRO') {
+                    proBadge.textContent = "PRO";
+                    proBadge.className = "text-[9px] px-2 py-0.5 rounded bg-neonGreen/10 border border-neonGreen/20 text-neonGreen font-semibold uppercase";
+                } else {
+                    proBadge.textContent = "STANDARD";
+                    proBadge.className = "text-[9px] px-2 py-0.5 rounded bg-slate-500/10 border border-slate-500/20 text-slate-400 font-semibold uppercase";
+                }
             }
             
             // Si gen avatar custom ki chwazi
