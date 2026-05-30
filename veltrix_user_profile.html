@@ -13,6 +13,10 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Supabase JS Client CDN & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="veltrix_supabase_client.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -451,29 +455,80 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Sauvegarde des données utilisateur dans localStorage pour persistance
-        let userProfile = {
-            firstName: "Jean",
-            lastName: "Dupont",
-            bio: "Analyse et stratégie financière. Passionné par les crypto-monnaies et les changements socio-politiques.",
-            avatarSeed: "Jean",
-            credits: 150
-        };
+        let activeUser = null;
+        let activeProfile = null;
+
+        async function checkUserSession() {
+            if (!supabase) {
+                setTimeout(checkUserSession, 100);
+                return;
+            }
+
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                console.warn("Session pa aktif oswa erè rive. Redireksyon...");
+                window.location.href = 'veltrix_premium_sign_in.html';
+                return;
+            }
+
+            activeUser = session.user;
+            
+            // Chaje pwofil itilizatè a depi nan profiles table nan Supabase
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', activeUser.id)
+                .single();
+
+            if (profileError || !profile) {
+                console.error("Erè nan chaje pwofil la:", profileError);
+                const meta = activeUser.user_metadata || {};
+                activeProfile = {
+                    id: activeUser.id,
+                    full_name: meta.full_name || "Itilizatè Veltrix",
+                    credits: 420,
+                    avatar_url: ""
+                };
+            } else {
+                activeProfile = profile;
+            }
+
+            // Mete non ak lòt detay yo sou ekran an
+            updateProfileUI();
+        }
+
+        function updateProfileUI() {
+            if (!activeProfile) return;
+
+            const fullname = activeProfile.full_name || "Itilizatè Veltrix";
+            const nameParts = fullname.split(' ');
+            const firstName = nameParts[0] || "";
+            const lastName = nameParts.slice(1).join(' ') || "";
+
+            document.getElementById('profile-firstname').value = firstName;
+            document.getElementById('profile-lastname').value = lastName;
+            
+            // e-mail
+            const emailInput = document.querySelector('input[type="email"]');
+            if (emailInput) {
+                emailInput.value = activeUser.email;
+            }
+
+            document.getElementById('sidebar-username').textContent = fullname;
+            
+            // Avatar seed
+            const seed = activeProfile.avatar_url || firstName || "Veltrix";
+            document.getElementById('current-avatar-preview').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
+            document.getElementById('sidebar-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
+
+            // Balances
+            document.getElementById('nav-credit-balance').textContent = `${activeProfile.credits} Crédits`;
+            document.getElementById('trans-credit-balance').textContent = `${activeProfile.credits} Crédits`;
+        }
 
         // Chargement des données au démarrage
         window.onload = function() {
-            const savedProfile = localStorage.getItem('veltrix_user_profile');
-            if (savedProfile) {
-                userProfile = JSON.parse(savedProfile);
-                
-                // Mise à jour de l'interface utilisateur
-                document.getElementById('profile-firstname').value = userProfile.firstName;
-                document.getElementById('profile-lastname').value = userProfile.lastName;
-                document.getElementById('profile-bio').value = userProfile.bio;
-                document.getElementById('sidebar-username').textContent = `${userProfile.firstName} ${userProfile.lastName}`;
-                document.getElementById('current-avatar-preview').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${userProfile.avatarSeed}&backgroundColor=090b11`;
-                document.getElementById('sidebar-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${userProfile.avatarSeed}&backgroundColor=090b11`;
-            }
+            checkUserSession();
         };
 
         // Commutation entre les onglets
@@ -506,19 +561,27 @@
         }
 
         // Changer l'Avatar
-        function changeAvatar(seed) {
-            userProfile.avatarSeed = seed;
-            
-            // Mise à jour visuelle instantanée
-            document.getElementById('current-avatar-preview').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
-            document.getElementById('sidebar-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
-            
-            localStorage.setItem('veltrix_user_profile', JSON.stringify(userProfile));
+        async function changeAvatar(seed) {
+            if (!supabase || !activeUser) return;
+
+            // Enregistrer dans Supabase
+            const { error } = await supabase
+                .from('profiles')
+                .update({ avatar_url: seed })
+                .eq('id', activeUser.id);
+
+            if (error) {
+                showToast("Erè nan sove avatar la: " + error.message, "error");
+                return;
+            }
+
+            activeProfile.avatar_url = seed;
+            updateProfileUI();
             showToast("Votre nouvel avatar a été enregistré avec succès !");
         }
 
         // Enregistrer les Informations Personnelles
-        function savePersonalInfo(event) {
+        async function savePersonalInfo(event) {
             event.preventDefault();
             
             const fName = document.getElementById('profile-firstname').value.trim();
@@ -530,23 +593,36 @@
                 return;
             }
 
-            userProfile.firstName = fName;
-            userProfile.lastName = lName;
-            userProfile.bio = bio;
-
-            localStorage.setItem('veltrix_user_profile', JSON.stringify(userProfile));
+            const fullname = `${fName} ${lName}`;
             
-            // Mise à jour de la barre latérale
-            document.getElementById('sidebar-username').textContent = `${fName} ${lName}`;
+            const button = event.target.querySelector('button[type="submit"]');
+            const originalBtnContent = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Sauvegarde...`;
+
+            const { error } = await supabase
+                .from('profiles')
+                .update({ full_name: fullname })
+                .eq('id', activeUser.id);
+
+            button.disabled = false;
+            button.innerHTML = originalBtnContent;
+
+            if (error) {
+                showToast("Erè nan sove pwofil la: " + error.message, "error");
+                return;
+            }
+
+            activeProfile.full_name = fullname;
+            updateProfileUI();
             
             showToast("Vos informations personnelles ont été enregistrées avec succès !");
         }
 
         // Enregistrer Sécurité et Mot de passe
-        function saveSecurity(event) {
+        async function saveSecurity(event) {
             event.preventDefault();
             
-            const currentPass = document.getElementById('sec-current-pass').value;
             const newPass = document.getElementById('sec-new-pass').value;
             const confirmPass = document.getElementById('sec-confirm-pass').value;
 
@@ -557,6 +633,21 @@
 
             if (newPass.length < 6) {
                 showToast("Le nouveau mot de passe doit contenir au moins 6 caractères.", "error");
+                return;
+            }
+
+            const button = event.target.querySelector('button[type="submit"]');
+            const originalBtnContent = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Modification...`;
+
+            const { error } = await supabase.auth.updateUser({ password: newPass });
+
+            button.disabled = false;
+            button.innerHTML = originalBtnContent;
+
+            if (error) {
+                showToast("Erè nan chanje mot de pas: " + error.message, "error");
                 return;
             }
 
@@ -573,13 +664,23 @@
         }
 
         // Simulation d'achat de crédits
-        function buyCredits() {
-            userProfile.credits += 100;
-            localStorage.setItem('veltrix_user_profile', JSON.stringify(userProfile));
-            
-            // Mise à jour visuelle des soldes
-            document.getElementById('nav-credit-balance').textContent = `${userProfile.credits} Crédits`;
-            document.getElementById('trans-credit-balance').textContent = `${userProfile.credits} Crédits`;
+        async function buyCredits() {
+            if (!supabase || !activeUser) return;
+
+            const newCredits = activeProfile.credits + 100;
+
+            const { error } = await supabase
+                .from('profiles')
+                .update({ credits: newCredits })
+                .eq('id', activeUser.id);
+
+            if (error) {
+                showToast("Erè nan achte kredi: " + error.message, "error");
+                return;
+            }
+
+            activeProfile.credits = newCredits;
+            updateProfileUI();
             
             showToast("Pack de 100 crédits ajouté à votre compte avec succès ! +$10.00", "success");
         }
@@ -590,8 +691,11 @@
         }
 
         // Déconnexion générale
-        function handleLogout() {
+        async function handleLogout() {
             showToast("Déconnexion en cours...");
+            if (supabase) {
+                await supabase.auth.signOut();
+            }
             setTimeout(() => {
                 window.location.href = 'veltrix_premium_sign_in.html';
             }, 1000);

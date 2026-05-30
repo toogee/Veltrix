@@ -13,6 +13,10 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Supabase JS Client CDN & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="veltrix_supabase_client.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -272,18 +276,39 @@
                 return;
             }
 
-            if (password.length < 6) {
-                showToast("Identifiants incorrects. Veuillez réessayer.", "error");
+            if (!supabase) {
+                showToast("Sistèm Supabase la pako konekte byen. Mete Anon Key la.", "error");
                 return;
             }
 
-            // Simulation d'authentification réussie
-            showToast("Connexion établie avec succès ! Initialisation...");
-            
-            // Redirection vers le dashboard après un petit délai d'ambiance
-            setTimeout(() => {
-                window.location.href = 'veltrix_premium_dashboard (1).html';
-            }, 1200);
+            const button = event.target.querySelector('button[type="submit"]');
+            const originalBtnContent = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Initialisation...`;
+
+            supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            }).then(({ data, error }) => {
+                button.disabled = false;
+                button.innerHTML = originalBtnContent;
+
+                if (error) {
+                    showToast(error.message, "error");
+                    return;
+                }
+
+                showToast("Connexion établie avec succès ! Redirection...");
+                
+                // Redirection vers le dashboard après un petit délai d'ambiance
+                setTimeout(() => {
+                    window.location.href = 'veltrix_premium_dashboard (1).html';
+                }, 1200);
+            }).catch(err => {
+                button.disabled = false;
+                button.innerHTML = originalBtnContent;
+                showToast(err.message || "Erè enkoni rive.", "error");
+            });
         }
 
         // Gestion du lien Mot de passe oublié

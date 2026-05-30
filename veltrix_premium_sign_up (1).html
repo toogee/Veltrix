@@ -13,6 +13,10 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Supabase JS Client CDN & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="veltrix_supabase_client.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -432,16 +436,50 @@
                 return;
             }
 
-            // Simuler une inscription réussie
-            document.getElementById('success-welcome-message').textContent = `Félicitations ${firstName}, votre compte Veltrix a été créé avec succès.`;
-            
-            const modal = document.getElementById('success-modal');
-            const modalCard = document.getElementById('success-modal-card');
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modalCard.classList.remove('scale-95', 'opacity-0');
-            }, 100);
+            // Sove done itilizatè a nan Supabase
+            if (!supabase) {
+                showToast("Sistèm Supabase la pako konekte byen. Mete Anon Key la.", "error");
+                return;
+            }
+
+            const button = event.target.querySelector('button[type="submit"]');
+            const originalBtnContent = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Traitement...`;
+
+            supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name: `${firstName} ${lastName}`,
+                        interest: document.getElementById('interest-select').value
+                    }
+                }
+            }).then(({ data, error }) => {
+                button.disabled = false;
+                button.innerHTML = originalBtnContent;
+
+                if (error) {
+                    showToast(error.message, "error");
+                    return;
+                }
+
+                // Afiche modal siksè a
+                document.getElementById('success-welcome-message').textContent = `Félicitations ${firstName}, votre compte Veltrix a été créé avec succès.`;
+                
+                const modal = document.getElementById('success-modal');
+                const modalCard = document.getElementById('success-modal-card');
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modalCard.classList.remove('scale-95', 'opacity-0');
+                }, 100);
+            }).catch(err => {
+                button.disabled = false;
+                button.innerHTML = originalBtnContent;
+                showToast(err.message || "Erè enkoni rive.", "error");
+            });
         }
 
         // Redirection simulée vers le Dashboard
