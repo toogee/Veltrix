@@ -286,29 +286,38 @@
             button.disabled = true;
             button.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Initialisation...`;
 
-            supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            }).then(({ data, error }) => {
+            try {
+                supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                }).then(({ data, error }) => {
+                    button.disabled = false;
+                    button.innerHTML = originalBtnContent;
+
+                    if (error) {
+                        console.error("Erreur de connexion Supabase Auth :", error);
+                        showToast(error.message, "error");
+                        return;
+                    }
+
+                    showToast("Connexion établie avec succès ! Redirection...");
+                    
+                    // Redirection vers le dashboard après un petit délai d'ambiance
+                    setTimeout(() => {
+                        window.location.href = 'veltrix_premium_dashboard (1).html';
+                    }, 1200);
+                }).catch(err => {
+                    button.disabled = false;
+                    button.innerHTML = originalBtnContent;
+                    console.error("Erreur asynchrone lors de la connexion :", err);
+                    showToast(err.message || "Une erreur de connexion est survenue.", "error");
+                });
+            } catch (err) {
                 button.disabled = false;
                 button.innerHTML = originalBtnContent;
-
-                if (error) {
-                    showToast(error.message, "error");
-                    return;
-                }
-
-                showToast("Connexion établie avec succès ! Redirection...");
-                
-                // Redirection vers le dashboard après un petit délai d'ambiance
-                setTimeout(() => {
-                    window.location.href = 'veltrix_premium_dashboard (1).html';
-                }, 1200);
-            }).catch(err => {
-                button.disabled = false;
-                button.innerHTML = originalBtnContent;
-                showToast(err.message || "Une erreur inconnue est survenue.", "error");
-            });
+                console.error("Erreur synchrone d'exécution Supabase :", err);
+                showToast("Erreur d'exécution : " + (err.message || "Impossible d'appeler l'API Supabase."), "error");
+            }
         }
 
         // Gestion du lien Mot de passe oublié

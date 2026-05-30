@@ -447,39 +447,50 @@
             button.disabled = true;
             button.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Traitement...`;
 
-            supabase.auth.signUp({
-                email: email,
-                password: password,
-                options: {
-                    data: {
-                        full_name: `${firstName} ${lastName}`,
-                        interest: document.getElementById('interest-select').value
+            try {
+                supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: `${firstName} ${lastName}`,
+                            interest: document.getElementById('interest-select').value
+                        }
                     }
-                }
-            }).then(({ data, error }) => {
+                }).then(({ data, error }) => {
+                    button.disabled = false;
+                    button.innerHTML = originalBtnContent;
+
+                    if (error) {
+                        console.error("Erreur retournée par Supabase Auth :", error);
+                        showToast(error.message, "error");
+                        return;
+                    }
+
+                    console.log("Inscription réussie !", data);
+
+                    // Affichage du modal de succès
+                    document.getElementById('success-welcome-message').textContent = `Félicitations ${firstName}, votre compte Veltrix a été créé avec succès.`;
+                    
+                    const modal = document.getElementById('success-modal');
+                    const modalCard = document.getElementById('success-modal-card');
+                    
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modalCard.classList.remove('scale-95', 'opacity-0');
+                    }, 100);
+                }).catch(err => {
+                    button.disabled = false;
+                    button.innerHTML = originalBtnContent;
+                    console.error("Erreur asynchrone lors de l'inscription :", err);
+                    showToast(err.message || "Une erreur de connexion est survenue.", "error");
+                });
+            } catch (err) {
                 button.disabled = false;
                 button.innerHTML = originalBtnContent;
-
-                if (error) {
-                    showToast(error.message, "error");
-                    return;
-                }
-
-                // Affichage du modal de succès
-                document.getElementById('success-welcome-message').textContent = `Félicitations ${firstName}, votre compte Veltrix a été créé avec succès.`;
-                
-                const modal = document.getElementById('success-modal');
-                const modalCard = document.getElementById('success-modal-card');
-                
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modalCard.classList.remove('scale-95', 'opacity-0');
-                }, 100);
-            }).catch(err => {
-                button.disabled = false;
-                button.innerHTML = originalBtnContent;
-                showToast(err.message || "Une erreur inconnue est survenue.", "error");
-            });
+                console.error("Erreur synchrone d'exécution Supabase :", err);
+                showToast("Erreur d'exécution : " + (err.message || "Impossible d'appeler l'API Supabase."), "error");
+            }
         }
 
         // Redirection simulée vers le Dashboard
