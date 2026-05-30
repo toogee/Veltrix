@@ -1537,6 +1537,11 @@
             renderDirectory();
             // Balances
             updateBalances();
+            
+            // Ouvrir directement la boutique si l'ancre #store est présente dans l'URL
+            if (window.location.hash === '#store') {
+                switchTab('tab-store');
+            }
         };
     </script>
 </body>
