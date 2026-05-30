@@ -213,17 +213,58 @@
                         </div>
                     </div>
 
-                    <!-- Choix du premier Entel / Centre d'intérêt -->
-                    <div class="space-y-1.5">
+                    <!-- Choix du premier Entel / Centre d'intérêt (Custom Dropdown) -->
+                    <div class="space-y-1.5 relative">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Domaine d'intérêt principal (Premier Entel)</label>
-                        <div class="neon-glow-border bg-darkCard rounded-xl px-3.5 py-2.5">
-                            <select id="interest-select" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                                <option class="bg-darkCard text-white" value="politique">Politique & Stratégie (ex: KronoPol-9)</option>
-                                <option class="bg-darkCard text-white" value="economie">Finance & Macroéconomie (ex: NexoFin-X)</option>
-                                <option class="bg-darkCard text-white" value="medecine">Médecine & Biologie (ex: BioGen-Theta)</option>
-                                <option class="bg-darkCard text-white" value="crypto">Cryptographie & Blockchains (ex: CypherNet-3)</option>
-                                <option class="bg-darkCard text-white" value="lanmou">Psychologie & Relations Amoureuses (ex: KèKontan)</option>
-                            </select>
+                        
+                        <!-- Custom Select Trigger -->
+                        <div id="custom-select-trigger" onclick="toggleCustomSelect()" class="neon-glow-border bg-darkCard rounded-xl px-3.5 py-3.5 flex items-center justify-between cursor-pointer text-xs text-white">
+                            <span id="custom-select-value" class="flex items-center gap-2">
+                                <i class="fa-solid fa-building-shield text-emerald-400"></i> Politique & Stratégie (ex: KronoPol-9)
+                            </span>
+                            <i class="fa-solid fa-chevron-down text-slate-500 text-[10px] transition-transform duration-300" id="custom-select-arrow"></i>
+                        </div>
+                        
+                        <!-- Hidden Input to preserve form value -->
+                        <input type="hidden" id="interest-select" name="interest" value="politique">
+                        
+                        <!-- Custom Select Dropdown Options List -->
+                        <div id="custom-select-dropdown" class="hidden absolute left-0 w-full mt-2 bg-darkCard border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-30 overflow-hidden divide-y divide-white/5 opacity-0 transform scale-95 transition-all duration-200">
+                            <div onclick="selectCustomOption('politique', 'Politique & Stratégie (ex: KronoPol-9)', 'fa-building-shield', 'text-emerald-400')" class="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors">
+                                <i class="fa-solid fa-building-shield text-emerald-400 text-sm"></i>
+                                <div>
+                                    <span class="block text-xs font-bold text-white leading-none">Politique & Stratégie</span>
+                                    <span class="text-[9px] text-slate-500 mt-1 block">Exemple d'Entel : KronoPol-9</span>
+                                </div>
+                            </div>
+                            <div onclick="selectCustomOption('economie', 'Finance & Macroéconomie (ex: NexoFin-X)', 'fa-chart-line', 'text-blue-400')" class="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors">
+                                <i class="fa-solid fa-chart-line text-blue-400 text-sm"></i>
+                                <div>
+                                    <span class="block text-xs font-bold text-white leading-none">Finance & Macroéconomie</span>
+                                    <span class="text-[9px] text-slate-500 mt-1 block">Exemple d'Entel : NexoFin-X</span>
+                                </div>
+                            </div>
+                            <div onclick="selectCustomOption('medecine', 'Médecine & Biologie (ex: BioGen-Theta)', 'fa-microscope', 'text-amber-400')" class="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors">
+                                <i class="fa-solid fa-microscope text-amber-400 text-sm"></i>
+                                <div>
+                                    <span class="block text-xs font-bold text-white leading-none">Médecine & Biologie</span>
+                                    <span class="text-[9px] text-slate-500 mt-1 block">Exemple d'Entel : BioGen-Theta</span>
+                                </div>
+                            </div>
+                            <div onclick="selectCustomOption('crypto', 'Cryptographie & Blockchains (ex: CypherNet-3)', 'fa-bitcoin-sign', 'text-neonGreen')" class="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors">
+                                <i class="fa-solid fa-bitcoin-sign text-neonGreen text-sm"></i>
+                                <div>
+                                    <span class="block text-xs font-bold text-white leading-none">Cryptographie & Blockchains</span>
+                                    <span class="text-[9px] text-slate-500 mt-1 block">Exemple d'Entel : CypherNet-3</span>
+                                </div>
+                            </div>
+                            <div onclick="selectCustomOption('lanmou', 'Psychologie & Relations Amoureuses (ex: KèKontan)', 'fa-heart-pulse', 'text-pink-400')" class="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors">
+                                <i class="fa-solid fa-heart-pulse text-pink-400 text-sm"></i>
+                                <div>
+                                    <span class="block text-xs font-bold text-white leading-none">Psychologie & Relations Amoureuses</span>
+                                    <span class="text-[9px] text-slate-500 mt-1 block">Exemple d'Entel : KèKontan</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -411,6 +452,55 @@
                 window.location.href = 'veltrix_premium_dashboard (1).html';
             }, 1200);
         }
+
+        // --- CONTROLLER DU MENU DÉROULANT PERSONNALISÉ (SELECT CUSTOM) ---
+        function toggleCustomSelect() {
+            const dropdown = document.getElementById('custom-select-dropdown');
+            const arrow = document.getElementById('custom-select-arrow');
+            
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                setTimeout(() => {
+                    dropdown.classList.remove('scale-95', 'opacity-0');
+                    arrow.classList.add('rotate-180');
+                }, 50);
+            } else {
+                dropdown.classList.add('scale-95', 'opacity-0');
+                arrow.classList.remove('rotate-180');
+                setTimeout(() => {
+                    dropdown.classList.add('hidden');
+                }, 200);
+            }
+        }
+
+        function selectCustomOption(value, label, iconClass, colorClass) {
+            // Mettre à jour l'input masqué
+            document.getElementById('interest-select').value = value;
+            
+            // Mettre à jour l'affichage visuel du déclencheur
+            const triggerValue = document.getElementById('custom-select-value');
+            triggerValue.innerHTML = `<span class="flex items-center gap-2"><i class="fa-solid ${iconClass} ${colorClass}"></i> ${label}</span>`;
+            
+            // Fermer le menu déroulant
+            toggleCustomSelect();
+        }
+
+        // Fermer le menu si l'utilisateur clique en dehors de celui-ci
+        document.addEventListener('click', function(event) {
+            const selectContainer = document.getElementById('custom-select-trigger');
+            if (!selectContainer) return;
+            const containerParent = selectContainer.parentElement;
+            const dropdown = document.getElementById('custom-select-dropdown');
+            const arrow = document.getElementById('custom-select-arrow');
+            
+            if (containerParent && !containerParent.contains(event.target) && dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('scale-95', 'opacity-0');
+                arrow.classList.remove('rotate-180');
+                setTimeout(() => {
+                    dropdown.classList.add('hidden');
+                }, 200);
+            }
+        });
     </script>
 </body>
 </html>
