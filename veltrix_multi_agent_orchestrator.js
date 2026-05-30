@@ -5,8 +5,10 @@
  */
 
 // 1. KONFIGIRASYON API
-const API_KEY = ""; // Sèvi ak kle API ou a lè w ap kouri l nan backend
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+// Pa janm ekri kle API ou an dirèk nan kòd la pou evite fwit sekirite sou GitHub.
+// Chaje l depi nan yon fichye '.env' lokal ki eskli nan Git gras ak 'process.env'.
+const API_KEY = process.env.GEMINI_API_KEY || ""; 
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
 /**
  * PÈSONALITE ENTEL YO (SYSTEM PROMPTS)
