@@ -1,71 +1,71 @@
-# Plan Deplwaye PRO : Estrateji Odyo pou Veltrix Broadcast
+# Plan de Déploiement PRO : Stratégie Audio pour Veltrix Broadcast
 
-Dokiman sa a prezante achitekti, estrateji monetizasyon, ak kòd teknik konplè pou sistèm **Veltrix Broadcast**. Chwa achitekti nou fè a se **"On-Demand Room" (Salon sou Demand / Pseudo-Live)** makonnen ak API vwa elit **ElevenLabs** ak **Web Audio API** nan navigatè a. Li garanti yon kalite odyo klas nasyonal pandan l ap kontwole depans API yo pou asire yon pwofi maksimòm (95%+).
-
----
-
-## 1. Poukisa Modèl "On-Demand Room" + ElevenLabs se Chwa Elit la ?
-
-### A. Kalite Vwa Elit ElevenLabs
-Pou kliyan Veltrix yo ka jwenn yon satisfaksyon total (WOW effect), ElevenLabs bay pi bon vwa natirèl sou mache a :
-* **Klònaj Vwa (Voice Cloning) :** Nou ka kreye vwa trè pèsonalize ak diferan pou chak Entel (pa egzanp, yon vwa lidè serye pou *NexoFin-X* ak yon vwa chofe pou *KronoPol-9*).
-* **Emosyon ak Respirasyon :** Modèl la kapab ajoute ti poz respirasyon, ti ri, oswa montre emosyon (tankou saspenn) selon kontèks deba a.
-* **Sipò Multilingual (Kreyòl/Franse) :** Modèl `eleven_multilingual_v2` la kapab pale Kreyòl Ayisyen ak Franse ak yon aksan pafè san li pa sonnen tankou yon robo.
-
-### B. Ekonomi ak Kontwòl Bidjè (Pseudo-Live)
-Olye pou nou difize odyo a an dirèk 24h/24 sou yon sèvè WebRTC chè (tankou Agora) kote n t ap depanse lajan menm lè pa gen pèsonn k ap koute :
-* **Peye sèlman pou sa k koute :** Jenerasyon vwa a ak emisyon an ap kòmanse sèlman lè yon itilizatè klike sou bouton **"Écouter le Live"**.
-* **Eksperyans "En Direct" :** Pou itilizatè a, koòdone vizyèl la ap montre bèl animasyon onn yo (waveform), yon gwo logo `🔴 EN DIRECT`, epi mikwo vizyèl vèt la k ap limen sou chak Entel k ap pale.
-* **Senplisite Teknik :** Navigatè a jis ap mande sèvè a moso odyo yo (MP3 audio chunks) youn apre lòt e l ap jwe yo san sote.
+Ce document présente l'architecture, la stratégie de monétisation et le code technique complet pour le système **Veltrix Broadcast**. Le choix architectural retenu est le **"On-Demand Room" (Salon à la Demande / Pseudo-Live)** couplé à l'API de voix d'élite d'**ElevenLabs** et à l'**Web Audio API** dans le navigateur. Il garantit une qualité audio de niveau national tout en contrôlant les coûts d'API afin d'assurer une marge maximale (95%+).
 
 ---
 
-## 2. Workflow Konplè Konvèsasyon Odyo a (A rive nan Z)
+## 1. Pourquoi le Modèle "On-Demand Room" + ElevenLabs est le Choix d'Élite ?
 
-Chak fwa yon itilizatè lanse yon emisyon, men kijan backend la ak front-end la ap kominike pou asire yon tranzisyon san sote :
+### A. La Qualité de Voix d'Élite d'ElevenLabs
+Pour offrir aux clients de Veltrix une satisfaction totale (effet WOW), ElevenLabs propose les meilleures voix naturelles du marché :
+* **Clonage de Voix (Voice Cloning) :** Nous pouvons créer des voix hautement personnalisées et distinctes pour chaque Entel (par exemple, une voix de leader sérieuse pour *NexoFin-X* et une voix dynamique pour *KronoPol-9*).
+* **Émotions et Respiration :** Le modèle est capable d'intégrer des pauses de respiration subtiles, des éclats de rire ou de transmettre des émotions (comme le suspense) selon le contexte du débat.
+* **Support Multilingue (Créole/Français) :** Le modèle `eleven_multilingual_v2` est capable de parler créole haïtien et français avec un accent parfait sans aucun effet robotique.
+
+### B. Économies et Contrôle du Budget (Pseudo-Live)
+Au lieu de diffuser de l'audio en continu 24h/24 sur un serveur WebRTC coûteux (comme Agora) où nous dépenserions des ressources même en l'absence d'auditeurs :
+* **Paiement à l'Usage Réel :** La génération de voix et la diffusion ne commencent que lorsqu'un utilisateur clique sur le bouton **"Écouter le Live"**.
+* **Expérience "En Direct" :** Pour l'utilisateur, l'interface affiche de magnifiques animations d'ondes (waveform), un indicateur visuel `🔴 EN DIRECT` marquant l'antenne, et un témoin vert s'allumant pour l'Entel qui prend la parole.
+* **Simplicité Technique :** Le navigateur demande simplement au serveur les segments audio (MP3 audio chunks) les uns après les autres et les lit de manière fluide.
+
+---
+
+## 2. Flux de Travail Complet de la Conversation Audio (de A à Z)
+
+Chaque fois qu'un utilisateur lance une émission, voici comment le backend et le frontend communiquent pour assurer une transition fluide :
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Kliyan (Navigatè)
-    participant Server as Sèvè Backend (Node.js)
+    actor User as Client (Navigateur)
+    participant Server as Serveur Backend (Node.js)
     participant Gemini as Google Gemini API
     participant ElevenLabs as ElevenLabs API
 
-    User->>Server: Klike "Écouter" (Lanse Broadcast)
+    User->>Server: Clique "Écouter" (Lance le Broadcast)
     activate Server
-    Server->>Gemini: 1. Kalkile premye replik la (Gemini 2.5 Flash)
+    Server->>Gemini: 1. Calcule la première réplique (Gemini 2.5 Flash)
     activate Gemini
-    Gemini-->>Server: Retounen Tèks Repons Entel A
+    Gemini-->>Server: Retourne le Texte de la Réponse de l'Entel A
     deactivate Gemini
-    Server->>ElevenLabs: 2. Voye Tèks + Voice ID Entel A (/stream)
+    Server->>ElevenLabs: 2. Envoie le Texte + Voice ID de l'Entel A (/stream)
     activate ElevenLabs
-    ElevenLabs-->>Server: Retounen moso odyo an dirèk (Buffer Stream)
+    ElevenLabs-->>Server: Retourne le flux audio en direct (Buffer Stream)
     deactivate ElevenLabs
-    Server-->>User: 3. Voye odyo a an moso (audio/mpeg)
+    Server-->>User: 3. Envoie l'audio par morceaux (audio/mpeg)
     deactivate Server
     
-    Note over User, Server: Navigatè a kòmanse jwe odyo A pandan Backend la ap prepare odyo B an background...
+    Note over User, Server: Le navigateur commence à lire l'audio A pendant que le Backend prépare l'audio B en tâche de fond...
     
-    Server->>Gemini: 4. Kalkile dezyèm replik la (Entel B)
+    Server->>Gemini: 4. Calcule la deuxième réplique (Entel B)
     activate Gemini
-    Gemini-->>Server: Retounen Tèks Repons Entel B
+    Gemini-->>Server: Retourne le Texte de la Réponse de l'Entel B
     deactivate Gemini
-    Server->>ElevenLabs: 5. Voye Tèks + Voice ID Entel B (/stream)
+    Server->>ElevenLabs: 5. Envoie le Texte + Voice ID de l'Entel B (/stream)
     activate ElevenLabs
-    ElevenLabs-->>Server: Retounen moso odyo B (.mp3 Buffer)
+    ElevenLabs-->>Server: Retourne le flux audio B (.mp3 Buffer)
     deactivate ElevenLabs
-    Server-->>User: 6. Ke odyo a chaje nan navigatè a nèt
+    Server-->>User: 6. Le morceau audio B est entièrement chargé dans le navigateur
 ```
 
 ---
 
-## 3. Kòd Backend Sèvè a (Node.js + Express)
+## 3. Code Backend du Serveur (Node.js + Express)
 
-Men kòd backend pwofesyonèl pou sèvè w la. Li asire sekirite kle API yo (ki sere nan `.env`) epi li voye son an an moso (Streaming/Piping) bay navigatè a pou evite tan tann (latency).
+Voici le code backend professionnel pour votre serveur. Il garantit la sécurité des clés API (stockées dans `.env`) et diffuse le son par segments (Streaming/Piping) vers le navigateur pour éliminer la latence.
 
 ```javascript
-// Server.js - Konfigirasyon Backend Veltrix Audio
+// Server.js - Configuration Backend Veltrix Audio
 const express = require('express');
 const fetch = require('node-fetch');
 require('dotenv').config();
@@ -73,25 +73,25 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-// Kle API yo dwe kache nan fichye .env sou sèvè w la
+// Les clés API doivent être masquées dans le fichier .env sur le serveur
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 
-// Database Voice IDs ou kreye oswa klone nan ElevenLabs pou chak Entel
+// Voice IDs créés ou clonés sur ElevenLabs pour chaque Entel
 const entelVoices = {
-    "KronoPol-9": "pNInz6ob9g9j9YGCt834", // Voice ID pou yon vwa gason politik dinamik
-    "NexoFin-X": "ErXwobaYiN019tU2b10X",  // Voice ID pou yon vwa finans serye
-    "MètKonsey": "IKne3meq5aBnO1rMsExF",  // Vwa formal e serye
-    "KèKontan": "EXAVITQu4vr4xnSDOCMa"    // Vwa cho e dous pou sikoloji
+    "KronoPol-9": "pNInz6ob9g9j9YGCt834", // Voice ID pour une voix politique masculine dynamique
+    "NexoFin-X": "ErXwobaYiN019tU2b10X",  // Voice ID pour une voix financière sérieuse
+    "MètKonsey": "IKne3meq5aBnO1rMsExF",  // Voix formelle et posée
+    "KèKontan": "EXAVITQu4vr4xnSDOCMa"    // Voix chaleureuse pour la psychologie
 };
 
 app.post('/api/generate-speech', async (req, res) => {
     const { text, speakerName } = req.body;
     
     if (!text || !speakerName) {
-        return res.status(400).json({ error: "Tèks la ak speakerName la nesesè." });
+        return res.status(400).json({ error: "Le texte et le speakerName sont requis." });
     }
 
-    // Nou chwazi vwa Entel la oswa nou pran yon vwa pa defo (Rachel)
+    // Sélection de la voix de l'Entel ou voix par défaut
     const voiceId = entelVoices[speakerName] || "21m00Tcm4TlvDq8ikWAM"; 
     
     try {
@@ -103,11 +103,11 @@ app.post('/api/generate-speech', async (req, res) => {
             },
             body: JSON.stringify({
                 text: text,
-                model_id: "eleven_multilingual_v2", // Modèl sa a pafè pou Kreyòl ak Franse
+                model_id: "eleven_multilingual_v2", // Modèle bilingue parfait pour le Créole et le Français
                 voice_settings: {
-                    stability: 0.45,         // Rann vwa a plis emosyonèl e dinamik
-                    similarity_boost: 0.85,  // Asire klòn lan parfe fidèl ak vwa orijinal la
-                    style: 0.15,             // Ti ekspresyon natirèl an plis
+                    stability: 0.45,         // Rend la voix plus expressive et dynamique
+                    similarity_boost: 0.85,  // Assure une fidélité optimale à la voix originale
+                    style: 0.15,             // Expressions naturelles complémentaires
                     use_speaker_boost: true
                 }
             })
@@ -118,38 +118,38 @@ app.post('/api/generate-speech', async (req, res) => {
             throw new Error(`ElevenLabs API Error: ${errorText}`);
         }
 
-        // Nou voye odyo a dirèkteman bay navigatè a an moso (Streaming / Piping)
+        // Nous envoyons l'audio directement au navigateur en morceaux (Streaming / Piping)
         res.setHeader('Content-Type', 'audio/mpeg');
         response.body.pipe(res);
 
-    } catch (error) {
-        console.error("Erè nan backend jenerasyon odyo:", error);
-        res.status(500).json({ error: "Sistèm nan pa kapab jwe vwa sa a kounye a." });
-    }
+     } catch (error) {
+        console.error("Erreur lors de la génération audio en tâche de fond:", error);
+        res.status(500).json({ error: "Le système ne peut pas lire cette voix actuellement." });
+     }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Sèvè Veltrix Audio ap kouri sou pò ${PORT}`));
+app.listen(PORT, () => console.log(`Serveur Veltrix Audio en cours d'exécution sur le port ${PORT}`));
 ```
 
 ---
 
-## 4. Jesyon Ke Odyo nan Front-End (Audio Queue Manager)
+## 4. Gestion de la File d'Attente Audio dans le Frontend (Audio Queue Manager)
 
-Paske deba a gen plizyè replik (`Entel A -> Entel B -> Entel A...`), navigatè a dwe gen yon **Queue Manager** (Jesyonè Fil d'attente) k ap asire ke le pli vit ke yon replik fini, pwochen replik la kòmanse jwe san okenn entèripsyon oswa tan tann.
+Puisque le débat comprend plusieurs répliques (`Entel A -> Entel B -> Entel A...`), le navigateur doit disposer d'un **Queue Manager** (Gestionnaire de File d'Attente) pour s'assurer que dès qu'une réplique se termine, la suivante commence à être lue de manière fluide et sans temps mort.
 
-Men kòd JavaScript pwofesyonèl pou devlopè w la ka entegre nan koòdone (front-end) tablodbò a :
+Voici le code JavaScript professionnel à intégrer dans l'interface (frontend) de votre tableau de bord :
 
 ```javascript
-// AudioQueueManager.js - Jesyonè Ke Odyo Veltrix
+// AudioQueueManager.js - Gestionnaire de File d'Attente Audio Veltrix
 class AudioQueueManager {
     constructor() {
-        this.queue = [];      // Lis replik k ap tann pou jwe
+        this.queue = [];      // Liste des répliques en attente de lecture
         this.isPlaying = false;
         this.currentAudio = null;
     }
 
-    // Ajoute yon moso odyo nan fil la
+    // Ajoute un morceau audio à la file d'attente
     addToQueue(audioUrl, speakerName) {
         this.queue.push({ url: audioUrl, speaker: speakerName });
         if (!this.isPlaying) {
@@ -157,12 +157,12 @@ class AudioQueueManager {
         }
     }
 
-    // Jwe pwochen moso odyo ki nan fil la
+    // Joue le morceau audio suivant de la file d'attente
     playNext() {
         if (this.queue.length === 0) {
             this.isPlaying = false;
             this.currentAudio = null;
-            // Kanpe animasyon onn yo paske deba a fini
+            // Arrête les animations d'ondes car le débat est terminé
             stopAllWaveforms();
             return;
         }
@@ -172,23 +172,23 @@ class AudioQueueManager {
         
         this.currentAudio = new Audio(currentItem.url);
         
-        // Synkronize vizyèl ak vwa a
+        // Synchronise le visuel et la voix
         highlightActiveSpeaker(currentItem.speaker);
         startWaveformAnimation();
 
-        // Konekte odyo a ak Web Audio API pou animasyon onn reyèl yo
+        // Connecte l'audio à l'Web Audio API pour l'analyse des fréquences réelles
         connectAudioToVisuals(this.currentAudio);
 
         this.currentAudio.play();
 
-        // Lè replik la fini, nou jwe sa k swiv la otomatikman
+        // Lorsque la réplique actuelle se termine, on lit la suivante automatiquement
         this.currentAudio.onended = () => {
-            URL.revokeObjectURL(currentItem.url); // Efase nan memwa pou evite chay sou navigatè a
+            URL.revokeObjectURL(currentItem.url); // Libère la mémoire dans le navigateur
             this.playNext();
         };
     }
 
-    // Kanpe tout emisyon an imedyatman si itilizatè a klike "Quitter"
+    // Arrête immédiatement toute l'émission si l'utilisateur clique sur "Quitter"
     stop() {
         if (this.currentAudio) {
             this.currentAudio.pause();
@@ -200,21 +200,21 @@ class AudioQueueManager {
     }
 }
 
-// Enstansye Jesyonè a
+// Instanciation du gestionnaire
 const veltrixBroadcastQueue = new AudioQueueManager();
 ```
 
 ---
 
-## 5. Synkronizasyon Onn Vizyèl yo ak Son an (Waveform Sync)
+## 5. Synchronisation des Ondes Visuelles et du Son (Waveform Sync)
 
-Pou rann arèn nan ultra-pwofesyonèl, onn vokal yo (waveform) dwe sote an tan reyèl selon frekans vwa k ap jwe a. Nou sèvi ak **Web Audio API** pou fè sa otomatikman san okenn reta vizyèl :
+Pour donner à l'arène un aspect ultra-professionnel, les ondes vocales (waveform) doivent s'animer en temps réel selon les fréquences réelles de la voix en cours de lecture. Nous utilisons la **Web Audio API** pour ce faire automatiquement et sans décalage visuel :
 
 ```javascript
-// WaveformVisualizer.js - Konekte frekans odyo a ak CSS a
+// WaveformVisualizer.js - Connexion des fréquences audio au CSS
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const analyser = audioCtx.createAnalyser();
-analyser.fftSize = 32; // Ti gwosè pou tcheke frekans rapid
+analyser.fftSize = 32; // Petite taille pour un calcul rapide des fréquences
 
 let audioSourceNode = null;
 
@@ -223,7 +223,7 @@ function connectAudioToVisuals(audioElement) {
         audioCtx.resume();
     }
     
-    // Evite re-konekte yon ansyen sous pou pa bay erè
+    // Évite de reconnecter une ancienne source
     if (audioSourceNode) {
         audioSourceNode.disconnect();
     }
@@ -242,11 +242,11 @@ function animateWaveform() {
     const dataArray = new Uint8Array(bufferLength);
     analyser.getByteFrequencyData(dataArray);
     
-    // Nou mete ajou wotè bèl ba animasyon yo selon frekans odyo a
-    const bars = document.querySelectorAll('.bar'); // Target ba vizyèl tablodbò a
+    // Met à jour la hauteur des barres d'animation selon la fréquence de l'audio
+    const bars = document.querySelectorAll('.bar'); // Cible les barres du dashboard
     bars.forEach((bar, index) => {
         const value = dataArray[index] || 0;
-        const height = Math.max(4, (value / 255) * 48); // Kalkile wotè dinamik an pixel
+        const height = Math.max(4, (value / 255) * 48); // Calcule la hauteur dynamique en pixels
         bar.style.height = `${height}px`;
     });
     
@@ -256,16 +256,16 @@ function animateWaveform() {
 function stopAllWaveforms() {
     const bars = document.querySelectorAll('.bar');
     bars.forEach(bar => {
-        bar.style.height = '4px'; // Reyajiste nan wotè minimòm lan
+        bar.style.height = '4px'; // Réinitialise à la hauteur minimale
     });
 }
 ```
 
 ---
 
-## 6. Kalkil Depans ak Rekòmandasyon pou Veltrix
+## 6. Calcul des Coûts et Recommandations pour Veltrix
 
-Pou asire w ke w ap tou de bay yon sèvis elit epi fè yon pwofi maksimòm (95%+) :
+Pour vous assurer de fournir un service d'élite tout en dégageant un bénéfice maximal (95%+) :
 
-* **Vann Broadcast la pi Chè :** Paske jenerasyon vwa nan ElevenLabs koute yon ti kras plis pase tèks, mete pri emisyon yo a **2 Kredi pou chak replik** (pa egzanp, yon emisyon 6 replik ap koute itilizatè a 12 Kredi).
-* **Limitasyon Karaktè :** Nan backend la, mete yon limit kote chak replik yon Entel pa kapab depase **150 karaktè** (apeprè 25 a 30 mo). Sa ap evite gwo diskou ki long, rann emisyon an pi vivan e dinamik (ping-pong style), epi **sove depans API ElevenLabs yo de 80%** !
+* **Tarification Plus Élevée du Broadcast :** Comme la génération de voix sur ElevenLabs est plus onéreuse que le simple texte, fixez le prix des émissions à **2 Crédits par réplique** (par exemple, une émission de 6 répliques coûtera 12 Crédits à l'utilisateur).
+* **Limitation des Caractères :** Dans le backend, appliquez une limite stricte où chaque réplique d'un Entel ne peut dépasser **150 caractères** (environ 25 à 30 mots). Cela évite les monologues interminables, rend le débat beaucoup plus vivant et dynamique (style ping-pong), et **économise jusqu'à 80% des coûts de l'API ElevenLabs** !
