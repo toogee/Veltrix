@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veltrix - Profil Utilisateur</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090B11',
+                        darkCard: '#111520',
+                        darkCardMuted: '#171D2B',
+                        neonGreen: '#CCFF00',
+                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
+                        oliveAccent: '#88B000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .neon-glow-border {
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.05);
+            border: 1px solid rgba(204, 255, 0, 0.1);
+        }
+        .neon-glow-border-active {
+            box-shadow: 0 0 20px rgba(204, 255, 0, 0.2);
+            border: 1px solid rgba(204, 255, 0, 0.6);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
+        }
+        /* Personnalisation de la barre de défilement */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #090B11;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #171D2B;
+            border-radius: 99px;
+            border: 1px solid rgba(204, 255, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans h-full flex flex-col overflow-hidden">
+
+    <!-- HEADER / NAVIGATION NAVBAR -->
+    <header class="w-full bg-darkCard/80 border-b border-white/5 backdrop-blur-md px-6 py-4 flex items-center justify-between z-30 shrink-0">
+        <!-- Logo -->
+        <a href="veltrix_premium_dashboard (1).html" class="flex items-center gap-3 group">
+            <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-brain text-neonGreen text-md"></i>
+            </div>
+            <span class="font-display font-bold text-xl tracking-wider text-white">VELTRIX</span>
+        </a>
+
+        <!-- Centre de Contrôle et Crédits -->
+        <div class="flex items-center gap-4">
+            <!-- Solde de Crédits -->
+            <div class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-darkCardMuted border border-white/5">
+                <i class="fa-solid fa-coins text-neonGreen text-xs"></i>
+                <span class="text-xs font-semibold text-slate-300">Solde :</span>
+                <span id="nav-credit-balance" class="text-xs font-bold text-white font-mono neon-text-glow">150 Crédits</span>
+            </div>
+
+            <!-- Retour au Dashboard -->
+            <a href="veltrix_premium_dashboard (1).html" class="px-4 py-2 bg-white/5 hover:bg-neonGreen/10 border border-white/5 hover:border-neonGreen/30 text-[11px] font-bold text-slate-300 hover:text-neonGreen rounded-xl transition-all flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>TABLEAU DE BORD</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- MAIN BODY LAYOUT -->
+    <div class="flex-1 flex overflow-hidden w-full max-w-7xl mx-auto">
+        
+        <!-- SIDEBAR DE NAVIGATION DU PROFIL (Masqué ou réduit sur mobile) -->
+        <aside class="hidden md:flex w-72 bg-darkCard/40 border-r border-white/5 p-6 flex-col justify-between shrink-0">
+            <div class="space-y-6">
+                <!-- Carte Profil Utilisateur Rapide -->
+                <div class="flex items-center gap-3.5 p-3 rounded-2xl bg-darkCard/60 border border-white/5">
+                    <div class="relative">
+                        <img id="sidebar-avatar" src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Jean&backgroundColor=090b11" alt="Avatar" class="w-12 h-12 rounded-xl bg-darkBg border border-neonGreen/20">
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-darkCard"></div>
+                    </div>
+                    <div class="overflow-hidden">
+                        <h3 id="sidebar-username" class="text-sm font-bold text-white truncate">Jean Dupont</h3>
+                        <span class="text-[10px] text-neonGreen font-semibold tracking-wider font-mono uppercase bg-neonGreen/10 px-2 py-0.5 rounded-full">Abonnement Premium</span>
+                    </div>
+                </div>
+
+                <!-- Liste des Boutons d'Onglets -->
+                <nav class="space-y-1">
+                    <button onclick="switchTab('pwofil')" id="btn-tab-pwofil" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all text-neonGreen bg-neonGreen/10 border border-neonGreen/20">
+                        <i class="fa-regular fa-user text-sm"></i>
+                        <span>Informations Personnelles</span>
+                    </button>
+                    <button onclick="switchTab('sekirite')" id="btn-tab-sekirite" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent">
+                        <i class="fa-solid fa-shield-halved text-sm"></i>
+                        <span>Sécurité & Mot de passe</span>
+                    </button>
+                    <button onclick="switchTab('transaksyon')" id="btn-tab-transaksyon" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent">
+                        <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+                        <span>Crédits & Transactions</span>
+                    </button>
+                    <button onclick="switchTab('preferans')" id="btn-tab-preferans" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent">
+                        <i class="fa-solid fa-sliders text-sm"></i>
+                        <span>Préférences des Entels</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Bouton Déconnexion -->
+            <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all border border-transparent">
+                <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                <span>Se déconnecter</span>
+            </button>
+        </aside>
+
+        <!-- MAIN SCROLLABLE CONTENT -->
+        <main class="flex-1 bg-darkBg flex flex-col overflow-y-auto custom-scrollbar p-6 lg:p-8">
+
+            <!-- Onglets sur Mobile (Visible seulement sur petit écran) -->
+            <div class="flex md:hidden items-center gap-2 overflow-x-auto pb-4 mb-4 border-b border-white/5">
+                <button onclick="switchTab('pwofil')" id="m-btn-tab-pwofil" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold bg-neonGreen/10 text-neonGreen border border-neonGreen/20">
+                    Profil
+                </button>
+                <button onclick="switchTab('sekirite')" id="m-btn-tab-sekirite" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200">
+                    Sécurité
+                </button>
+                <button onclick="switchTab('transaksyon')" id="m-btn-tab-transaksyon" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200">
+                    Transactions
+                </button>
+                <button onclick="switchTab('preferans')" id="m-btn-tab-preferans" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200">
+                    Préférences
+                </button>
+            </div>
+
+            <!-- TAB 1: INFORMATIONS PERSONNELLES -->
+            <section id="tab-content-pwofil" class="space-y-6">
+                <div class="space-y-1">
+                    <h2 class="font-display font-bold text-2xl text-white">Informations Personnelles</h2>
+                    <p class="text-xs text-slate-400">Ajustez votre identité numérique et la façon dont votre profil apparaît sur le réseau Veltrix.</p>
+                </div>
+
+                <!-- Choisir l'Avatar -->
+                <div class="bg-darkCard border border-white/5 rounded-2xl p-6 space-y-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Avatar Numérique</label>
+                    <div class="flex flex-col sm:flex-row items-center gap-6">
+                        <img id="current-avatar-preview" src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Jean&backgroundColor=090b11" alt="Aperçu Avatar" class="w-20 h-20 rounded-2xl bg-darkCardMuted border-2 border-neonGreen shadow-[0_0_20px_rgba(204,255,0,0.15)]">
+                        <div class="space-y-3 w-full">
+                            <span class="text-xs text-slate-400 block">Cliquez sur l'un de ces modèles pour changer votre avatar immédiatement :</span>
+                            <div class="flex flex-wrap gap-3">
+                                <button onclick="changeAvatar('Jean')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
+                                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Jean&backgroundColor=090b11" alt="Robot 1">
+                                </button>
+                                <button onclick="changeAvatar('Alex')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
+                                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Alex&backgroundColor=090b11" alt="Robot 2">
+                                </button>
+                                <button onclick="changeAvatar('Veltrix')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
+                                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Veltrix&backgroundColor=090b11" alt="Robot 3">
+                                </button>
+                                <button onclick="changeAvatar('Krono')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
+                                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Krono&backgroundColor=090b11" alt="Robot 4">
+                                </button>
+                                <button onclick="changeAvatar('Cypher')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
+                                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Cypher&backgroundColor=090b11" alt="Robot 5">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire d'Informations -->
+                <form onsubmit="savePersonalInfo(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Prénom</label>
+                            <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-4 py-3">
+                                <input id="profile-firstname" type="text" value="Jean" required class="w-full bg-transparent text-xs text-white focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nom</label>
+                            <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-4 py-3">
+                                <input id="profile-lastname" type="text" value="Dupont" required class="w-full bg-transparent text-xs text-white focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Adresse E-mail</label>
+                        <div class="neon-glow-border bg-darkCard/50 rounded-xl flex items-center px-4 py-3 gap-2.5 opacity-60">
+                            <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
+                            <input type="email" value="jean.dupont@exemple.com" disabled class="w-full bg-transparent text-xs text-slate-400 focus:outline-none cursor-not-allowed">
+                        </div>
+                        <span class="text-[10px] text-slate-500 block">Vous ne pouvez pas modifier cette adresse e-mail pour le moment pour des raisons de sécurité.</span>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Biographie de l'Utilisateur</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl flex items-center p-4">
+                            <textarea id="profile-bio" rows="3" class="w-full bg-transparent text-xs text-white focus:outline-none resize-none placeholder-slate-600" placeholder="Écrivez une courte biographie sur ce que vous recherchez dans les débats d'Entels...">Analyse et stratégie financière. Passionné par les crypto-monnaies et les changements socio-politiques.</textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="px-5 py-3.5 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.15)]">
+                        <span>ENREGISTRER LES MODIFICATIONS</span>
+                        <i class="fa-solid fa-floppy-disk"></i>
+                    </button>
+                </form>
+            </section>
+
+            <!-- TAB 2: SÉCURITÉ & MOT DE PASSE -->
+            <section id="tab-content-sekirite" class="space-y-6 hidden">
+                <div class="space-y-1">
+                    <h2 class="font-display font-bold text-2xl text-white">Sécurité & Mot de passe</h2>
+                    <p class="text-xs text-slate-400">Protégez votre compte, modifiez votre mot de passe et gérez les appareils connectés à votre compte Veltrix.</p>
+                </div>
+
+                <!-- Formulaire modifier le mot de passe -->
+                <form onsubmit="saveSecurity(event)" class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mot de passe actuel</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-4 py-3 gap-2.5">
+                            <i class="fa-solid fa-lock-open text-slate-500 text-xs"></i>
+                            <input id="sec-current-pass" type="password" placeholder="••••••••" required class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nouveau mot de passe</label>
+                            <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-4 py-3 gap-2.5">
+                                <i class="fa-solid fa-lock text-slate-500 text-xs"></i>
+                                <input id="sec-new-pass" type="password" placeholder="••••••••" required class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Confirmer le nouveau mot de passe</label>
+                            <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-4 py-3 gap-2.5">
+                                <i class="fa-solid fa-lock text-slate-500 text-xs"></i>
+                                <input id="sec-confirm-pass" type="password" placeholder="••••••••" required class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="px-5 py-3.5 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.15)]">
+                        <span>MODIFIER LE MOT DE PASSE</span>
+                        <i class="fa-solid fa-key"></i>
+                    </button>
+                </form>
+
+                <!-- Appareils Connectés -->
+                <div class="bg-darkCard border border-white/5 rounded-2xl p-6 space-y-4">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Appareils actuellement connectés</h3>
+                    <div class="space-y-3.5">
+                        <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/20 flex items-center justify-center text-neonGreen">
+                                    <i class="fa-solid fa-desktop"></i>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-bold text-white">Google Chrome (Windows 11)</span>
+                                    <span class="text-[10px] text-slate-500">Port-au-Prince, Haïti ● Actif maintenant</span>
+                                </div>
+                            </div>
+                            <span class="text-[9px] font-bold font-mono text-neonGreen bg-neonGreenDim px-2.5 py-1 rounded-md border border-neonGreen/30">CET APPAREIL</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-slate-400">
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-bold text-white">Safari (iPhone 15 Pro)</span>
+                                    <span class="text-[10px] text-slate-500">Port-au-Prince, Haïti ● Connecté il y a 2 jours</span>
+                                </div>
+                            </div>
+                            <button onclick="disconnectDevice()" class="text-[10px] text-red-400 hover:text-red-300 font-bold hover:underline">Déconnecter</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: CRÉDITS ET TRANSACTIONS -->
+            <section id="tab-content-transaksyon" class="space-y-6 hidden">
+                <div class="space-y-1">
+                    <h2 class="font-display font-bold text-2xl text-white">Crédits & Transactions</h2>
+                    <p class="text-xs text-slate-400">Gerez votre solde de crédits, achetez de nouveaux packs et consultez votre historique d'utilisation sur le système.</p>
+                </div>
+
+                <!-- Solde et Packs de Crédit -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Solde Actif -->
+                    <div class="bg-gradient-to-br from-darkCard to-darkCardMuted border border-neonGreen/20 p-5 rounded-2xl flex flex-col justify-between shadow-[0_4px_25px_rgba(204,255,0,0.03)] col-span-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Solde Actif</span>
+                            <div class="w-7 h-7 rounded-lg bg-neonGreen/10 border border-neonGreen/20 flex items-center justify-center text-neonGreen">
+                                <i class="fa-solid fa-wallet text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="py-4">
+                            <span id="trans-credit-balance" class="text-4xl font-display font-bold text-white neon-text-glow">150 Crédits</span>
+                            <span class="block text-[10px] text-slate-500 uppercase mt-1">Équivalent à ~150 messages de débat</span>
+                        </div>
+                        <button onclick="buyCredits()" class="w-full py-2 bg-neonGreen/10 hover:bg-neonGreen border border-neonGreen/30 hover:border-transparent text-[11px] font-bold text-neonGreen hover:text-darkBg rounded-lg transition-all text-center">
+                            Acheter des Crédits <i class="fa-solid fa-plus ml-1"></i>
+                        </button>
+                    </div>
+
+                    <!-- Explication micro-paiements -->
+                    <div class="bg-darkCard border border-white/5 p-5 rounded-2xl flex flex-col justify-between col-span-1 md:col-span-2">
+                        <div class="space-y-2">
+                            <span class="text-[10px] font-bold text-neonGreen uppercase tracking-wider block">Comment fonctionnent les micro-paiements ?</span>
+                            <h3 class="text-sm font-bold text-white">Payez exactement ce que vous consommez</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Contrairement aux autres plateformes, Veltrix n'impose aucun abonnement mensuel obligatoire. Vous rechargez vos crédits et ils sont déduits en temps réel :
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-white/5 mt-3">
+                            <div class="text-left">
+                                <span class="text-[10px] text-slate-500 uppercase font-semibold">1 Message de Chat (Débat)</span>
+                                <span class="block text-xs font-bold text-white">1 Crédit</span>
+                            </div>
+                            <div class="text-left">
+                                <span class="text-[10px] text-slate-500 uppercase font-semibold">1 Réplique Audio (Broadcast)</span>
+                                <span class="block text-xs font-bold text-white">2 Crédits</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historique des Transactions -->
+                <div class="bg-darkCard border border-white/5 rounded-2xl p-6 space-y-4">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Historique des Transactions et Débats</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="text-slate-500 border-b border-white/5">
+                                    <th class="pb-3 font-semibold">Date et Heure</th>
+                                    <th class="pb-3 font-semibold">Type d'Activité</th>
+                                    <th class="pb-3 font-semibold">Description / Sujet</th>
+                                    <th class="pb-3 font-semibold text-right">Montant (Crédits)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                <tr class="text-slate-300">
+                                    <td class="py-3.5 text-slate-500 font-mono">30 Mai 2026, 10:14</td>
+                                    <td class="py-3.5"><span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-bold text-[10px] uppercase">Achat</span></td>
+                                    <td class="py-3.5 font-medium">Carte de Crédit (Pack Débutant)</td>
+                                    <td class="py-3.5 text-right font-bold text-emerald-400 font-mono">+100</td>
+                                </tr>
+                                <tr class="text-slate-300">
+                                    <td class="py-3.5 text-slate-500 font-mono">29 Mai 2026, 14:22</td>
+                                    <td class="py-3.5"><span class="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 font-bold text-[10px] uppercase">Chat</span></td>
+                                    <td class="py-3.5 font-medium text-slate-400">Débat entre KronoPol-9 et NexoFin-X (Crypto)</td>
+                                    <td class="py-3.5 text-right font-bold text-red-400 font-mono">-5</td>
+                                </tr>
+                                <tr class="text-slate-300">
+                                    <td class="py-3.5 text-slate-500 font-mono">28 Mai 2026, 18:05</td>
+                                    <td class="py-3.5"><span class="px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 font-bold text-[10px] uppercase">Broadcast</span></td>
+                                    <td class="py-3.5 font-medium text-slate-400">Émission vocale de 3 Entels sur la Réforme de la Santé</td>
+                                    <td class="py-3.5 text-right font-bold text-red-400 font-mono">-10</td>
+                                </tr>
+                                <tr class="text-slate-300">
+                                    <td class="py-3.5 text-slate-500 font-mono">26 Mai 2026, 09:12</td>
+                                    <td class="py-3.5"><span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-bold text-[10px] uppercase">Bonus</span></td>
+                                    <td class="py-3.5 font-medium">Cadeau de bienvenue pour l'inscription sur Veltrix</td>
+                                    <td class="py-3.5 text-right font-bold text-emerald-400 font-mono">+50</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: PRÉFÉRENCES DES ENTELS -->
+            <section id="tab-content-preferans" class="space-y-6 hidden">
+                <div class="space-y-1">
+                    <h2 class="font-display font-bold text-2xl text-white">Préférences des Entels</h2>
+                    <p class="text-xs text-slate-400">Modifiez les paramètres du système de débat pour votre format par défaut préféré.</p>
+                </div>
+
+                <!-- Formulaire de Préférences -->
+                <form onsubmit="savePreferences(event)" class="space-y-4">
+                    <!-- Langue par défaut -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Langue par défaut pour les Débats et Broadcasts</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl px-4 py-3">
+                            <select id="pref-language" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                                <option class="bg-darkCard text-white" value="fr">Français (Franse)</option>
+                                <option class="bg-darkCard text-white" value="cr">Kreyòl Ayisyen</option>
+                                <option class="bg-darkCard text-white" value="en">English (Anglè)</option>
+                                <option class="bg-darkCard text-white" value="es">Español (Espanyòl)</option>
+                            </select>
+                        </div>
+                        <span class="text-[10px] text-slate-500 block">Cela servira d'option par défaut à chaque fois que vous créerez une nouvelle émission ou un chat de débat.</span>
+                    </div>
+
+                    <!-- Vitesse de réponse par défaut -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Vitesse de discussion et de réflexion (Temps de frappe)</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl px-4 py-3">
+                            <select id="pref-speed" class="w-full bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                                <option class="bg-darkCard text-white" value="slow">Profond & Posé (Temps de lecture et de réflexion prolongé - recommandé)</option>
+                                <option class="bg-darkCard text-white" value="normal">Normal (3 secondes par intervention)</option>
+                                <option class="bg-darkCard text-white" value="fast">Rapide (Les répliques apparaissent plus vite)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Nombre de répliques par défaut -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nombre de messages par défaut pour les chats de débat</label>
+                        <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-4 py-3">
+                            <input id="pref-default-messages" type="number" min="2" max="25" value="6" required class="w-full bg-transparent text-xs text-white focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="px-5 py-3.5 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.15)]">
+                        <span>ENREGISTRER LES PRÉFÉRENCES</span>
+                        <i class="fa-solid fa-sliders"></i>
+                    </button>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- NOTIFICATION TOAST CONTAINER -->
+    <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Sauvegarde des données utilisateur dans localStorage pour persistance
+        let userProfile = {
+            firstName: "Jean",
+            lastName: "Dupont",
+            bio: "Analyse et stratégie financière. Passionné par les crypto-monnaies et les changements socio-politiques.",
+            avatarSeed: "Jean",
+            credits: 150
+        };
+
+        // Chargement des données au démarrage
+        window.onload = function() {
+            const savedProfile = localStorage.getItem('veltrix_user_profile');
+            if (savedProfile) {
+                userProfile = JSON.parse(savedProfile);
+                
+                // Mise à jour de l'interface utilisateur
+                document.getElementById('profile-firstname').value = userProfile.firstName;
+                document.getElementById('profile-lastname').value = userProfile.lastName;
+                document.getElementById('profile-bio').value = userProfile.bio;
+                document.getElementById('sidebar-username').textContent = `${userProfile.firstName} ${userProfile.lastName}`;
+                document.getElementById('current-avatar-preview').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${userProfile.avatarSeed}&backgroundColor=090b11`;
+                document.getElementById('sidebar-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${userProfile.avatarSeed}&backgroundColor=090b11`;
+            }
+        };
+
+        // Commutation entre les onglets
+        function switchTab(tabId) {
+            const tabs = ['pwofil', 'sekirite', 'transaksyon', 'preferans'];
+            
+            tabs.forEach(t => {
+                const content = document.getElementById(`tab-content-${t}`);
+                const desktopBtn = document.getElementById(`btn-tab-${t}`);
+                const mobileBtn = document.getElementById(`m-btn-tab-${t}`);
+                
+                if (t === tabId) {
+                    content.classList.remove('hidden');
+                    // Style actif bureau
+                    desktopBtn.classList.add('text-neonGreen', 'bg-neonGreen/10', 'border-neonGreen/20');
+                    desktopBtn.classList.remove('text-slate-400', 'hover:bg-white/5', 'border-transparent');
+                    // Style actif mobile
+                    mobileBtn.classList.add('bg-neonGreen/10', 'text-neonGreen', 'border', 'border-neonGreen/20');
+                    mobileBtn.classList.remove('text-slate-400');
+                } else {
+                    content.classList.add('hidden');
+                    // Style inactif bureau
+                    desktopBtn.classList.remove('text-neonGreen', 'bg-neonGreen/10', 'border-neonGreen/20');
+                    desktopBtn.classList.add('text-slate-400', 'hover:bg-white/5', 'border-transparent');
+                    // Style inactif mobile
+                    mobileBtn.classList.remove('bg-neonGreen/10', 'text-neonGreen', 'border', 'border-neonGreen/20');
+                    mobileBtn.classList.add('text-slate-400');
+                }
+            });
+        }
+
+        // Changer l'Avatar
+        function changeAvatar(seed) {
+            userProfile.avatarSeed = seed;
+            
+            // Mise à jour visuelle instantanée
+            document.getElementById('current-avatar-preview').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
+            document.getElementById('sidebar-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
+            
+            localStorage.setItem('veltrix_user_profile', JSON.stringify(userProfile));
+            showToast("Votre nouvel avatar a été enregistré avec succès !");
+        }
+
+        // Enregistrer les Informations Personnelles
+        function savePersonalInfo(event) {
+            event.preventDefault();
+            
+            const fName = document.getElementById('profile-firstname').value.trim();
+            const lName = document.getElementById('profile-lastname').value.trim();
+            const bio = document.getElementById('profile-bio').value.trim();
+
+            if (!fName || !lName) {
+                showToast("Le prénom et le nom sont obligatoires.", "error");
+                return;
+            }
+
+            userProfile.firstName = fName;
+            userProfile.lastName = lName;
+            userProfile.bio = bio;
+
+            localStorage.setItem('veltrix_user_profile', JSON.stringify(userProfile));
+            
+            // Mise à jour de la barre latérale
+            document.getElementById('sidebar-username').textContent = `${fName} ${lName}`;
+            
+            showToast("Vos informations personnelles ont été enregistrées avec succès !");
+        }
+
+        // Enregistrer Sécurité et Mot de passe
+        function saveSecurity(event) {
+            event.preventDefault();
+            
+            const currentPass = document.getElementById('sec-current-pass').value;
+            const newPass = document.getElementById('sec-new-pass').value;
+            const confirmPass = document.getElementById('sec-confirm-pass').value;
+
+            if (newPass !== confirmPass) {
+                showToast("Les nouveaux mots de passe ne correspondent pas.", "error");
+                return;
+            }
+
+            if (newPass.length < 6) {
+                showToast("Le nouveau mot de passe doit contenir au moins 6 caractères.", "error");
+                return;
+            }
+
+            showToast("Votre mot de passe a été modifié avec succès !");
+            document.getElementById('sec-current-pass').value = "";
+            document.getElementById('sec-new-pass').value = "";
+            document.getElementById('sec-confirm-pass').value = "";
+        }
+
+        // Enregistrer les préférences
+        function savePreferences(event) {
+            event.preventDefault();
+            showToast("Vos préférences de débat ont été mises à jour !");
+        }
+
+        // Simulation d'achat de crédits
+        function buyCredits() {
+            userProfile.credits += 100;
+            localStorage.setItem('veltrix_user_profile', JSON.stringify(userProfile));
+            
+            // Mise à jour visuelle des soldes
+            document.getElementById('nav-credit-balance').textContent = `${userProfile.credits} Crédits`;
+            document.getElementById('trans-credit-balance').textContent = `${userProfile.credits} Crédits`;
+            
+            showToast("Pack de 100 crédits ajouté à votre compte avec succès ! +$10.00", "success");
+        }
+
+        // Déconnecter un appareil
+        function disconnectDevice() {
+            showToast("Cette session a été déconnectée avec succès.");
+        }
+
+        // Déconnexion générale
+        function handleLogout() {
+            showToast("Déconnexion en cours...");
+            setTimeout(() => {
+                window.location.href = 'veltrix_premium_sign_in.html';
+            }, 1000);
+        }
+
+        // Système de notification Toast personnalisé
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "p-4 rounded-xl text-xs text-white flex items-center gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.5)] transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto min-w-[280px]";
+            
+            if (type === "success") {
+                toast.classList.add('bg-darkCard', 'border', 'border-neonGreen/40');
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-neonGreen text-md"></i> <span>${message}</span>`;
+            } else {
+                toast.classList.add('bg-darkCard', 'border', 'border-red-500/40');
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 text-md"></i> <span>${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-2px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
