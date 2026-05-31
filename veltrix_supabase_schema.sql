@@ -43,6 +43,8 @@ CREATE TRIGGER on_auth_user_created
 REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM public;
 REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM anon;
 REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM authenticated;
+GRANT EXECUTE ON FUNCTION public.handle_new_user() TO supabase_auth_admin;
+
 
 -- 3. GESTION DE LA SÉCURITÉ DE NIVEAU LIGNE (ROW LEVEL SECURITY - RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
