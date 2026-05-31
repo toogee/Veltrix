@@ -4,8 +4,6 @@
  * Il dispose d'un système intelligent demandant la clé publique Anon directement dans l'interface si elle n'est pas encore enregistrée.
  */
 
-let SUPABASE_URL = safeStorage.getItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
-
 // Wrappers de stockage sécurisés contre les restrictions du protocole local file:///
 const safeStorage = {
     getItem(key) {
@@ -33,6 +31,9 @@ const safeStorage = {
         }
     }
 };
+
+let SUPABASE_URL = safeStorage.getItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
+
 
 // Chargement de la clé Anon depuis le localStorage sécurisé
 let supabaseAnonKey = safeStorage.getItem('veltrix_supabase_anon_key') || "";
