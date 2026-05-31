@@ -16,7 +16,7 @@
 
     <!-- Supabase JS Client CDN & Config -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="veltrix_supabase_client.js"></script>
+    <script src="veltrix_supabase_client.js?v=2.1"></script>
 
     <script>
         tailwind.config = {
@@ -225,10 +225,10 @@
                         ⚠️ <strong>Connexion en attente :</strong> Si l'écran reste bloqué, c'est que votre navigateur utilise une version obsolète en cache ou que votre base Supabase n'est pas encore configurée sur ce navigateur spécifique.
                     </p>
                     <div class="flex flex-col gap-2 pt-1.5">
-                        <button onclick="window.location.reload(true)" class="py-2.5 px-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] text-white font-semibold transition-colors border border-white/5 flex items-center justify-center gap-1.5 cursor-pointer">
+                        <button onclick="window.location.href = window.location.href.split('?')[0] + '?cb=' + Math.random() + window.location.hash" class="py-2.5 px-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] text-white font-semibold transition-colors border border-white/5 flex items-center justify-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-rotate"></i> Forcer le rafraîchissement (Vider le cache)
                         </button>
-                        <button onclick="window.injectSupabaseKeyModal()" class="py-2.5 px-3 bg-neonGreen/10 hover:bg-neonGreen/20 text-neonGreen text-[10px] font-bold rounded-xl border border-neonGreen/20 flex items-center justify-center gap-1.5 cursor-pointer">
+                        <button onclick="if(window.injectSupabaseKeyModal){window.injectSupabaseKeyModal()}else{alert('Le module de configuration est en cours de chargement. Veuillez patienter et réessayer.')}" class="py-2.5 px-3 bg-neonGreen/10 hover:bg-neonGreen/20 text-neonGreen text-[10px] font-bold rounded-xl border border-neonGreen/20 flex items-center justify-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-database"></i> Configurer Supabase sur ce navigateur
                         </button>
                     </div>
