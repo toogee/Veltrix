@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veltrix - Confirmation de Compte</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Supabase JS Client CDN & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="veltrix_supabase_client.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090B11',
+                        darkCard: '#111520',
+                        darkCardMuted: '#171D2B',
+                        neonGreen: '#CCFF00',
+                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
+                        oliveAccent: '#88B000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .neon-glow-border {
+            box-shadow: 0 0 25px rgba(204, 255, 0, 0.08);
+            border: 1px solid rgba(204, 255, 0, 0.15);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 15px rgba(204, 255, 0, 0.4);
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans h-full overflow-hidden flex flex-col items-center justify-center p-6 relative">
+    <!-- Background glows -->
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-neonGreen/5 blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-oliveAccent/5 blur-[120px] pointer-events-none"></div>
+
+    <div class="w-full max-w-md space-y-8 text-center relative z-10">
+        <!-- Logo -->
+        <div class="flex items-center justify-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center">
+                <i class="fa-solid fa-brain text-neonGreen text-lg"></i>
+            </div>
+            <span class="font-display font-bold text-2xl tracking-wider text-white">VELTRIX</span>
+        </div>
+
+        <!-- Main Status Card -->
+        <div class="bg-darkCard border border-white/5 rounded-3xl p-8 shadow-[0_15px_40px_rgba(0,0,0,0.6)] space-y-6 transform scale-100 transition-all duration-300 neon-glow-border animate-float" id="confirm-card">
+            <!-- Icon State (Loader by default) -->
+            <div id="status-icon-container" class="w-20 h-20 bg-neonGreen/5 border border-neonGreen/20 rounded-full flex items-center justify-center mx-auto text-3xl text-neonGreen">
+                <i class="fa-solid fa-circle-notch animate-spin" id="status-icon"></i>
+            </div>
+
+            <div class="space-y-2">
+                <h2 id="status-title" class="font-display font-bold text-xl md:text-2xl text-white">Vérification de votre e-mail</h2>
+                <p id="status-desc" class="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
+                    Nous vérifions votre lien de confirmation auprès de notre serveur sécurisé...
+                </p>
+            </div>
+
+            <!-- Loader bar visual -->
+            <div id="progress-bar-container" class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full w-2/3 bg-neonGreen transition-all duration-500 rounded-full animate-pulse"></div>
+            </div>
+
+            <!-- Action Button (Hidden by default, shown on completion/error) -->
+            <button id="action-btn" onclick="window.handleAction()" class="hidden w-full py-4 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.15)] mt-4">
+                <span id="btn-text">ACCÉDER À MON COMPTE</span>
+                <i class="fa-solid fa-arrow-right" id="btn-icon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST CONTAINER -->
+    <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+    <script>
+    (function() {
+        let actionTarget = 'dashboard';
+
+        async function verifyConfirmation() {
+            if (!supabase) {
+                setTimeout(verifyConfirmation, 100);
+                return;
+            }
+
+            try {
+                // Attendre un court instant pour que le SDK Supabase gère l'analyse du hash d'URL
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const { data: { session }, error } = await supabase.auth.getSession();
+
+                if (error) {
+                    throw error;
+                }
+
+                if (session && session.user) {
+                    showSuccess(session.user);
+                } else {
+                    // Si aucune session n'est active, vérifier si l'URL contient une erreur d'auth
+                    const params = new URLSearchParams(window.location.search);
+                    const errorDesc = params.get('error_description');
+                    if (errorDesc) {
+                        throw new Error(errorDesc);
+                    } else {
+                        throw new Error("Aucun jeton de session actif n'a été trouvé. Veuillez vous connecter manuellement.");
+                    }
+                }
+            } catch (err) {
+                console.error("Erreur de confirmation :", err);
+                showError(err.message || "Une erreur est survenue lors de la vérification de votre compte.");
+            }
+        }
+
+        function showSuccess(user) {
+            const iconContainer = document.getElementById('status-icon-container');
+            const icon = document.getElementById('status-icon');
+            const title = document.getElementById('status-title');
+            const desc = document.getElementById('status-desc');
+            const progressBar = document.getElementById('progress-bar');
+            const progressBarContainer = document.getElementById('progress-bar-container');
+            const actionBtn = document.getElementById('action-btn');
+            const btnText = document.getElementById('btn-text');
+
+            // Mettre à jour l'icône de succès
+            iconContainer.className = "w-20 h-20 bg-neonGreen/10 border border-neonGreen/30 rounded-full flex items-center justify-center mx-auto text-3xl text-neonGreen animate-bounce";
+            icon.className = "fa-solid fa-circle-check";
+
+            // Mettre à jour les textes
+            title.textContent = "Adresse E-mail confirmée !";
+            title.classList.add('neon-text-glow');
+            const name = user.user_metadata?.full_name ? `, ${user.user_metadata.full_name.split(' ')[0]}` : '';
+            desc.innerHTML = `Félicitations${name} ! Votre compte Veltrix Premium est désormais entièrement vérifié et activé. <strong class="text-white">Vos 50 Crédits offerts ont été ajoutés à votre solde !</strong>`;
+
+            // Remplir la barre de progrès et la masquer proprement
+            progressBar.style.width = "100%";
+            progressBar.classList.remove('animate-pulse');
+            setTimeout(() => {
+                progressBarContainer.classList.add('hidden');
+            }, 300);
+
+            // Afficher le bouton de redirection vers le dashboard
+            actionBtn.classList.remove('hidden');
+            btnText.textContent = "ACCÉDER AU DASHBOARD PREMIUM";
+            actionTarget = 'dashboard';
+
+            showToast("Compte vérifié avec succès !");
+
+            // Redirection automatique après 3.5 secondes
+            setTimeout(() => {
+                window.location.href = 'veltrix_premium_dashboard (1).html';
+            }, 3500);
+        }
+
+        function showError(message) {
+            const iconContainer = document.getElementById('status-icon-container');
+            const icon = document.getElementById('status-icon');
+            const title = document.getElementById('status-title');
+            const desc = document.getElementById('status-desc');
+            const progressBarContainer = document.getElementById('progress-bar-container');
+            const actionBtn = document.getElementById('action-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+
+            // Mettre à jour l'icône d'erreur
+            iconContainer.className = "w-20 h-20 bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center mx-auto text-3xl text-red-500";
+            icon.className = "fa-solid fa-circle-xmark";
+
+            // Mettre à jour les textes
+            title.textContent = "Échec de la confirmation";
+            desc.textContent = message;
+
+            // Masquer la barre de progrès
+            progressBarContainer.classList.add('hidden');
+
+            // Afficher le bouton d'action vers la page de connexion
+            actionBtn.classList.remove('hidden');
+            actionBtn.className = "w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 mt-4 cursor-pointer";
+            btnText.textContent = "RETOURNER À LA PAGE DE CONNEXION";
+            btnIcon.className = "fa-solid fa-arrow-left-to-bracket";
+            actionTarget = 'signin';
+
+            showToast(message, "error");
+        }
+
+        window.handleAction = function() {
+            if (actionTarget === 'dashboard') {
+                window.location.href = 'veltrix_premium_dashboard (1).html';
+            } else {
+                window.location.href = 'veltrix_premium_sign_in.html';
+            }
+        };
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "p-4 rounded-xl text-xs text-white flex items-center gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.5)] transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto min-w-[280px]";
+            
+            if (type === "success") {
+                toast.classList.add('bg-darkCard', 'border', 'border-neonGreen/40');
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-neonGreen text-md"></i> <span>${message}</span>`;
+            } else {
+                toast.classList.add('bg-darkCard', 'border', 'border-red-500/40');
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 text-md"></i> <span>${message}</span>`;
+            }
+
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-2px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Démarrage de la vérification au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            verifyConfirmation();
+        });
+    })();
+    </script>
+</body>
+</html>

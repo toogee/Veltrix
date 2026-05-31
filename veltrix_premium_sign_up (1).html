@@ -639,16 +639,31 @@
             button.disabled = true;
             button.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Traitement...`;
 
+            // Déterminer l'URL de redirection dynamique pour la confirmation d'e-mail
+            let redirectUrl = "";
+            if (window.location.origin && window.location.origin !== "null" && window.location.protocol.startsWith("http")) {
+                const currentPath = window.location.pathname;
+                const pathDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                redirectUrl = window.location.origin + pathDir + "/veltrix_confirm_email.html";
+                console.log("URL de redirection Supabase configurée :", redirectUrl);
+            }
+
+            const signUpOptions = {
+                data: {
+                    full_name: `${firstName} ${lastName}`,
+                    interest: document.getElementById('interest-select').value
+                }
+            };
+
+            if (redirectUrl) {
+                signUpOptions.emailRedirectTo = redirectUrl;
+            }
+
             try {
                 supabase.auth.signUp({
                     email: email,
                     password: password,
-                    options: {
-                        data: {
-                            full_name: `${firstName} ${lastName}`,
-                            interest: document.getElementById('interest-select').value
-                        }
-                    }
+                    options: signUpOptions
                 }).then(({ data, error }) => {
                     button.disabled = false;
                     button.innerHTML = originalBtnContent;
