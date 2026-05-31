@@ -342,6 +342,50 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
+        // =========================================================================
+        // SUPABASE STANDALONE CLIENT & MODAL INTEGRATION (Bypasses all file:/// restrictions)
+        // =========================================================================
+        const SUPABASE_URL = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
+        let supabase = null;
+        let supabaseAnonKey = localStorage.getItem('veltrix_supabase_anon_key') || "";
+
+        if (supabaseAnonKey === "undefined" || supabaseAnonKey === "null" || supabaseAnonKey === "[object Object]") {
+            localStorage.removeItem('veltrix_supabase_anon_key');
+            supabaseAnonKey = "";
+        }
+
+        // Fonction d'initialisation du client Supabase
+        function initSupabaseClientStandalone() {
+            if (typeof window.supabase === 'undefined') {
+                console.warn("Le SDK Supabase n'est pas encore chargé.");
+                return false;
+            }
+            
+            if (!supabaseAnonKey) {
+                window.injectSupabaseKeyModal();
+                return false;
+            }
+
+            try {
+                if (supabaseAnonKey.length < 20) {
+                    throw new Error("Clé Anon trop courte.");
+                }
+                supabase = window.supabase.createClient(SUPABASE_URL, supabaseAnonKey);
+                if (!supabase || !supabase.auth) {
+                    throw new Error("Instance incomplete.");
+                }
+                console.log("Client local Supabase connecté avec succès !");
+                return true;
+            } catch (error) {
+                console.error("Erreur connexion client :", error);
+                localStorage.removeItem('veltrix_supabase_anon_key');
+                supabaseAnonKey = "";
+                supabase = null;
+                window.injectSupabaseKeyModal();
+                return false;
+            }
+        }
+
         // Modal de configuration de la clé Supabase (Fallback autonome et incassable)
         window.injectSupabaseKeyModal = function() {
             if (document.getElementById('supabase-key-modal')) return;
@@ -400,15 +444,30 @@
             }
 
             localStorage.setItem('veltrix_supabase_anon_key', key);
+            supabaseAnonKey = key;
             
-            const modal = document.getElementById('supabase-key-modal');
-            if (modal) modal.remove();
-            
-            showToast("Clé Supabase enregistrée. Rechargement...");
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+            const success = initSupabaseClientStandalone();
+            if (success) {
+                const modal = document.getElementById('supabase-key-modal');
+                if (modal) modal.remove();
+                showToast("Clé Supabase enregistrée. Chargement...");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showToast("Erreur d'initialisation. Assurez-vous que la clé est correcte !", "error");
+            }
         };
+
+        // Démarrage automatique
+        window.addEventListener('DOMContentLoaded', () => {
+            const checkInterval = setInterval(() => {
+                if (typeof window.supabase !== 'undefined') {
+                    clearInterval(checkInterval);
+                    initSupabaseClientStandalone();
+                }
+            }, 100);
+        });
 
         // Fonction pour vérifier et afficher la force du mot de passe
         function checkPasswordStrength(password) {
