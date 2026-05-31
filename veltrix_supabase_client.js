@@ -60,6 +60,8 @@ function injectSupabaseKeyModal() {
     // Si le modal est déjà là, on ne fait rien
     if (document.getElementById('supabase-key-modal')) return;
 
+    const currentVal = localStorage.getItem('veltrix_supabase_anon_key') || "";
+
     const modal = document.createElement('div');
     modal.id = "supabase-key-modal";
     modal.className = "fixed inset-0 bg-darkBg/90 backdrop-blur-md flex items-center justify-center z-[9999] p-4";
@@ -79,7 +81,7 @@ function injectSupabaseKeyModal() {
             <div class="space-y-3">
                 <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
                     <i class="fa-solid fa-key text-slate-500 text-xs"></i>
-                    <input id="supabase-key-input" type="password" placeholder="Entrez votre clé Anon Supabase..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                    <input id="supabase-key-input" type="password" value="${currentVal}" placeholder="Entrez votre clé Anon Supabase..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
                 </div>
                 <a href="https://supabase.com/dashboard" target="_blank" class="text-[10px] text-neonGreen hover:underline block font-semibold text-right">
                     Où puis-je trouver cette clé ? <i class="fa-solid fa-up-right-from-square text-[8px]"></i>
@@ -140,3 +142,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }, 100);
 });
+
+// Exposition des fonctions pour un contrôle manuel sur toutes les pages
+window.injectSupabaseKeyModal = injectSupabaseKeyModal;
+window.initSupabaseClient = initSupabaseClient;
