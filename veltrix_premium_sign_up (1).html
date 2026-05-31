@@ -307,35 +307,35 @@
     <!-- SUCCESS REGISTRATION MODAL -->
     <div id="success-modal" class="fixed inset-0 bg-darkBg/95 backdrop-blur-md z-50 flex items-center justify-center p-6 hidden">
         <div class="bg-darkCard border border-neonGreen/30 p-8 rounded-3xl max-w-md w-full text-center space-y-6 shadow-[0_0_50px_rgba(204,255,0,0.2)] transform scale-95 opacity-0 transition-all duration-300" id="success-modal-card">
-            <!-- Icone de succès animée -->
+            <!-- Icone de mail envoyée animée -->
             <div class="w-20 h-20 bg-neonGreen/10 border border-neonGreen/30 rounded-full flex items-center justify-center mx-auto text-3xl text-neonGreen animate-bounce">
-                <i class="fa-solid fa-circle-check"></i>
+                <i class="fa-solid fa-paper-plane"></i>
             </div>
             
             <div class="space-y-2">
-                <h3 class="font-display font-bold text-2xl text-white">Bienvenue sur Veltrix !</h3>
-                <p id="success-welcome-message" class="text-xs text-slate-400">Félicitations Jean, votre compte a été créé avec succès.</p>
+                <h3 class="font-display font-bold text-2xl text-white">📧 Confirmation Requise !</h3>
+                <p id="success-welcome-message" class="text-xs text-slate-400">Félicitations Jean, votre pré-inscription a été enregistrée.</p>
             </div>
 
-            <!-- Boîte de crédit gagné -->
+            <!-- Boîte de crédit en attente -->
             <div class="p-4 rounded-2xl bg-neonGreenDim border border-neonGreen/20 flex items-center justify-between">
                 <div class="text-left">
-                    <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Solde initial</span>
-                    <span class="text-xl font-bold text-white font-display">50 Crédits</span>
+                    <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Cadeau de bienvenue</span>
+                    <span class="text-xl font-bold text-white font-display">+50 Crédits</span>
                 </div>
                 <div class="text-xs text-neonGreen font-semibold px-2.5 py-1 bg-neonGreen/10 border border-neonGreen/20 rounded-lg">
-                    CADEAU ACCORDÉ
+                    EN ATTENTE
                 </div>
             </div>
 
-            <p class="text-[11px] text-slate-500 leading-relaxed">
-                Vous êtes désormais prêt à faire défiler nos Entels et à lancer vos propres sessions de débats et de podcasts de vêt.
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+                Un e-mail de confirmation vient de vous être envoyé. Veuillez **cliquer sur le lien dans le message** pour activer définitivement votre compte et créditer vos crédits offerts.
             </p>
 
-            <!-- Accéder au Dashboard Button -->
-            <button onclick="goToDashboard()" class="w-full py-4 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-105 transition-all flex items-center justify-center gap-2">
-                <span>DÉCOUVRIR LE DASHBOARD</span>
-                <i class="fa-solid fa-chevron-right"></i>
+            <!-- Accéder au Sign In Button -->
+            <button onclick="goToSignIn()" class="w-full py-4 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-105 transition-all flex items-center justify-center gap-2">
+                <span>SE CONNECTER À MON COMPTE</span>
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
             </button>
         </div>
     </div>
@@ -700,13 +700,12 @@
             }
         }
 
-        // Redirection simulée vers le Dashboard
-        function goToDashboard() {
-            showToast("Redirection vers la console d'analyse...");
+        // Redirection vers le portail de connexion
+        function goToSignIn() {
+            showToast("Redirection vers le portail de connexion...");
             setTimeout(() => {
-                // Redirection fictive vers le fichier dashboard.html déjà présent
-                window.location.href = 'veltrix_premium_dashboard (1).html';
-            }, 1200);
+                window.location.href = 'veltrix_premium_sign_in.html';
+            }, 1000);
         }
 
         // --- CONTROLLER DU MENU DÉROULANT PERSONNALISÉ (SELECT CUSTOM) ---
@@ -762,7 +761,7 @@
         window.checkPasswordStrength = checkPasswordStrength;
         window.showToast = showToast;
         window.handleSignUp = handleSignUp;
-        window.goToDashboard = goToDashboard;
+        window.goToSignIn = goToSignIn;
         window.toggleCustomSelect = toggleCustomSelect;
         window.selectCustomOption = selectCustomOption;
     })();

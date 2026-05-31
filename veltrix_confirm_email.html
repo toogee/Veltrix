@@ -163,16 +163,18 @@
                 progressBarContainer.classList.add('hidden');
             }, 300);
 
-            // Afficher le bouton de redirection vers le dashboard
+            // Afficher le bouton de redirection vers la page de connexion (Sign In)
             actionBtn.classList.remove('hidden');
-            btnText.textContent = "ACCÉDER AU DASHBOARD PREMIUM";
-            actionTarget = 'dashboard';
+            btnText.textContent = "SE CONNECTER À MON COMPTE";
+            const btnIcon = document.getElementById('btn-icon');
+            if (btnIcon) btnIcon.className = "fa-solid fa-arrow-right-to-bracket";
+            actionTarget = 'signin';
 
             showToast("Compte vérifié avec succès !");
 
-            // Redirection automatique après 3.5 secondes
+            // Redirection automatique vers la page de connexion après 3.5 secondes
             setTimeout(() => {
-                window.location.href = 'veltrix_premium_dashboard (1).html';
+                window.location.href = 'veltrix_premium_sign_in.html';
             }, 3500);
         }
 
