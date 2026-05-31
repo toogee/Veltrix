@@ -104,7 +104,8 @@
         let actionTarget = 'dashboard';
 
         async function verifyConfirmation() {
-            if (!supabase) {
+            const supabaseInstance = window.supabaseClient;
+            if (!supabaseInstance) {
                 setTimeout(verifyConfirmation, 100);
                 return;
             }
@@ -113,7 +114,7 @@
                 // Attendre un court instant pour que le SDK Supabase gère l'analyse du hash d'URL
                 await new Promise(resolve => setTimeout(resolve, 1500));
 
-                const { data: { session }, error } = await supabase.auth.getSession();
+                const { data: { session }, error } = await supabaseInstance.auth.getSession();
 
                 if (error) {
                     throw error;
