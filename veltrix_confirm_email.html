@@ -196,7 +196,12 @@
             const modal = document.getElementById('supabase-key-modal');
             if (modal) modal.remove();
             
-            window.location.reload();
+            // Relancer directement la vérification sans recharger pour préserver le hash d'URL
+            const desc = document.getElementById('status-desc');
+            if (desc) {
+                desc.textContent = "Configuration enregistrée ! Nous vérifions votre lien de confirmation...";
+            }
+            verifyConfirmation();
         };
 
         async function verifyConfirmation() {

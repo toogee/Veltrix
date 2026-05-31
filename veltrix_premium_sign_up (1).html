@@ -350,7 +350,6 @@
                 try {
                     return localStorage.getItem(key);
                 } catch (e) {
-                    console.warn("localStorage non accessible en local :", e);
                     return window[`__mem_${key}`] || "";
                 }
             },
@@ -358,7 +357,6 @@
                 try {
                     localStorage.setItem(key, value);
                 } catch (e) {
-                    console.warn("localStorage non accessible en local :", e);
                     window[`__mem_${key}`] = value;
                 }
             },
@@ -366,11 +364,20 @@
                 try {
                     localStorage.removeItem(key);
                 } catch (e) {
-                    console.warn("localStorage non accessible en local :", e);
                     delete window[`__mem_${key}`];
                 }
             }
         };
+
+        // AUTO-DÉTECTION ET EXTRACTION DEPUIS L'URL (Fallback ultime pour file:///)
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const urlParam = params.get('sb_url') || hashParams.get('sb_url');
+            const keyParam = params.get('sb_key') || hashParams.get('sb_key');
+            if (urlParam) safeStorage.setItem('veltrix_supabase_url', urlParam);
+            if (keyParam) safeStorage.setItem('veltrix_supabase_anon_key', keyParam);
+        })();
 
         // =========================================================================
         // SUPABASE STANDALONE CLIENT & MODAL INTEGRATION (Bypasses all file:/// restrictions)

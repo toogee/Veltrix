@@ -4,13 +4,22 @@
  * Il dispose d'un système intelligent demandant la clé publique Anon directement dans l'interface si elle n'est pas encore enregistrée.
  */
 
+function isLocalStorageWorking() {
+    try {
+        localStorage.setItem('__test_storage', '1');
+        localStorage.removeItem('__test_storage');
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 // Wrappers de stockage sécurisés contre les restrictions du protocole local file:///
 const safeStorage = {
     getItem(key) {
         try {
             return localStorage.getItem(key);
         } catch (e) {
-            console.warn("localStorage non accessible en local :", e);
             return window[`__mem_${key}`] || "";
         }
     },
@@ -18,7 +27,6 @@ const safeStorage = {
         try {
             localStorage.setItem(key, value);
         } catch (e) {
-            console.warn("localStorage non accessible en local :", e);
             window[`__mem_${key}`] = value;
         }
     },
@@ -26,11 +34,20 @@ const safeStorage = {
         try {
             localStorage.removeItem(key);
         } catch (e) {
-            console.warn("localStorage non accessible en local :", e);
             delete window[`__mem_${key}`];
         }
     }
 };
+
+// AUTO-DÉTECTION ET EXTRACTION DEPUIS L'URL (Fallback ultime pour file:///)
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const urlParam = params.get('sb_url') || hashParams.get('sb_url');
+    const keyParam = params.get('sb_key') || hashParams.get('sb_key');
+    if (urlParam) safeStorage.setItem('veltrix_supabase_url', urlParam);
+    if (keyParam) safeStorage.setItem('veltrix_supabase_anon_key', keyParam);
+})();
 
 let SUPABASE_URL = safeStorage.getItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
 
@@ -190,8 +207,15 @@ window.saveSupabaseKey = function() {
         const modal = document.getElementById('supabase-key-modal');
         if (modal) modal.remove();
         
-        // Rafraîchit la page automatiquement pour charger les données depuis Supabase
-        window.location.reload();
+        // Si localStorage est bloqué, on recharge en passant les clés dans l'URL pour ne pas les perdre
+        if (!isLocalStorageWorking()) {
+            const separator = window.location.search ? '&' : '?';
+            const cleanSearch = window.location.search.replace(/[?&]sb_url=[^&]*/g, '').replace(/[?&]sb_key=[^&]*/g, '');
+            const separatorCorrected = (cleanSearch ? '&' : '?');
+            window.location.href = window.location.pathname + cleanSearch + separatorCorrected + `sb_url=${encodeURIComponent(url)}&sb_key=${encodeURIComponent(key)}` + window.location.hash;
+        } else {
+            window.location.reload();
+        }
     } else {
         alert("Erreur d'initialisation. Assurez-vous que l'URL et la clé sont correctes !");
     }
@@ -206,6 +230,21 @@ window.addEventListener('DOMContentLoaded', () => {
             initSupabaseClient();
         }
     }, 100);
+
+    // Auto-propagation des clés dans tous les liens internes pour le fallback file:///
+    if (!isLocalStorageWorking()) {
+        const url = safeStorage.getItem('veltrix_supabase_url');
+        const key = safeStorage.getItem('veltrix_supabase_anon_key');
+        if (url && key) {
+            document.querySelectorAll('a').forEach(a => {
+                const href = a.getAttribute('href');
+                if (href && href.endsWith('.html') && !href.startsWith('http') && !href.startsWith('//')) {
+                    const separator = href.includes('?') ? '&' : '?';
+                    a.setAttribute('href', href + separator + `sb_url=${encodeURIComponent(url)}&sb_key=${encodeURIComponent(key)}`);
+                }
+            });
+        }
+    }
 });
 
 // Exposition des fonctions pour un contrôle manuel sur toutes les pages
