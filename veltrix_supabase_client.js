@@ -4,7 +4,7 @@
  * Il dispose d'un système intelligent demandant la clé publique Anon directement dans l'interface si elle n'est pas encore enregistrée.
  */
 
-const SUPABASE_URL = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
+let SUPABASE_URL = safeStorage.getItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
 
 // Wrappers de stockage sécurisés contre les restrictions du protocole local file:///
 const safeStorage = {
@@ -88,6 +88,7 @@ function injectSupabaseKeyModal() {
     // Si le modal est déjà là, on ne fait rien
     if (document.getElementById('supabase-key-modal')) return;
 
+    const currentUrl = safeStorage.getItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
     const currentVal = safeStorage.getItem('veltrix_supabase_anon_key') || "";
 
     const modal = document.createElement('div');
@@ -102,17 +103,29 @@ function injectSupabaseKeyModal() {
             <div class="space-y-1.5">
                 <h3 class="font-display font-bold text-lg text-white">Connexion Veltrix & Supabase</h3>
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    Pour connecter la création de compte, la connexion et les soldes de vos Crédits à Supabase, veuillez saisir la **Clé Publique Anon** de votre projet ci-dessous.
+                    Pour connecter la création de compte, la connexion et les soldes de vos Crédits à Supabase, veuillez saisir l'**URL du Projet** et la **Clé Publique Anon** de votre projet ci-dessous.
                 </p>
             </div>
             
-            <div class="space-y-3">
-                <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
-                    <i class="fa-solid fa-key text-slate-500 text-xs"></i>
-                    <input id="supabase-key-input" type="password" value="${currentVal}" placeholder="Entrez votre clé Anon Supabase..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+            <div class="space-y-3 text-left">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">URL du Projet Supabase</label>
+                    <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
+                        <i class="fa-solid fa-link text-slate-500 text-xs"></i>
+                        <input id="supabase-url-input" type="text" value="${currentUrl}" placeholder="https://xxxx.supabase.co" class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                    </div>
                 </div>
-                <a href="https://supabase.com/dashboard" target="_blank" class="text-[10px] text-neonGreen hover:underline block font-semibold text-right">
-                    Où puis-je trouver cette clé ? <i class="fa-solid fa-up-right-from-square text-[8px]"></i>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clé Publique Anon</label>
+                    <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
+                        <i class="fa-solid fa-key text-slate-500 text-xs"></i>
+                        <input id="supabase-key-input" type="password" value="${currentVal}" placeholder="Entrez votre clé Anon Supabase..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
+                    </div>
+                </div>
+                
+                <a href="https://supabase.com/dashboard" target="_blank" class="text-[10px] text-neonGreen hover:underline block font-semibold text-right pt-1">
+                    Où puis-je trouver ces informations ? <i class="fa-solid fa-up-right-from-square text-[8px]"></i>
                 </a>
             </div>
 
@@ -135,15 +148,23 @@ function injectSupabaseKeyModal() {
 
 // Enregistrement de la clé Supabase
 window.saveSupabaseKey = function() {
-    const input = document.getElementById('supabase-key-input');
-    const key = input.value.trim();
+    const urlInput = document.getElementById('supabase-url-input');
+    const keyInput = document.getElementById('supabase-key-input');
+    const url = urlInput ? urlInput.value.trim() : "";
+    const key = keyInput ? keyInput.value.trim() : "";
     
+    if (!url) {
+        alert("Veuillez d'abord entrer l'URL de votre projet Supabase !");
+        return;
+    }
     if (!key) {
         alert("Veuillez d'abord entrer votre clé Anon Supabase !");
         return;
     }
 
+    safeStorage.setItem('veltrix_supabase_url', url);
     safeStorage.setItem('veltrix_supabase_anon_key', key);
+    SUPABASE_URL = url;
     supabaseAnonKey = key;
     
     // Initialisation du client
@@ -156,7 +177,7 @@ window.saveSupabaseKey = function() {
         // Rafraîchit la page automatiquement pour charger les données depuis Supabase
         window.location.reload();
     } else {
-        alert("Erreur d'initialisation. Assurez-vous que la clé est correcte !");
+        alert("Erreur d'initialisation. Assurez-vous que l'URL et la clé sont correctes !");
     }
 };
 
