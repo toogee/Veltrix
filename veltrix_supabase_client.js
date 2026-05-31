@@ -6,11 +6,39 @@
 
 const SUPABASE_URL = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
 
-// Chargement de la clé Anon depuis le localStorage
-let supabaseAnonKey = localStorage.getItem('veltrix_supabase_anon_key') || "";
+// Wrappers de stockage sécurisés contre les restrictions du protocole local file:///
+const safeStorage = {
+    getItem(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            console.warn("localStorage non accessible en local :", e);
+            return window[`__mem_${key}`] || "";
+        }
+    },
+    setItem(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            console.warn("localStorage non accessible en local :", e);
+            window[`__mem_${key}`] = value;
+        }
+    },
+    removeItem(key) {
+        try {
+            localStorage.removeItem(key);
+        } catch (e) {
+            console.warn("localStorage non accessible en local :", e);
+            delete window[`__mem_${key}`];
+        }
+    }
+};
+
+// Chargement de la clé Anon depuis le localStorage sécurisé
+let supabaseAnonKey = safeStorage.getItem('veltrix_supabase_anon_key') || "";
 // Nettoyage automatique des valeurs invalides de localStorage
 if (supabaseAnonKey === "undefined" || supabaseAnonKey === "null" || supabaseAnonKey === "[object Object]") {
-    localStorage.removeItem('veltrix_supabase_anon_key');
+    safeStorage.removeItem('veltrix_supabase_anon_key');
     supabaseAnonKey = "";
 }
 let supabase = null;
@@ -46,7 +74,7 @@ function initSupabaseClient() {
         console.error("Erreur d'initialisation de Supabase :", error);
         
         // Réinitialisation automatique du localStorage pour forcer la saisie d'une nouvelle clé
-        localStorage.removeItem('veltrix_supabase_anon_key');
+        safeStorage.removeItem('veltrix_supabase_anon_key');
         supabaseAnonKey = "";
         supabase = null;
         
@@ -60,7 +88,7 @@ function injectSupabaseKeyModal() {
     // Si le modal est déjà là, on ne fait rien
     if (document.getElementById('supabase-key-modal')) return;
 
-    const currentVal = localStorage.getItem('veltrix_supabase_anon_key') || "";
+    const currentVal = safeStorage.getItem('veltrix_supabase_anon_key') || "";
 
     const modal = document.createElement('div');
     modal.id = "supabase-key-modal";
@@ -89,7 +117,7 @@ function injectSupabaseKeyModal() {
             </div>
 
             <div class="flex gap-3">
-                <button onclick="saveSupabaseKey()" class="flex-1 py-3 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform shadow-[0_0_15px_rgba(204,255,0,0.1)]">
+                <button onclick="saveSupabaseKey()" class="flex-1 py-3 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform shadow-[0_0_15px_rgba(204,255,0,0.15)]">
                     CONNECTER LA BASE DE DONNÉES
                 </button>
             </div>
@@ -115,7 +143,7 @@ window.saveSupabaseKey = function() {
         return;
     }
 
-    localStorage.setItem('veltrix_supabase_anon_key', key);
+    safeStorage.setItem('veltrix_supabase_anon_key', key);
     supabaseAnonKey = key;
     
     // Initialisation du client
