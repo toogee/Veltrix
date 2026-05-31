@@ -482,6 +482,12 @@
 
             if (profileError || !profile) {
                 console.error("Erreur lors du chargement du profil :", profileError);
+                
+                // Détecter si la table profiles est manquante dans la base de données
+                if (profileError && (profileError.code === '42P01' || (profileError.message && profileError.message.includes('relation "profiles" does not exist')))) {
+                    showToast("⚠️ La table 'profiles' est manquante. Veuillez exécuter le script veltrix_supabase_schema.sql dans votre dashboard Supabase !", "error");
+                }
+
                 const meta = activeUser.user_metadata || {};
                 activeProfile = {
                     id: activeUser.id,
@@ -539,10 +545,8 @@
             document.getElementById('trans-credit-balance').textContent = `${activeProfile.credits} Crédits`;
         }
 
-        // Chargement des données au démarrage
-        window.onload = function() {
-            checkUserSession();
-        };
+        // Chargement automatique immédiat sans attendre les images/assets externes
+        checkUserSession();
 
         // Commutation entre les onglets
         function switchTab(tabId) {
