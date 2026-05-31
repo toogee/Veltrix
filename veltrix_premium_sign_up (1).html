@@ -342,15 +342,43 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
+        // Wrappers de stockage sécurisés contre les restrictions du protocole local file:///
+        const safeStorage = {
+            getItem(key) {
+                try {
+                    return localStorage.getItem(key);
+                } catch (e) {
+                    console.warn("localStorage non accessible en local :", e);
+                    return window[`__mem_${key}`] || "";
+                }
+            },
+            setItem(key, value) {
+                try {
+                    localStorage.setItem(key, value);
+                } catch (e) {
+                    console.warn("localStorage non accessible en local :", e);
+                    window[`__mem_${key}`] = value;
+                }
+            },
+            removeItem(key) {
+                try {
+                    localStorage.removeItem(key);
+                } catch (e) {
+                    console.warn("localStorage non accessible en local :", e);
+                    delete window[`__mem_${key}`];
+                }
+            }
+        };
+
         // =========================================================================
         // SUPABASE STANDALONE CLIENT & MODAL INTEGRATION (Bypasses all file:/// restrictions)
         // =========================================================================
         const SUPABASE_URL = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
         let supabase = null;
-        let supabaseAnonKey = localStorage.getItem('veltrix_supabase_anon_key') || "";
+        let supabaseAnonKey = safeStorage.getItem('veltrix_supabase_anon_key') || "";
 
         if (supabaseAnonKey === "undefined" || supabaseAnonKey === "null" || supabaseAnonKey === "[object Object]") {
-            localStorage.removeItem('veltrix_supabase_anon_key');
+            safeStorage.removeItem('veltrix_supabase_anon_key');
             supabaseAnonKey = "";
         }
 
@@ -378,7 +406,7 @@
                 return true;
             } catch (error) {
                 console.error("Erreur connexion client :", error);
-                localStorage.removeItem('veltrix_supabase_anon_key');
+                safeStorage.removeItem('veltrix_supabase_anon_key');
                 supabaseAnonKey = "";
                 supabase = null;
                 window.injectSupabaseKeyModal();
@@ -390,7 +418,7 @@
         window.injectSupabaseKeyModal = function() {
             if (document.getElementById('supabase-key-modal')) return;
 
-            const currentVal = localStorage.getItem('veltrix_supabase_anon_key') || "";
+            const currentVal = safeStorage.getItem('veltrix_supabase_anon_key') || "";
 
             const modal = document.createElement('div');
             modal.id = "supabase-key-modal";
@@ -443,7 +471,7 @@
                 return;
             }
 
-            localStorage.setItem('veltrix_supabase_anon_key', key);
+            safeStorage.setItem('veltrix_supabase_anon_key', key);
             supabaseAnonKey = key;
             
             const success = initSupabaseClientStandalone();
