@@ -101,7 +101,9 @@
 
     <script>
     (function() {
-        let actionTarget = 'dashboard';
+        let loadingTimeout = setTimeout(() => {
+            showTimeoutWarning();
+        }, 4000);
 
         async function verifyConfirmation() {
             const supabaseInstance = window.supabaseClient;
@@ -109,6 +111,9 @@
                 setTimeout(verifyConfirmation, 100);
                 return;
             }
+
+            // Client connecté avec succès, on annule le message d'attente
+            clearTimeout(loadingTimeout);
 
             try {
                 // Attendre un court instant pour que le SDK Supabase gère l'analyse du hash d'URL
@@ -209,6 +214,26 @@
             actionTarget = 'signin';
 
             showToast(message, "error");
+        }
+
+        function showTimeoutWarning() {
+            const desc = document.getElementById('status-desc');
+            if (!desc) return;
+            desc.innerHTML = `
+                <div class="space-y-4 mt-4 text-slate-300">
+                    <p class="text-[11px] leading-relaxed">
+                        ⚠️ <strong>Connexion en attente :</strong> Si l'écran reste bloqué, c'est que votre navigateur utilise une version obsolète en cache ou que votre base Supabase n'est pas encore configurée sur ce navigateur spécifique.
+                    </p>
+                    <div class="flex flex-col gap-2 pt-1.5">
+                        <button onclick="window.location.reload(true)" class="py-2.5 px-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] text-white font-semibold transition-colors border border-white/5 flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-rotate"></i> Forcer le rafraîchissement (Vider le cache)
+                        </button>
+                        <button onclick="window.injectSupabaseKeyModal()" class="py-2.5 px-3 bg-neonGreen/10 hover:bg-neonGreen/20 text-neonGreen text-[10px] font-bold rounded-xl border border-neonGreen/20 flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-database"></i> Configurer Supabase sur ce navigateur
+                        </button>
+                    </div>
+                </div>
+            `;
         }
 
         window.handleAction = function() {
