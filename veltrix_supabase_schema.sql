@@ -42,6 +42,7 @@ CREATE TRIGGER on_auth_user_created
 -- Restreindre l'exécution directe de handle_new_user (uniquement exécuté par le système de trigger)
 REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM public;
 REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM anon;
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM authenticated;
 
 -- 3. GESTION DE LA SÉCURITÉ DE NIVEAU LIGNE (ROW LEVEL SECURITY - RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -59,6 +60,12 @@ CREATE POLICY "profiles_update_policy" ON public.profiles
 CREATE OR REPLACE FUNCTION public.deduct_user_credits(user_id UUID, amount INT)
 RETURNS VOID AS $$
 BEGIN
+    -- DOUBLE SÉCURITÉ : S'assurer que l'utilisateur connecté ne peut débiter QUE son propre compte
+    -- auth.uid() renvoie l'ID de la session active de l'utilisateur connecté depuis le site.
+    IF auth.uid() IS NOT NULL AND user_id <> auth.uid() THEN
+        RAISE EXCEPTION 'Action non autorisée. Vous ne pouvez débiter que vos propres crédits.';
+    END IF;
+
     UPDATE public.profiles
     SET credits = credits - amount
     WHERE id = user_id AND credits >= amount;
@@ -74,4 +81,5 @@ REVOKE EXECUTE ON FUNCTION public.deduct_user_credits(UUID, INT) FROM public;
 REVOKE EXECUTE ON FUNCTION public.deduct_user_credits(UUID, INT) FROM anon;
 GRANT EXECUTE ON FUNCTION public.deduct_user_credits(UUID, INT) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.deduct_user_credits(UUID, INT) TO service_role;
+
 
