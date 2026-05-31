@@ -31,13 +31,17 @@ BEGIN
     );
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Lancer le trigger après l'inscription de chaque nouvel utilisateur
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Restreindre l'exécution directe de handle_new_user (uniquement exécuté par le système de trigger)
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM public;
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM anon;
 
 -- 3. GESTION DE LA SÉCURITÉ DE NIVEAU LIGNE (ROW LEVEL SECURITY - RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -63,4 +67,11 @@ BEGIN
         RAISE EXCEPTION 'Solde de crédits insuffisant ou utilisateur inexistant.';
     END IF;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+-- Restreindre l'exécution de la déduction de crédits aux seuls utilisateurs connectés et au service_role
+REVOKE EXECUTE ON FUNCTION public.deduct_user_credits(UUID, INT) FROM public;
+REVOKE EXECUTE ON FUNCTION public.deduct_user_credits(UUID, INT) FROM anon;
+GRANT EXECUTE ON FUNCTION public.deduct_user_credits(UUID, INT) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.deduct_user_credits(UUID, INT) TO service_role;
+
