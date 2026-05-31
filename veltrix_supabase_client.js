@@ -124,6 +124,10 @@ function injectSupabaseKeyModal() {
                     </div>
                 </div>
                 
+                <p class="text-[10px] text-amber-400 leading-relaxed bg-amber-400/5 p-2.5 rounded-lg border border-amber-400/10">
+                    ⚠️ <strong>Attention Clé :</strong> Veuillez utiliser la clé publique **<code>anon</code> / <code>public</code>** (qui est un très long jeton commençant par <code>eyJ...</code>). N'utilisez pas la clé <em>service_role</em> ni le <em>JWT Secret</em>.
+                </p>
+                
                 <a href="https://supabase.com/dashboard" target="_blank" class="text-[10px] text-neonGreen hover:underline block font-semibold text-right pt-1">
                     Où puis-je trouver ces informations ? <i class="fa-solid fa-up-right-from-square text-[8px]"></i>
                 </a>
@@ -133,6 +137,14 @@ function injectSupabaseKeyModal() {
                 <button onclick="saveSupabaseKey()" class="flex-1 py-3 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform shadow-[0_0_15px_rgba(204,255,0,0.15)]">
                     CONNECTER LA BASE DE DONNÉES
                 </button>
+            </div>
+            
+            <div class="border-t border-white/5 pt-4 text-left space-y-1.5">
+                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Configuration Actuelle Active</span>
+                <div class="text-[10px] text-slate-400 space-y-1 bg-white/5 p-2 rounded-lg border border-white/5 font-mono">
+                    <div class="truncate">URL : <span class="text-white">${SUPABASE_URL || "Non configuré"}</span></div>
+                    <div class="truncate">Clé : <span class="text-white">${supabaseAnonKey ? (supabaseAnonKey.substring(0, 15) + "...") : "Non configuré"}</span></div>
+                </div>
             </div>
         </div>
     `;
