@@ -665,6 +665,15 @@
 
     <!-- LOGIQUE LOGICIELLE ET BASE DE DONNÉES MULTILINGUE DES ENTELS -->
     <script>
+        let supabase = null;
+        // Synchroniser activement la variable locale avec le client Supabase global
+        const checkSupabaseInstance = setInterval(() => {
+            if (window.supabaseClient) {
+                supabase = window.supabaseClient;
+                clearInterval(checkSupabaseInstance);
+            }
+        }, 50);
+
         // État Global de l'utilisateur
         let userState = {
             credits: 420,
