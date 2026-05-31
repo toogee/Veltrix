@@ -342,6 +342,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
+    (function() {
         // Wrappers de stockage sécurisés contre les restrictions du protocole local file:///
         const safeStorage = {
             getItem(key) {
@@ -708,6 +709,15 @@
                 }, 200);
             }
         });
+
+        // Exposer les fonctions au scope global (window)
+        window.checkPasswordStrength = checkPasswordStrength;
+        window.showToast = showToast;
+        window.handleSignUp = handleSignUp;
+        window.goToDashboard = goToDashboard;
+        window.toggleCustomSelect = toggleCustomSelect;
+        window.selectCustomOption = selectCustomOption;
+    })();
     </script>
 </body>
 </html>

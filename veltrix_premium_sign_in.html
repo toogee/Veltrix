@@ -223,6 +223,7 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
+    (function() {
         // Wrappers de stockage sécurisés contre les restrictions du protocole local file:///
         const safeStorage = {
             getItem(key) {
@@ -490,6 +491,13 @@
 
             showToast(`Un e-mail de réinitialisation a été envoyé à : ${email}`);
         }
+
+        // Exposer les fonctions au scope global (window)
+        window.togglePasswordVisibility = togglePasswordVisibility;
+        window.showToast = showToast;
+        window.handleSignIn = handleSignIn;
+        window.handleForgotPassword = handleForgotPassword;
+    })();
     </script>
 </body>
 </html>
