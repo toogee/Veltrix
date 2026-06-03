@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GetVeltrix - Politique de Confidentialité</title>
+    <meta name="description" content="Politique de Confidentialité de la plateforme GetVeltrix - Protection de vos données d'analyse et d'identité.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090B11',
+                        darkCard: '#111520',
+                        neonGreen: '#CCFF00',
+                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
+                        oliveAccent: '#88B000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .neon-border-glow {
+            border: 1px solid rgba(204, 255, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .neon-border-glow:hover {
+            border-color: rgba(204, 255, 0, 0.8);
+            box-shadow: 0 0 20px rgba(204, 255, 0, 0.15);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans antialiased overflow-x-hidden">
+
+    <!-- EN-TÊTE / NAVIGATION -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-darkBg/80 backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center neon-border-glow">
+                    <i class="fa-solid fa-brain text-neonGreen text-xl group-hover:scale-110 transition-transform"></i>
+                </div>
+                <span class="font-display font-bold text-2xl tracking-wider text-white">GETVELTRIX</span>
+            </a>
+
+            <div class="flex items-center gap-4">
+                <a href="signin" class="text-sm font-semibold hover:text-neonGreen transition-colors">Connexion</a>
+                <a href="signup" class="bg-neonGreen text-darkBg font-display font-bold px-5 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity">
+                    Rejoindre
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN LEGAL CONTAINER -->
+    <main class="relative pt-32 pb-20 px-6 md:px-12 max-w-4xl mx-auto min-h-screen">
+        <!-- Background glows -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-neonGreen/5 blur-[120px] -z-10 pointer-events-none"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-oliveAccent/5 blur-[120px] -z-10 pointer-events-none"></div>
+
+        <article class="bg-darkCard rounded-3xl border border-white/5 p-8 md:p-12 shadow-2xl space-y-8">
+            <div class="space-y-4 border-b border-white/5 pb-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neonGreen/10 border border-neonGreen/20 text-xs font-semibold tracking-wider text-neonGreen uppercase">
+                    <i class="fa-solid fa-user-lock"></i> Pack Juridique GetVeltrix
+                </div>
+                <h1 class="font-display font-bold text-4xl text-white">Politique de Confidentialité</h1>
+                <p class="text-slate-400 text-sm">Date de dernière mise à jour : 30 Mai 2026</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-300 leading-relaxed font-sans">
+                <p>
+                    Chez GetVeltrix, nous prenons la protection de vos données personnelles très au sérieux. Cette Politique de Confidentialité vous explique comment nous collectons, utilisons et protégeons vos informations.
+                </p>
+
+                <!-- Section 1 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">1</span>
+                        Données Collectées
+                    </h3>
+                    <p>
+                        Nous collectons uniquement les informations nécessaires au bon fonctionnement de la plateforme et à la sécurité de votre compte :
+                    </p>
+                    <ul class="list-disc list-inside pl-4 space-y-2 text-slate-400">
+                        <li><strong class="text-white">Informations d'Inscription :</strong> Prénom, nom, adresse e-mail et mot de passe (chiffré).</li>
+                        <li><strong class="text-white">Données d'Usage :</strong> Sujets de débats soumis (prompts), historique des transactions de crédits, choix d'avatars et préférences de langue de débats.</li>
+                        <li><strong class="text-white">Données de Connexion :</strong> Adresse IP, type de navigateur, système d'exploitation et journaux d'activité (logs de diagnostic).</li>
+                    </ul>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">2</span>
+                        Utilisation des Données
+                    </h3>
+                    <p>
+                        Vos informations personnelles sont exclusivement utilisées pour :
+                    </p>
+                    <ul class="list-disc list-inside pl-4 space-y-2 text-slate-400">
+                        <li>Créer, gérer et sécuriser votre compte utilisateur GetVeltrix.</li>
+                        <li>Traiter vos transactions financières et gérer votre solde de crédits de manière sécurisée (via notre passerelle de paiement tierce agréée, Stripe).</li>
+                        <li>Permettre la génération des débats et émissions audio via l'API Google Gemini et ElevenLabs.</li>
+                    </ul>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">3</span>
+                        Partage des Données avec des Tiers (API Google & ElevenLabs)
+                    </h3>
+                    <p>
+                        Pour générer les débats, nous transmettons les sujets de discussion (prompts) à des sous-traitants techniques :
+                    </p>
+                    <ul class="list-disc list-inside pl-4 space-y-2 text-slate-400">
+                        <li><strong class="text-white">Google AI Studio (Gemini) :</strong> Reçoit le prompt anonymisé pour générer les réponses textuelles des Entels.</li>
+                        <li><strong class="text-white">ElevenLabs Inc :</strong> Reçoit le texte des répliques pour générer le flux audio synthétique.</li>
+                        <li><strong class="text-white">Stripe :</strong> Traite les paiements par carte bancaire.</li>
+                    </ul>
+                    <p class="bg-neonGreen/5 border border-neonGreen/20 p-4 rounded-xl text-slate-400">
+                        <strong class="text-neonGreen">Sécurité :</strong> Aucune donnée personnelle d'identification (votre nom ou votre adresse e-mail) n'est partagée avec Google ou ElevenLabs. Vos prompts sont transmis de manière totalement anonyme et chiffrée.
+                    </p>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">4</span>
+                        Sécurité et Local Storage
+                    </h3>
+                    <ul class="space-y-3 text-slate-400">
+                        <li>
+                            <strong class="text-white block mb-1">Banc d'Essai (Test Bench) :</strong> Dans le cadre de notre banc d'essai expérimental, vos clés API personnelles (Gemini et ElevenLabs) sont stockées exclusivement de façon locale dans votre propre navigateur (localStorage). GetVeltrix n'a jamais accès à ces clés et ne les stocke sur aucun serveur externe.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Chiffrement :</strong> Toutes les données échangées entre votre navigateur et nos serveurs de production sont sécurisées par un protocole de chiffrement SSL/TLS de niveau industriel.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section 5 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">5</span>
+                        Vos Droits
+                    </h3>
+                    <p>
+                        Conformément aux lois applicables sur la protection des données (notamment le RGPD), vous disposez d'un droit d'accès, de rectification, de portabilité et de suppression de vos données personnelles.
+                    </p>
+                    <p>
+                        Vous pouvez exercer ces droits à tout moment en modifiant vos informations depuis votre espace <strong class="text-white">Profil Utilisateur</strong> ou en contactant notre équipe de support à l'adresse suivante : <a href="mailto:support@veltrix.com" class="text-neonGreen hover:underline">support@veltrix.com</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>&copy; 2026 GetVeltrix Technologies Inc. Tous droits réservés.</p>
+                <div class="flex items-center gap-4">
+                    <a href="terms" class="hover:text-neonGreen transition-colors">Conditions d'Utilisation</a>
+                    <span>&bull;</span>
+                    <a href="/" class="hover:text-neonGreen transition-colors">Accueil</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+</body>
+</html>

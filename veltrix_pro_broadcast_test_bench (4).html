@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veltrix - PRO Broadcast Test Bench</title>
+    <title>GetVeltrix - PRO Broadcast Test Bench</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -68,7 +68,7 @@
                 <i class="fa-solid fa-tower-broadcast text-neonGreen text-md animate-pulse"></i>
             </div>
             <div>
-                <span class="font-display font-bold text-lg tracking-wider text-white">VELTRIX <span class="text-neonGreen text-xs">BROADCAST PRO</span></span>
+                <span class="font-display font-bold text-lg tracking-wider text-white">GETVELTRIX <span class="text-neonGreen text-xs">BROADCAST PRO</span></span>
                 <span class="hidden sm:inline block text-[9px] text-slate-500 uppercase tracking-widest ml-2">Panneau de Test Vocal ElevenLabs</span>
             </div>
         </div>
@@ -666,25 +666,62 @@
             const stabilityValue = parseFloat(document.getElementById('voice-stability-range').value);
             const similarityValue = parseFloat(document.getElementById('voice-similarity-range').value);
 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'xi-api-key': apiKey
-                },
-                body: JSON.stringify({
-                    text: text,
-                    model_id: "eleven_multilingual_v2", // Modèle bilingue recommandé
-                    voice_settings: {
-                        stability: stabilityValue,
-                        similarity_boost: similarityValue
-                    }
-                })
-            });
+            let response;
+            try {
+                response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'xi-api-key': apiKey
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        model_id: "eleven_multilingual_v2", // Modèle bilingue recommandé
+                        voice_settings: {
+                            stability: stabilityValue,
+                            similarity_boost: similarityValue
+                        }
+                    })
+                });
+            } catch (err) {
+                throw new Error("Impossible de se connecter à ElevenLabs.");
+            }
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.detail?.message || "Erreur de l'API ElevenLabs.");
+                const errMsg = errData.detail?.message || "";
+                
+                // Détection de "Voice ID not found" -> Basculer sur voix par défaut (Rachel/Antoni)
+                if (response.status === 404 || errMsg.toLowerCase().includes("voice not found") || errMsg.toLowerCase().includes("was not found")) {
+                    console.warn(`Voice ID ${voiceId} non configuré ou introuvable. Repli sur la voix par défaut.`);
+                    const defaultVoice = voiceId.includes("krono") ? "ErXwobaYiN019PkySvjV" : "21m00Tcm4TlvDq8ikWAM"; // Antoni (Krono) / Rachel (Nexo)
+                    
+                    const fallbackUrl = `https://api.elevenlabs.io/v1/text-to-speech/${defaultVoice}`;
+                    const fallbackResponse = await fetch(fallbackUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'xi-api-key': apiKey
+                        },
+                        body: JSON.stringify({
+                            text: text,
+                            model_id: "eleven_multilingual_v2",
+                            voice_settings: {
+                                stability: stabilityValue,
+                                similarity_boost: similarityValue
+                            }
+                        })
+                    });
+
+                    if (fallbackResponse.ok) {
+                        return await fallbackResponse.arrayBuffer();
+                    } else {
+                        const fallbackErr = await fallbackResponse.json().catch(() => ({}));
+                        throw new Error(fallbackErr.detail?.message || "Erreur ElevenLabs (Voix par défaut).");
+                    }
+                }
+                
+                throw new Error(errMsg || "Erreur de l'API ElevenLabs.");
             }
 
             return await response.arrayBuffer();

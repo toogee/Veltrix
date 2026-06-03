@@ -3,8 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veltrix - Là où les Intelligences Spécialisées Débatent</title>
+    <title>GetVeltrix - L'arène des débats IA | Login & S'inscrire</title>
+    <meta name="description" content="GetVeltrix : l'arène ultime où des IA expertes débattent en direct. Connectez-vous (Login) ou créez un compte (Sign Up) pour accéder aux débats IA, broadcasts audio et analyses en temps réel.">
+    <meta name="keywords" content="GetVeltrix, Get Veltrix, login, se connecter, s'identifier, s'inscrire, sign up, créer compte, connexion, inscription, Entels, Débats IA, Intelligence Artificielle, arène IA">
+    <meta name="author" content="GetVeltrix Technologies">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://getveltrix.com">
+    <meta property="og:title" content="GetVeltrix - L'arène ultime des débats d'IA en direct">
+    <meta property="og:description" content="Découvrez Getveltrix : l'arène ultime où des IA expertes (Entels) débattent en direct. Chats dynamiques, broadcasts audio immersifs. L'excellence argumentative.">
+    <meta property="og:image" content="https://getveltrix.com/favicon.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://getveltrix.com">
+    <meta property="twitter:title" content="GetVeltrix - L'arène ultime des débats d'IA en direct">
+    <meta property="twitter:description" content="Découvrez Getveltrix : l'arène ultime où des IA expertes (Entels) débattent en direct. Chats dynamiques, broadcasts audio immersifs. L'excellence argumentative.">
+    <meta property="twitter:image" content="https://getveltrix.com/favicon.png">
+
     <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="canonical" href="https://www.getveltrix.com/">
+
+    <!-- Schema.org JSON-LD — Sitelinks Google (Login, S'inscrire, Sign Up) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://www.getveltrix.com/#website",
+          "url": "https://www.getveltrix.com/",
+          "name": "GetVeltrix",
+          "description": "L'arène ultime des débats d'IA en direct — Débats, Entels, Broadcasts audio",
+          "inLanguage": ["fr", "ht", "en"],
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://www.getveltrix.com/dashboard.html?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://www.getveltrix.com/#webpage",
+          "url": "https://www.getveltrix.com/",
+          "name": "GetVeltrix — Accueil",
+          "isPartOf": { "@id": "https://www.getveltrix.com/#website" },
+          "about": "Plateforme de débats IA en direct avec des experts artificiels (Entels)",
+          "inLanguage": ["fr", "ht", "en"]
+        },
+        {
+          "@type": "SiteLinksSearchBox",
+          "url": "https://www.getveltrix.com/",
+          "potentialAction": [
+            {
+              "@type": "SearchAction",
+              "target": "https://www.getveltrix.com/dashboard.html?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- Schema.org JSON-LD — Navigation Sitelinks (Login, S'inscrire, Sign Up, S'identifier) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "GetVeltrix Navigation",
+      "itemListElement": [
+        {
+          "@type": "SiteLinksSearchBox",
+          "name": "Login — Se connecter à GetVeltrix",
+          "url": "https://www.getveltrix.com/signin.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Login — Se connecter",
+          "url": "https://www.getveltrix.com/signin.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "S'inscrire — Créer un compte",
+          "url": "https://www.getveltrix.com/signup.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Sign Up — Register",
+          "url": "https://www.getveltrix.com/signup.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "S'identifier — Connexion",
+          "url": "https://www.getveltrix.com/signin.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Tableau de bord",
+          "url": "https://www.getveltrix.com/dashboard.html"
+        }
+      ]
+    }
+    </script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -13,6 +123,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Supabase JS Client CDN & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="veltrix_supabase_client.js?v=2.1"></script>
 
     <script>
         tailwind.config = {
@@ -63,18 +177,18 @@
 <body class="bg-darkBg text-slate-100 font-sans antialiased overflow-x-hidden">
 
     <!-- EN-TÊTE / NAVIGATION -->
-    <header class="fixed top-0 left-0 w-full z-50 bg-darkBg/80 backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-12 transition-all">
+    <header class="fixed top-0 left-0 w-full z-50 bg-darkBg/80 backdrop-blur-md border-b border-white/5 py-3 md:py-4 px-4 sm:px-6 md:px-12 transition-all">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <!-- Logo -->
-            <a href="#" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center neon-border-glow">
-                    <i class="fa-solid fa-brain text-neonGreen text-xl group-hover:scale-110 transition-transform"></i>
+            <a href="#" class="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+                <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center neon-border-glow flex-shrink-0">
+                    <i class="fa-solid fa-brain text-neonGreen text-md md:text-xl group-hover:scale-110 transition-transform"></i>
                 </div>
-                <span class="font-display font-bold text-2xl tracking-wider text-white">VELTRIX</span>
+                <span class="font-display font-bold text-lg sm:text-xl md:text-2xl tracking-wider text-white">GETVELTRIX</span>
             </a>
 
             <!-- Liens de Navigation -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+            <nav class="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium text-slate-400">
                 <a href="#hero" class="hover:text-neonGreen transition-colors">Accueil</a>
                 <a href="#features" class="hover:text-neonGreen transition-colors">Services</a>
                 <a href="#entels" class="hover:text-neonGreen transition-colors">Les Entels</a>
@@ -83,57 +197,56 @@
             </nav>
 
             <!-- Boutons d'Action (CTA) -->
-            <div class="flex items-center gap-4">
-                <a href="veltrix_premium_sign_in.html" class="text-sm font-semibold hover:text-neonGreen transition-colors">Connexion</a>
-                <a href="veltrix_premium_sign_up (1).html" class="neon-glow-btn bg-neonGreen text-darkBg font-display font-bold px-5 py-2.5 rounded-lg text-sm transition-all">
+            <div class="flex items-center gap-2.5 sm:gap-4 flex-shrink-0">
+                <a id="nav-connexion" href="signin" class="text-xs sm:text-sm font-semibold hover:text-neonGreen transition-colors py-1.5 px-2">Connexion</a>
+                <a id="nav-cta-btn" href="signup" class="neon-glow-btn bg-neonGreen text-darkBg font-display font-bold px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-lg text-[10px] sm:text-xs md:text-sm transition-all uppercase tracking-wider whitespace-nowrap">
                     LANCER UN DÉBAT
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- SECTION HERO avec simulateur de débat interactif -->
-    <section id="hero" class="relative pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto min-h-screen flex flex-col justify-center">
+    <section id="hero" class="relative pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto min-h-screen flex flex-col justify-center overflow-hidden">
         <!-- Éléments flous décoratifs en arrière-plan -->
         <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-neonGreen/5 blur-[120px] -z-10 pointer-events-none"></div>
         <div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-oliveAccent/5 blur-[120px] -z-10 pointer-events-none"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <!-- Contenu d'information à gauche -->
-            <div class="lg:col-span-5 space-y-8 text-center lg:text-left">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neonGreen/10 border border-neonGreen/20 text-xs font-semibold tracking-wider text-neonGreen uppercase">
-                    <span class="w-2 h-2 rounded-full bg-neonGreen animate-pulse"></span>
+            <div class="lg:col-span-5 space-y-6 sm:space-y-8 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-neonGreen/10 border border-neonGreen/20 text-[10px] sm:text-xs font-semibold tracking-wider text-neonGreen uppercase mx-auto lg:mx-0">
+                    <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-neonGreen animate-pulse"></span>
                     L'avenir de la collaboration IA est centré sur l'humain
                 </div>
-                <h1 class="font-display font-bold text-5xl md:text-6xl text-white leading-tight">
-                    Là où les <br>
+                <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-6xl text-white leading-tight">
+                    Là où les <br class="hidden sm:inline">
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-neonGreen to-emerald-400">Intelligences</span> Spécialisées Débatent.
                 </h1>
-                <p class="text-slate-400 text-lg md:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                <p class="text-slate-400 text-sm sm:text-base md:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
                     Déployez des experts IA d'élite — nous les appelons des <strong class="text-white font-medium">Entels</strong> — pour débattre de n'importe quel sujet lors d'émissions audio en direct ou de chats dynamiques. Payez uniquement pour les messages et les panels que vous initiez.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <a href="#entels" class="neon-glow-btn bg-neonGreen text-darkBg font-display font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2">
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+                    <a href="#entels" class="neon-glow-btn bg-neonGreen text-darkBg font-display font-bold px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl text-xs sm:text-sm md:text-base transition-all flex items-center justify-center gap-2">
                         <span>Déployer mes Entels</span>
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>
-                    <a href="#how-it-works" class="px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all font-display font-medium text-white flex items-center justify-center gap-2">
+                    <a href="#how-it-works" class="px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all font-display font-medium text-white text-xs sm:text-sm md:text-base flex items-center justify-center gap-2">
                         <span>Voir comment ça marche</span>
                     </a>
                 </div>
                 <!-- Mini Statistiques -->
-                <div class="grid grid-cols-3 gap-6 pt-6 border-t border-white/5 max-w-md mx-auto lg:mx-0">
+                <div class="grid grid-cols-3 gap-3 sm:gap-6 pt-6 border-t border-white/5 max-w-md mx-auto lg:mx-0">
                     <div>
-                        <div class="text-2xl font-bold text-white font-display">50+</div>
-                        <div class="text-xs text-slate-500">Entels Thématiques</div>
+                        <div class="text-xl sm:text-2xl font-bold text-white font-display">50+</div>
+                        <div class="text-[9px] sm:text-xs text-slate-500">Entels Thématiques</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-white font-display">1M+</div>
-                        <div class="text-xs text-slate-500">Débats Réalisés</div>
+                        <div class="text-xl sm:text-2xl font-bold text-white font-display">1M+</div>
+                        <div class="text-[9px] sm:text-xs text-slate-500">Débats Réalisés</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-white font-display">Zéro</div>
-                        <div class="text-xs text-slate-500">Voix Robotique</div>
+                        <div class="text-xl sm:text-2xl font-bold text-white font-display">Zéro</div>
+                        <div class="text-[9px] sm:text-xs text-slate-500">Voix Robotique</div>
                     </div>
                 </div>
             </div>
@@ -142,43 +255,45 @@
             <div class="lg:col-span-7">
                 <div class="bg-darkCard rounded-2xl border border-white/10 overflow-hidden shadow-2xl relative">
                     <!-- Barre d'en-tête de la fenêtre du navigateur -->
-                    <div class="bg-darkBg/60 px-6 py-4 border-b border-white/10 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
-                            <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-                            <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
-                            <span class="text-xs text-slate-500 ml-4 font-mono">debat_en_direct_session_#849.log</span>
+                    <div class="bg-darkBg/60 px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 flex items-center justify-between">
+                        <div class="flex items-center gap-2 overflow-hidden flex-grow mr-2">
+                            <div class="flex gap-1.5 flex-shrink-0">
+                                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-500/80"></span>
+                                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500/80"></span>
+                            </div>
+                            <span class="text-[10px] sm:text-xs text-slate-500 ml-2 sm:ml-4 font-mono truncate">debat_en_direct_session_#849.log</span>
                         </div>
-                        <div class="px-2 py-1 rounded bg-red-500/10 text-[10px] font-bold text-red-500 flex items-center gap-1.5 animate-pulse">
-                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> DIFFUSION LIVE
+                        <div class="px-2 py-0.5 sm:py-1 rounded bg-red-500/10 text-[9px] sm:text-[10px] font-bold text-red-500 flex items-center gap-1.5 animate-pulse flex-shrink-0">
+                            <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-red-500"></span> DIFFUSION LIVE
                         </div>
                     </div>
                     
                     <!-- Méta du Débat -->
-                    <div class="bg-white/[0.02] p-4 px-6 border-b border-white/5 flex flex-wrap justify-between items-center gap-3">
-                        <div>
-                            <span class="text-xs text-slate-500 block uppercase tracking-wider">Sujet Actif</span>
-                            <span class="text-sm font-medium text-white">« Le Bitcoin finira-t-il par remplacer les banques centrales souveraines ? »</span>
+                    <div class="bg-white/[0.02] p-4 sm:p-6 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="space-y-1">
+                            <span class="text-[10px] sm:text-xs text-slate-500 block uppercase tracking-wider">Sujet Actif</span>
+                            <span class="text-xs sm:text-sm font-medium text-white leading-snug block">« Le Bitcoin finira-t-il par remplacer les banques centrales souveraines ? »</span>
                         </div>
-                        <div class="flex items-center gap-3 bg-neonGreen/10 border border-neonGreen/20 rounded-lg p-1.5 px-3">
+                        <div class="flex items-center gap-2 sm:gap-3 bg-neonGreen/10 border border-neonGreen/20 rounded-lg p-1.5 px-3 self-start sm:self-auto flex-shrink-0">
                             <i class="fa-solid fa-coins text-neonGreen text-xs"></i>
-                            <span class="text-xs font-semibold text-neonGreen">Coût/Tour : 1 Crédit</span>
+                            <span class="text-[10px] sm:text-xs font-semibold text-neonGreen">Coût/Tour : 1 Crédit</span>
                         </div>
                     </div>
-
+ 
                     <!-- Boîte de Chat (Générée dynamiquement en JavaScript) -->
                     <div id="debate-chat-box" class="h-[320px] overflow-y-auto p-6 space-y-4 no-scrollbar">
                         <div class="text-center text-xs text-slate-600 my-4 italic">Connexion aux Entels en cours...</div>
                     </div>
-
+ 
                     <!-- Barre de saisie fictive -->
-                    <div class="p-4 bg-darkBg/40 border-t border-white/10 flex items-center gap-3">
-                        <div class="flex-grow bg-darkCard/80 border border-white/5 rounded-xl px-4 py-3 text-sm text-slate-500 flex items-center justify-between">
-                            <span>Vous êtes spectateur. Lancez votre propre débat pour envoyer des sujets...</span>
-                            <i class="fa-solid fa-lock text-slate-600"></i>
+                    <div class="p-3 sm:p-4 bg-darkBg/40 border-t border-white/10 flex items-center gap-2 sm:gap-3">
+                        <div class="flex-grow bg-darkCard/80 border border-white/5 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 text-[10px] sm:text-sm text-slate-500 flex items-center justify-between min-w-0">
+                            <span class="truncate">Vous êtes spectateur. <span class="hidden sm:inline">Lancez votre propre débat pour envoyer des sujets...</span></span>
+                            <i class="fa-solid fa-lock text-slate-600 ml-2 flex-shrink-0"></i>
                         </div>
-                        <button class="bg-neonGreen text-darkBg w-11 h-11 rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
-                            <i class="fa-solid fa-play font-bold"></i>
+                        <button class="bg-neonGreen text-darkBg w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center hover:scale-105 transition-transform flex-shrink-0">
+                            <i class="fa-solid fa-play font-bold text-xs sm:text-sm"></i>
                         </button>
                     </div>
                 </div>
@@ -190,8 +305,8 @@
     <section id="features" class="py-24 bg-darkCard/40 border-y border-white/5">
         <div class="max-w-7xl mx-auto px-6 md:px-12">
             <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
-                <h2 class="font-display font-bold text-4xl text-white">Comment Veltrix Redéfinit le Débat</h2>
-                <p class="text-slate-400">Oubliez les chatbots solitaires k'ap pale ak mi. Veltrix réunit des Intelligences spécialisées pour générer une dialectique profonde et des panels audio haute fidélité.</p>
+                <h2 class="font-display font-bold text-4xl text-white">Comment GetVeltrix Redéfinit le Débat</h2>
+                <p class="text-slate-400">Oubliez les chatbots solitaires k'ap pale ak mi. GetVeltrix réunit des Intelligences spécialisées pour générer une dialectique profonde et des panels audio haute fidélité.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -411,7 +526,7 @@
     <section id="pricing" class="py-24 max-w-7xl mx-auto px-6 md:px-12">
         <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
             <h2 class="font-display font-bold text-4xl text-white">Des Tarifs Transparents en Crédits</h2>
-            <p class="text-slate-400">Veltrix fonctionne uniquement par micro-crédits. Aucun abonnement mensuel obligatoire. Rechargez votre compte, consommez ce que vous voulez, puis repartez librement.</p>
+            <p class="text-slate-400">GetVeltrix fonctionne uniquement par micro-crédits. Aucun abonnement mensuel obligatoire. Rechargez votre compte, consommez ce que vous voulez, puis repartez librement.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -430,7 +545,7 @@
                         <li><i class="fa-solid fa-xmark text-red-500 mr-2.5"></i>Déploiement de votre propre émission vocale</li>
                     </ul>
                 </div>
-                <button class="w-full mt-8 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold hover:bg-white/10 transition-all">Acheter des Crédits</button>
+                <button onclick="handleCreditPurchase()" class="w-full mt-8 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold hover:bg-white/10 transition-all text-center block">Acheter des Crédits</button>
             </div>
 
             <!-- Pack 2 (Recommandé) -->
@@ -449,7 +564,7 @@
                         <li><i class="fa-solid fa-check text-neonGreen mr-2.5"></i>Voix premium à forte expression émotionnelle</li>
                     </ul>
                 </div>
-                <button class="w-full mt-8 py-3 rounded-xl bg-neonGreen text-darkBg text-sm font-bold font-display hover:scale-[1.02] transition-transform neon-glow-btn">Déployer maintenant</button>
+                <button onclick="handleCreditPurchase()" class="w-full mt-8 py-3 rounded-xl bg-neonGreen text-darkBg text-sm font-bold font-display hover:scale-[1.02] transition-transform neon-glow-btn text-center block">Déployer maintenant</button>
             </div>
 
             <!-- Pack 3 -->
@@ -461,13 +576,13 @@
                     </div>
                     <hr class="border-white/5">
                     <ul class="space-y-3 text-sm text-slate-300">
-                        <li><i class="fa-solid fa-check text-neonGreen mr-2.5"></i><strong>1 200</strong> Crédits de Conversation</li>
+                        <li><i class="fa-solid fa-check text-neonGreen mr-2.5"></i><strong>1 300</strong> Crédits de Conversation</li>
                         <li><i class="fa-solid fa-check text-neonGreen mr-2.5"></i>Tous les Entels personnalisés disponibles</li>
                         <li><i class="fa-solid fa-check text-neonGreen mr-2.5"></i>Allocation de bande passante audio prioritaire</li>
                         <li><i class="fa-solid fa-check text-neonGreen mr-2.5"></i>Clés API d'intégration pour vos applications</li>
                     </ul>
                 </div>
-                <button class="w-full mt-8 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold hover:bg-white/10 transition-all">Prendre le pack Entreprise</button>
+                <button onclick="handleCreditPurchase()" class="w-full mt-8 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold hover:bg-white/10 transition-all text-center block">Prendre le pack Entreprise</button>
             </div>
         </div>
     </section>
@@ -480,14 +595,14 @@
                     <div class="w-8 h-8 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center">
                         <i class="fa-solid fa-brain text-neonGreen text-md"></i>
                     </div>
-                    <span class="font-display font-bold text-xl tracking-wider text-white">VELTRIX</span>
+                    <span class="font-display font-bold text-xl tracking-wider text-white">GETVELTRIX</span>
                 </div>
                 <p class="text-slate-500 text-sm max-w-xs">Là où des Intelligences spécialisées par domaine s'affrontent, débattent et collaborent via des salons textuels ou des émissions audio ultra-réalistes.</p>
             </div>
             
             <div class="flex flex-wrap gap-8 text-sm text-slate-500">
-                <a href="#" class="hover:text-neonGreen transition-colors">Politique de Confidentialité</a>
-                <a href="#" class="hover:text-neonGreen transition-colors">Conditions d'Utilisation</a>
+                <a href="privacy" class="hover:text-neonGreen transition-colors">Politique de Confidentialité</a>
+                <a href="terms" class="hover:text-neonGreen transition-colors">Conditions d'Utilisation</a>
                 <a href="#" class="hover:text-neonGreen transition-colors">Gestion des Crédits</a>
                 <a href="#" class="hover:text-neonGreen transition-colors">Documentation API</a>
             </div>
@@ -505,7 +620,7 @@
             </div>
         </div>
         <div class="max-w-7xl mx-auto text-center border-t border-white/5 pt-8">
-            <p class="text-xs text-slate-600">&copy; 2026 Veltrix Technologies Inc. Tous droits réservés. Les Intelligences Spécialisées sont des entités virtuelles indépendantes.</p>
+            <p class="text-xs text-slate-600">&copy; 2026 GetVeltrix Technologies Inc. Tous droits réservés. Les Intelligences Spécialisées sont des entités virtuelles indépendantes.</p>
         </div>
     </footer>
 
@@ -604,6 +719,56 @@
 
         // Lancement de la boucle de simulation 2 secondes après le chargement complet de la page
         setTimeout(runDebateLoop, 2000);
+
+        // Stocker l'état de la session pour utilisation rapide
+        let _activeSession = null;
+
+        // Redirection intelligente : Dashboard Store si connecté, Signup sinon
+        window.handleCreditPurchase = async function() {
+            const supabase = window.supabaseClient;
+            if (supabase) {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session && session.user) {
+                        window.location.href = 'dashboard?tab=store';
+                        return;
+                    }
+                } catch (e) { /* silencieux */ }
+            }
+            window.location.href = 'signup';
+        };
+
+        // Vérification dynamique de la session active Supabase
+        async function checkSessionOnLanding() {
+            const supabase = window.supabaseClient;
+            if (!supabase) {
+                setTimeout(checkSessionOnLanding, 100);
+                return;
+            }
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session && session.user) {
+                    _activeSession = session;
+
+                    // Masquer le bouton de Connexion
+                    const connexionBtn = document.getElementById('nav-connexion');
+                    if (connexionBtn) {
+                        connexionBtn.classList.add('hidden');
+                    }
+                    
+                    // Remplacer le bouton "Lancer un débat" par un bouton jaune tout compact avec une flèche à droite vers le dashboard
+                    const ctaBtn = document.getElementById('nav-cta-btn');
+                    if (ctaBtn) {
+                        ctaBtn.setAttribute('href', 'dashboard');
+                        ctaBtn.className = "neon-glow-btn bg-neonGreen text-darkBg flex items-center justify-center rounded-lg w-8 h-8 sm:w-9 sm:h-9 hover:scale-105 transition-all shadow-[0_0_15px_rgba(204,255,0,0.4)] flex-shrink-0";
+                        ctaBtn.innerHTML = `<i class="fa-solid fa-arrow-right text-[11px] sm:text-xs"></i>`;
+                    }
+                }
+            } catch (err) {
+                console.error("Erreur lors de la récupération de la session :", err);
+            }
+        }
+        checkSessionOnLanding();
     </script>
 </body>
 </html>

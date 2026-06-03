@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veltrix - Confirmation de Compte</title>
+    <title>GetVeltrix - Confirmation de Compte</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -66,7 +66,7 @@
             <div class="w-10 h-10 rounded-xl bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center">
                 <i class="fa-solid fa-brain text-neonGreen text-lg"></i>
             </div>
-            <span class="font-display font-bold text-2xl tracking-wider text-white">VELTRIX</span>
+            <span class="font-display font-bold text-2xl tracking-wider text-white">GETVELTRIX</span>
         </div>
 
         <!-- Main Status Card -->
@@ -121,85 +121,28 @@
             }
         }
 
-        // Modal autonome d'urgence injecté en cas de défaillance du script externe
+        // Version inoffensive de injectSupabaseKeyModal (pas de modal affiché)
         window.injectSupabaseKeyModal = function() {
-            if (document.getElementById('supabase-key-modal')) return;
-
-            const currentUrl = getSafeStorageItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
-            const currentVal = getSafeStorageItem('veltrix_supabase_anon_key') || "";
-
-            const modal = document.createElement('div');
-            modal.id = "supabase-key-modal";
-            modal.className = "fixed inset-0 bg-darkBg/90 backdrop-blur-md flex items-center justify-center z-[9999] p-4 pointer-events-auto";
-            
-            modal.innerHTML = `
-                <div class="bg-darkCard border border-neonGreen/30 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-[0_0_50px_rgba(204,255,0,0.15)] text-center transform scale-95 transition-all duration-300">
-                    <div class="w-12 h-12 bg-neonGreen/10 border border-neonGreen/20 rounded-xl flex items-center justify-center mx-auto text-neonGreen text-xl">
-                        <i class="fa-solid fa-database"></i>
-                    </div>
-                    <div class="space-y-1.5">
-                        <h3 class="font-display font-bold text-lg text-white">Connexion Veltrix & Supabase</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Pour connecter la création de compte, la connexion et les soldes de vos Crédits à Supabase, veuillez saisir l'**URL du Projet** et la **Clé Publique Anon** de votre projet ci-dessous.
-                        </p>
-                    </div>
-                    
-                    <div class="space-y-3 text-left">
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">URL du Projet Supabase</label>
-                            <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
-                                <i class="fa-solid fa-link text-slate-500 text-xs"></i>
-                                <input id="supabase-url-input" type="text" value="${currentUrl}" placeholder="https://xxxx.supabase.co" class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
-                            </div>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clé Publique Anon</label>
-                            <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
-                                <i class="fa-solid fa-key text-slate-500 text-xs"></i>
-                                <input id="supabase-key-input" type="password" value="${currentVal}" placeholder="Entrez votre clé Anon Supabase..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3">
-                        <button onclick="window.saveSupabaseKeyInline()" class="flex-grow py-3 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform shadow-[0_0_15px_rgba(204,255,0,0.15)] cursor-pointer">
-                            CONNECTER LA BASE DE DONNÉES
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(modal);
-            setTimeout(() => {
-                modal.querySelector('.transform').classList.remove('scale-95');
-                modal.querySelector('.transform').classList.add('scale-100');
-            }, 50);
+            console.warn("L'affichage du modal Supabase a été court-circuité. Rétablissement des identifiants par défaut...");
+            try {
+                const defaultUrl = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
+                const defaultKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwaHp6eHhydmZhcXhneXp6ZWJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjQzODksImV4cCI6MjA5NTc0MDM4OX0.4xolo6bSh2td55h0dGxRlzxGdeCaIKK8Q13eDke--Cw";
+                setSafeStorageItem('veltrix_supabase_url', defaultUrl);
+                setSafeStorageItem('veltrix_supabase_anon_key', defaultKey);
+                if (typeof window.supabase !== 'undefined') {
+                    window.supabaseClient = window.supabase.createClient(defaultUrl, defaultKey);
+                }
+            } catch (e) {
+                console.error("Erreur lors de la réinitialisation automatique :", e);
+            }
         };
 
         window.saveSupabaseKeyInline = function() {
-            const urlInput = document.getElementById('supabase-url-input');
-            const keyInput = document.getElementById('supabase-key-input');
-            const url = urlInput ? urlInput.value.trim() : "";
-            const key = keyInput ? keyInput.value.trim() : "";
-            
-            if (!url) { alert("Veuillez d'abord entrer l'URL !"); return; }
-            if (!key) { alert("Veuillez d'abord entrer la clé !"); return; }
-
-            setSafeStorageItem('veltrix_supabase_url', url);
-            setSafeStorageItem('veltrix_supabase_anon_key', key);
-            
-            if (typeof window.supabase !== 'undefined') {
-                window.supabaseClient = window.supabase.createClient(url, key);
-            }
-            
-            const modal = document.getElementById('supabase-key-modal');
-            if (modal) modal.remove();
-            
-            // Relancer directement la vérification sans recharger pour préserver le hash d'URL
+            console.warn("saveSupabaseKeyInline appelée. Utilisation des paramètres par défaut.");
+            window.injectSupabaseKeyModal();
             const desc = document.getElementById('status-desc');
             if (desc) {
-                desc.textContent = "Configuration enregistrée ! Nous vérifions votre lien de confirmation...";
+                desc.textContent = "Configuration restaurée ! Nous vérifions votre lien de confirmation...";
             }
             verifyConfirmation();
         };
@@ -207,17 +150,37 @@
         async function verifyConfirmation() {
             let supabaseInstance = window.supabaseClient;
 
+            const defaultUrl = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
+            const defaultKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwaHp6eHhydmZhcXhneXp6ZWJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjQzODksImV4cCI6MjA5NTc0MDM4OX0.4xolo6bSh2td55h0dGxRlzxGdeCaIKK8Q13eDke--Cw";
+
             // FALLBACK AUTONOME : Si le client n'a pas été instancié par le script externe, on l'initialise localement
             if (!supabaseInstance && typeof window.supabase !== 'undefined') {
-                const localUrl = getSafeStorageItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
-                const localKey = getSafeStorageItem('veltrix_supabase_anon_key') || "";
-                if (localKey && localKey.length >= 20) {
+                let localUrl = getSafeStorageItem('veltrix_supabase_url') || defaultUrl;
+                if (localUrl === "undefined" || localUrl === "null" || localUrl === "[object Object]" || localUrl === "" || !localUrl.startsWith("http")) {
+                    localUrl = defaultUrl;
+                    setSafeStorageItem('veltrix_supabase_url', defaultUrl);
+                }
+
+                let localKey = getSafeStorageItem('veltrix_supabase_anon_key') || defaultKey;
+                if (localKey === "undefined" || localKey === "null" || localKey === "[object Object]" || localKey === "" || localKey.length < 20) {
+                    localKey = defaultKey;
+                    setSafeStorageItem('veltrix_supabase_anon_key', defaultKey);
+                }
+
+                try {
+                    window.supabaseClient = window.supabase.createClient(localUrl, localKey);
+                    supabaseInstance = window.supabaseClient;
+                    console.log("Client connecté de manière autonome via le fallback inline.");
+                } catch (e) {
+                    console.warn("Échec de l'initialisation autonome, tentative de restauration par défaut :", e);
                     try {
-                        window.supabaseClient = window.supabase.createClient(localUrl, localKey);
+                        window.supabaseClient = window.supabase.createClient(defaultUrl, defaultKey);
                         supabaseInstance = window.supabaseClient;
-                        console.log("Client connecté de manière autonome via le fallback inline.");
-                    } catch (e) {
-                        console.warn("Échec de l'initialisation autonome :", e);
+                        setSafeStorageItem('veltrix_supabase_url', defaultUrl);
+                        setSafeStorageItem('veltrix_supabase_anon_key', defaultKey);
+                        console.log("Initialisation réussie avec les identifiants GetVeltrix par défaut !");
+                    } catch (innerErr) {
+                        console.error("Échec critique d'initialisation autonome :", innerErr);
                     }
                 }
             }
@@ -276,7 +239,7 @@
             title.textContent = "Adresse E-mail confirmée !";
             title.classList.add('neon-text-glow');
             const name = user.user_metadata?.full_name ? `, ${user.user_metadata.full_name.split(' ')[0]}` : '';
-            desc.innerHTML = `Félicitations${name} ! Votre compte Veltrix Premium est désormais entièrement vérifié et activé. <strong class="text-white">Vos 50 Crédits offerts ont été ajoutés à votre solde !</strong>`;
+            desc.innerHTML = `Félicitations${name} ! Votre compte GetVeltrix Premium est désormais entièrement vérifié et activé. <strong class="text-white">Vos 25 Crédits offerts ont été ajoutés à votre solde !</strong>`;
 
             // Remplir la barre de progrès et la masquer proprement
             progressBar.style.width = "100%";
@@ -296,7 +259,7 @@
 
             // Redirection automatique vers la page de connexion après 3.5 secondes
             setTimeout(() => {
-                window.location.href = 'veltrix_premium_sign_in.html';
+                window.location.href = 'signin';
             }, 3500);
         }
 
@@ -343,7 +306,7 @@
                         <button onclick="window.location.href = window.location.href.split('?')[0] + '?cb=' + Math.random() + window.location.hash" class="py-2.5 px-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] text-white font-semibold transition-colors border border-white/5 flex items-center justify-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-rotate"></i> Forcer le rafraîchissement (Vider le cache)
                         </button>
-                        <button onclick="window.injectSupabaseKeyModal()" class="py-2.5 px-3 bg-neonGreen/10 hover:bg-neonGreen/20 text-neonGreen text-[10px] font-bold rounded-xl border border-neonGreen/20 flex items-center justify-center gap-1.5 cursor-pointer">
+                        <button onclick="window.injectSupabaseKeyModal()" class="hidden py-2.5 px-3 bg-neonGreen/10 hover:bg-neonGreen/20 text-neonGreen text-[10px] font-bold rounded-xl border border-neonGreen/20 items-center justify-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-database"></i> Configurer Supabase sur ce navigateur
                         </button>
                     </div>
@@ -353,9 +316,9 @@
 
         window.handleAction = function() {
             if (actionTarget === 'dashboard') {
-                window.location.href = 'veltrix_premium_dashboard (1).html';
+                window.location.href = 'dashboard';
             } else {
-                window.location.href = 'veltrix_premium_sign_in.html';
+                window.location.href = 'signin';
             }
         };
 

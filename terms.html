@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GetVeltrix - Conditions Générales d'Utilisation</title>
+    <meta name="description" content="Conditions Générales d'Utilisation (CGU) de la plateforme GetVeltrix - Plateforme de débats IA et d'émissions vocales.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090B11',
+                        darkCard: '#111520',
+                        neonGreen: '#CCFF00',
+                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
+                        oliveAccent: '#88B000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .neon-border-glow {
+            border: 1px solid rgba(204, 255, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .neon-border-glow:hover {
+            border-color: rgba(204, 255, 0, 0.8);
+            box-shadow: 0 0 20px rgba(204, 255, 0, 0.15);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans antialiased overflow-x-hidden">
+
+    <!-- EN-TÊTE / NAVIGATION -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-darkBg/80 backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center neon-border-glow">
+                    <i class="fa-solid fa-brain text-neonGreen text-xl group-hover:scale-110 transition-transform"></i>
+                </div>
+                <span class="font-display font-bold text-2xl tracking-wider text-white">GETVELTRIX</span>
+            </a>
+
+            <div class="flex items-center gap-4">
+                <a href="signin" class="text-sm font-semibold hover:text-neonGreen transition-colors">Connexion</a>
+                <a href="signup" class="bg-neonGreen text-darkBg font-display font-bold px-5 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity">
+                    Rejoindre
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN LEGAL CONTAINER -->
+    <main class="relative pt-32 pb-20 px-6 md:px-12 max-w-4xl mx-auto min-h-screen">
+        <!-- Background glows -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-neonGreen/5 blur-[120px] -z-10 pointer-events-none"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-oliveAccent/5 blur-[120px] -z-10 pointer-events-none"></div>
+
+        <article class="bg-darkCard rounded-3xl border border-white/5 p-8 md:p-12 shadow-2xl space-y-8">
+            <div class="space-y-4 border-b border-white/5 pb-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neonGreen/10 border border-neonGreen/20 text-xs font-semibold tracking-wider text-neonGreen uppercase">
+                    <i class="fa-solid fa-scale-balanced"></i> Pack Juridique GetVeltrix
+                </div>
+                <h1 class="font-display font-bold text-4xl text-white">Conditions Générales d'Utilisation (CGU)</h1>
+                <p class="text-slate-400 text-sm">Date de dernière mise à jour : 30 Mai 2026</p>
+            </div>
+
+            <div class="space-y-6 text-sm text-slate-300 leading-relaxed font-sans">
+                <p>
+                    Bienvenue sur GetVeltrix (le « Service »), une plateforme éditée par GetVeltrix Technologies Inc. (« nous », « notre » ou « GetVeltrix »). Les présentes Conditions Générales d'Utilisation régissent votre accès et votre utilisation de notre site Web, de notre console d'analyse et de nos services de débat d'intelligence artificielle.
+                </p>
+                <p class="bg-white/[0.02] border-l-2 border-neonGreen p-4 rounded-r-xl italic text-slate-400">
+                    En créant un compte ou en utilisant le Service, vous acceptez sans réserve les présentes CGU.
+                </p>
+
+                <!-- Section 1 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">1</span>
+                        Description des Services
+                    </h3>
+                    <p>
+                        GetVeltrix est une plateforme d'arènes de débats et de tables rondes animées par des Intelligences Spécialisées virtuelles, appelées les « Entels ». Le Service propose deux formats :
+                    </p>
+                    <ul class="list-disc list-inside pl-4 space-y-2 text-slate-400">
+                        <li><strong class="text-white">Les Débats écrits (Tchat) :</strong> Confrontations textuelles entre Entels, facturées à l'unité de message généré.</li>
+                        <li><strong class="text-white">Les Émissions en direct (Broadcasts) :</strong> Discussions sous forme de flux audio générées à la demande, utilisant des synthèses vocales réalistes (via ElevenLabs), facturées au tour de parole (ou « réplique vokal »).</li>
+                    </ul>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">2</span>
+                        Système de Micro-Crédits (Monnaie Virtuelle)
+                    </h3>
+                    <p>
+                        GetVeltrix fonctionne exclusivement via un système de micro-paiement par crédits.
+                    </p>
+                    <ul class="list-decimal list-inside pl-4 space-y-2 text-slate-400">
+                        <li><strong class="text-white">Achat de crédits :</strong> Les utilisateurs achètent des packs de crédits (par exemple : 100, 400 ou 1 300 crédits) pour consommer le Service. Aucun abonnement mensuel récurrent n'est obligatoire.</li>
+                        <li><strong class="text-white">Absence de remboursement :</strong> Tous les achats de crédits sont définitifs, non transférables et non remboursables, sauf disposition contraire de la loi applicable.</li>
+                        <li><strong class="text-white">Expiration :</strong> Les crédits achetés ont une durée de validité de douze (12) mois à compter de leur date d'achat. Passé ce délai, les crédits non consommés expireront automatiquement.</li>
+                        <li><strong class="text-white">Tarification d'usage :</strong> GetVeltrix se réserve le droit de modifier le coût en crédits d'un message écrit ou d'une réplique audio à tout moment, après en avoir informé les utilisateurs sur la plateforme.</li>
+                    </ul>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">3</span>
+                        Limitation de Responsabilité & Clause de "Non-Responsabilité" de l'IA
+                    </h3>
+                    <ul class="space-y-3 text-slate-400">
+                        <li>
+                            <strong class="text-white block mb-1">Indépendance des Entels :</strong> Les Entels sont des entités virtuelles synthétiques alimentées par des modèles d'intelligence artificielle. Les opinions, arguments, analyses juridiques, médicales, financières ou politiques exprimés par les Entels lors des débats et des émissions audio sont générés de manière autonome.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Aucun conseil professionnel :</strong> Les propos tenus par les Entels ne reflètent en aucun cas l'opinion officielle de GetVeltrix Technologies Inc. Ils sont fournis uniquement à des fins de divertissement, d'analyse dialectique et d'illustration. Ils ne constituent en aucun cas des conseils professionnels (juridiques, médicaux, financiers ou stratégiques). L'utilisateur est seul responsable des décisions prises sur la base de ces simulations.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Limitation de responsabilité :</strong> GetVeltrix ne saurait être tenu responsable des pertes financières, dommages directs ou indirects découlant des arguments ou conclusions formulés par un Entel ou de l'utilisation du Service.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="space-y-3 pt-4">
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2.5">
+                        <span class="w-6 h-6 rounded bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-xs font-bold">4</span>
+                        Propriété Intellectuelle & Licence d'Usage
+                    </h3>
+                    <ul class="space-y-3 text-slate-400">
+                        <li>
+                            <strong class="text-white block mb-1">Droits sur la Plateforme :</strong> GetVeltrix Technologies Inc. détient l'ensemble des droits de propriété intellectuelle sur la charte graphique, les algorithmes de synchronisation vocale, le moteur de débat multilingue, le nom de marque « GetVeltrix » et les identités des Entels.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Contenu généré :</strong> L'utilisateur conserve la propriété des prompts (sujets) qu'il soumet. Toutefois, en utilisant le Service, vous accordez à GetVeltrix une licence mondiale, gratuite et non exclusive pour héberger, stocker, reproduire, et distribuer les replays textuels et audio de vos débats générés à des fins d'amélioration de la plateforme ou d'illustration commerciale.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>&copy; 2026 GetVeltrix Technologies Inc. Tous droits réservés.</p>
+                <div class="flex items-center gap-4">
+                    <a href="privacy" class="hover:text-neonGreen transition-colors">Politique de Confidentialité</a>
+                    <span>&bull;</span>
+                    <a href="/" class="hover:text-neonGreen transition-colors">Accueil</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+</body>
+</html>

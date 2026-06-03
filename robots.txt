@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Pages importantes pour l'indexation
+Allow: /index.html
+Allow: /signin.html
+Allow: /signup.html
+Allow: /dashboard.html
+Allow: /privacy.html
+Allow: /terms.html
+
+# Ne pas indexer les fichiers de configuration
+Disallow: /.env
+Disallow: /.git/
+Disallow: /api/
+Disallow: /*.ts
+Disallow: /*.js$
+Disallow: /veltrix_api_test_bench*
+Disallow: /veltrix_pro_broadcast*
+
+# Sitemap
+Sitemap: https://www.getveltrix.com/sitemap.xml

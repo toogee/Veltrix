@@ -1,678 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veltrix - Console de Gestion & Débats</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Supabase JS Client CDN & Config -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="veltrix_supabase_client.js?v=2.1"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Urbanist', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        darkBg: '#090B11',
-                        darkCard: '#111520',
-                        darkCardMuted: '#171D2B',
-                        neonGreen: '#CCFF00',
-                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
-                        oliveAccent: '#88B000',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .neon-glow-border {
-            box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
-            border: 1px solid rgba(204, 255, 0, 0.15);
-        }
-        .neon-glow-border:hover, .neon-glow-border.active {
-            box-shadow: 0 0 25px rgba(204, 255, 0, 0.3);
-            border-color: rgba(204, 255, 0, 0.6);
-        }
-        .neon-text-glow {
-            text-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        @keyframes wave {
-            0%, 100% { height: 4px; }
-            50% { height: 38px; }
-        }
-        .bar {
-            width: 4px;
-            animation: wave 1.2s ease-in-out infinite;
-        }
-        .bar:nth-child(2) { animation-delay: 0.15s; }
-        .bar:nth-child(3) { animation-delay: 0.3s; }
-        .bar:nth-child(4) { animation-delay: 0.45s; }
-        .bar:nth-child(5) { animation-delay: 0.6s; }
-        .bar:nth-child(6) { animation-delay: 0.25s; }
-        .bar:nth-child(7) { animation-delay: 0.35s; }
-        .bar:nth-child(8) { animation-delay: 0.05s; }
-        
-        /* Styles pour les Dropdowns Customs */
-        .custom-select-wrapper {
-            width: 100%;
-        }
-        .custom-select-trigger {
-            transition: all 0.3s ease;
-        }
-        .custom-select-trigger:hover {
-            box-shadow: 0 0 25px rgba(204, 255, 0, 0.25);
-            border-color: rgba(204, 255, 0, 0.6);
-        }
-        /* Style pour l'autofill des inputs du tableau de bord */
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus,
-        input:-webkit-autofill:active {
-            -webkit-box-shadow: 0 0 0 30px #111520 inset !important;
-            -webkit-text-fill-color: #f1f5f9 !important;
-            transition: background-color 5000s ease-in-out 0s;
-        }
-    </style>
-</head>
-<body class="bg-darkBg text-slate-100 font-sans h-full overflow-hidden flex flex-col md:flex-row">
-
-    <!-- NAVIGATION LATÉRALE (SIDEBAR) -->
-    <aside class="w-full md:w-64 bg-darkCard border-r border-white/5 flex flex-col justify-between flex-shrink-0 z-20">
-        <div>
-            <div class="p-6 border-b border-white/5 flex items-center justify-between">
-                <a href="index.html" class="flex items-center gap-2.5 group">
-                    <div class="w-8 h-8 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center">
-                        <i class="fa-solid fa-brain text-neonGreen text-md animate-pulse"></i>
-                    </div>
-                    <span class="font-display font-bold text-xl tracking-wider text-white">VELTRIX</span>
-                </a>
-                <span id="sidebar-tier-badge" class="text-[9px] px-2 py-0.5 rounded bg-neonGreen/10 border border-neonGreen/20 text-neonGreen font-semibold uppercase">PRO</span>
-            </div>
-
-            <!-- Liste des Menus -->
-            <nav class="p-4 space-y-1.5">
-                <button onclick="switchTab('tab-home')" id="btn-tab-home" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-neonGreen text-darkBg active">
-                    <i class="fa-solid fa-chart-pie text-lg"></i>
-                    <span>Vue d'ensemble</span>
-                </button>
-                <button onclick="switchTab('tab-debate')" id="btn-tab-debate" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-comments text-lg"></i>
-                    <span>Lancer un Débat</span>
-                </button>
-                <button onclick="switchTab('tab-broadcast')" id="btn-tab-broadcast" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-volume-high text-lg"></i>
-                    <span>Broadcasts Audio</span>
-                </button>
-                <button onclick="switchTab('tab-entels')" id="btn-tab-entels" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-user-group text-lg"></i>
-                    <span>Nos Entels</span>
-                </button>
-                <button onclick="switchTab('tab-store')" id="btn-tab-store" class="tab-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-coins text-lg"></i>
-                    <span>Boutique de Crédits</span>
-                </button>
-            </nav>
-        </div>
-
-        <!-- Profil utilisateur & Informations crédits dans la barre latérale -->
-        <div class="p-4 border-t border-white/5 space-y-4">
-            <div class="bg-darkBg p-3 rounded-xl border border-white/5 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-neonGreen/10 flex items-center justify-center text-neonGreen">
-                        <i class="fa-solid fa-wallet"></i>
-                    </div>
-                    <div>
-                        <span class="text-[10px] text-slate-500 block uppercase font-bold">Solde Actuel</span>
-                        <span id="credit-balance-display" class="text-sm font-bold text-white">420 Crédits</span>
-                    </div>
-                </div>
-                <button onclick="switchTab('tab-store')" class="w-6 h-6 rounded bg-neonGreen/20 hover:bg-neonGreen hover:text-darkBg text-neonGreen flex items-center justify-center transition-all">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                </button>
-            </div>
-
-            <a href="veltrix_user_profile.html" class="flex items-center gap-3 hover:bg-white/5 p-2 rounded-xl transition-all group">
-                <div class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center relative shrink-0 font-display">
-                    <span id="user-initials" class="text-sm font-bold text-white">JD</span>
-                    <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-darkCard"></span>
-                </div>
-                <div class="overflow-hidden">
-                    <h4 id="user-fullname" class="text-sm font-bold text-white group-hover:text-neonGreen transition-colors truncate">Jean Dupont</h4>
-                    <span id="user-id-display" class="text-xs text-slate-500 block truncate">ID: vltx_84712</span>
-                </div>
-            </a>
-        </div>
-    </aside>
-
-    <!-- ZONE DE CONTENU PRINCIPAL -->
-    <main class="flex-grow flex flex-col overflow-hidden">
-        <header class="h-16 border-b border-white/5 bg-darkCard/50 backdrop-blur-md px-6 md:px-8 flex items-center justify-between flex-shrink-0 z-10">
-            <h2 id="header-page-title" class="font-display font-bold text-xl text-white">Vue d'ensemble</h2>
-            
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-semibold text-emerald-400">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    API Entel-engine en ligne (99.9%)
-                </div>
-                <button class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors relative">
-                    <i class="fa-regular fa-bell text-slate-400"></i>
-                    <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-neonGreen"></span>
-                </button>
-            </div>
-        </header>
-
-        <div class="flex-grow overflow-y-auto p-6 md:p-8 no-scrollbar">
-
-            <!-- TAB 1: VUE D'ENSEMBLE (HOME) -->
-            <section id="tab-home" class="tab-content space-y-8">
-                <!-- Bannière d'accueil -->
-                <div class="bg-gradient-to-r from-neonGreen/10 via-darkCard to-darkCard p-6 md:p-8 rounded-2xl border border-neonGreen/10 relative overflow-hidden">
-                    <div class="absolute right-0 top-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-neonGreen/10 to-transparent pointer-events-none"></div>
-                    <div class="max-w-2xl space-y-4">
-                        <span class="px-2.5 py-1 rounded-full bg-neonGreen/10 border border-neonGreen/20 text-xs text-neonGreen font-semibold uppercase">Console Veltrix</span>
-                        <h1 class="font-display font-bold text-3xl md:text-4xl text-white">Déployez des discussions à couper le souffle.</h1>
-                        <p class="text-slate-400 text-sm md:text-base">Organisez des débats écrits ou générez des émissions audios à la demande en mobilisant nos Entels — nos spécialistes nantis de doctorats et d'identités virtuelles uniques.</p>
-                        <div class="flex flex-wrap gap-3 pt-2">
-                            <button onclick="switchTab('tab-debate')" class="px-5 py-2.5 rounded-xl bg-neonGreen text-darkBg font-display font-bold text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>Lancer un Débat</span>
-                            </button>
-                            <button onclick="switchTab('tab-broadcast')" class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-display font-medium text-sm hover:bg-white/10 transition-all flex items-center gap-2">
-                                <i class="fa-solid fa-volume-high"></i>
-                                <span>Créer un Broadcast</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Statistiques d'utilisation globale -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-darkCard p-5 rounded-2xl border border-white/5">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs text-slate-500 uppercase tracking-wider">Débats Créés</span>
-                            <i class="fa-solid fa-comments text-neonGreen"></i>
-                        </div>
-                        <div class="text-2xl font-bold font-display text-white" id="stat-debates-count">18</div>
-                        <div class="text-xs text-slate-500 mt-1"><span class="text-emerald-400 font-bold"><i class="fa-solid fa-caret-up mr-0.5"></i>+4</span> cette semaine</div>
-                    </div>
-                    <div class="bg-darkCard p-5 rounded-2xl border border-white/5">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs text-slate-500 uppercase tracking-wider">Temps d'Écoute Audio</span>
-                            <i class="fa-solid fa-microphone text-neonGreen"></i>
-                        </div>
-                        <div class="text-2xl font-bold font-display text-white">4h 12m</div>
-                        <div class="text-xs text-slate-500 mt-1"><span class="text-emerald-400 font-bold"><i class="fa-solid fa-caret-up mr-0.5"></i>+48m</span> de podcasts</div>
-                    </div>
-                    <div class="bg-darkCard p-5 rounded-2xl border border-white/5">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs text-slate-500 uppercase tracking-wider">Entels Actifs</span>
-                            <i class="fa-solid fa-user-check text-neonGreen"></i>
-                        </div>
-                        <div class="text-2xl font-bold font-display text-white" id="stat-entels-count">12 / 12</div>
-                        <div class="text-xs text-slate-500 mt-1">Sujets spécialisés prêts</div>
-                    </div>
-                    <div class="bg-darkCard p-5 rounded-2xl border border-white/5">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs text-slate-500 uppercase tracking-wider">Consommation</span>
-                            <i class="fa-solid fa-bolt text-neonGreen"></i>
-                        </div>
-                        <div class="text-2xl font-bold font-display text-white" id="stat-credits-used">580 Cr.</div>
-                        <div class="text-xs text-slate-500 mt-1">Utilisés ce mois-ci</div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <!-- Liste des Débats Récents -->
-                    <div class="lg:col-span-8 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-6">
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-display font-bold text-lg text-white">Historique de vos Activités</h3>
-                            <button onclick="switchTab('tab-debate')" class="text-xs font-semibold text-neonGreen hover:underline">Accéder au Créateur</button>
-                        </div>
-                        <div class="space-y-4" id="recent-debates-list">
-                            <!-- Item 1 -->
-                            <div class="flex flex-wrap items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 gap-4">
-                                <div class="flex items-center gap-4">
-                                    <div class="flex -space-x-3">
-                                        <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center text-neonGreen text-xs font-bold font-display">
-                                            CF
-                                        </div>
-                                        <div class="w-9 h-9 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xs font-bold font-display">
-                                            KP
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-bold text-white">Cryptographie et Cybersurveillance d'État</h4>
-                                        <p class="text-xs text-slate-500">Par CypherNet-3 & KronoPol-9 &bull; Tchat écrit</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-4">
-                                    <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-400 font-semibold uppercase">Complété</span>
-                                    <span class="text-xs font-semibold text-slate-400">12 messages</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Émissions recommandées -->
-                    <div class="lg:col-span-4 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-6">
-                        <h3 class="font-display font-bold text-lg text-white">Émission à l'écoute</h3>
-                        <div class="space-y-4">
-                            <div class="p-4 rounded-xl bg-neonGreen/5 border border-neonGreen/10 space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-[9px] text-red-500 font-semibold uppercase tracking-wider animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-red-500 inline-block mr-1"></span> LIVE</span>
-                                    <span class="text-[10px] text-slate-400">88 auditeurs</span>
-                                </div>
-                                <h4 class="text-xs font-bold text-white">« Modélisation éthique des modifications génomiques »</h4>
-                                <p class="text-[11px] text-slate-500">Avec BioGen-Theta & NeurAx-8</p>
-                                <button onclick="switchTab('tab-broadcast')" class="w-full py-2 bg-neonGreen text-darkBg rounded-lg font-bold text-xs hover:scale-[1.02] transition-transform">
-                                    REJOINDRE LE BROADCAST
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 2: CRÉER / PARTICIPER À UN DÉBAT (SIMULATEUR INTERACTIF) -->
-            <section id="tab-debate" class="tab-content space-y-8 hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
-                    <!-- Formulaire de configuration (Gauche) -->
-                    <div class="lg:col-span-5 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-5">
-                        <div>
-                            <h3 class="font-display font-bold text-xl text-white">Configurer votre Débat</h3>
-                            <p class="text-xs text-slate-500">Instanciez les Entels de votre choix, sélectionnez la langue d'expression et lancez la confrontation.</p>
-                        </div>
-
-                        <!-- 1. Saisir le Sujet -->
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. Saisir le Sujet du Débat</label>
-                            <input id="debate-topic-input" type="text" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neonGreen/60 transition-all">
-                        </div>
-
-                        <!-- 2. Sélectionner la langue -->
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">2. Choisir la Langue d'Échange</label>
-                            <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                <option value="fr">Français</option>
-                                <option value="en">English (Anglais)</option>
-                                <option value="es">Español (Espagnol)</option>
-                                <option value="ht">Kreyòl Ayisyen (Créole Haïtien)</option>
-                            </select>
-                        </div>
-
-                        <!-- 3. Sélectionner les deux Entels par catégorie -->
-                        <div class="space-y-3">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">3. Choisir les 2 Entels Face-à-Face</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div class="space-y-1.5">
-                                    <span class="text-[10px] text-slate-500">Entel 1</span>
-                                    <select id="entel-left-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                        <!-- Injecté dynamiquement par JS -->
-                                    </select>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <span class="text-[10px] text-slate-500">Entel 2</span>
-                                    <select id="entel-right-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                        <!-- Injecté dynamiquement par JS -->
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 4. Définir le volume / nombre de tours -->
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center">
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">4. Nombre d'Échanges</label>
-                                <span class="text-xs text-neonGreen font-semibold" id="turns-cost-display">4 messages (4 crédits)</span>
-                            </div>
-                            <input id="debate-turns-range" type="range" min="2" max="12" step="2" value="4" oninput="updateTurnsCost(this.value)" class="w-full accent-neonGreen bg-darkBg">
-                            <div class="flex justify-between text-[10px] text-slate-500">
-                                <span>2 messages</span>
-                                <span>6 messages</span>
-                                <span>12 messages</span>
-                            </div>
-                        </div>
-
-                        <!-- 5. Mode de Débat -->
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">5. Mode de Rendu</label>
-                            <div class="grid grid-cols-2 gap-3">
-                                <label class="p-3 bg-darkBg border border-neonGreen/40 rounded-xl cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
-                                    <input type="radio" name="debate-mode" value="text" checked class="accent-neonGreen">
-                                    <span>Tchat Écrit</span>
-                                </label>
-                                <label class="p-3 bg-darkBg border border-white/5 rounded-xl cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500">
-                                    <input type="radio" name="debate-mode" value="audio" disabled class="accent-neonGreen">
-                                    <span class="flex items-center gap-1.5">Audio <span class="text-[9px] bg-neonGreen/20 text-neonGreen px-1 rounded">PRO</span></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Lancer le Débat CTA -->
-                        <button onclick="startCustomDebate()" class="w-full py-4 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-sm transition-all hover:scale-[1.01] flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-play"></i>
-                            <span>DÉPLOYER L'ARÈNE DE DÉBAT</span>
-                        </button>
-                    </div>
-
-                    <!-- Visualisation du Débat interactif (Droite) -->
-                    <div class="lg:col-span-7 bg-darkCard rounded-2xl border border-white/5 overflow-hidden flex flex-col h-[650px]">
-                        <div class="p-4 bg-darkBg/60 border-b border-white/10 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
-                                <span class="text-xs text-slate-500 font-mono ml-2">veltrix_debate_engine_active.log</span>
-                            </div>
-                            <span class="text-[10px] text-slate-500 font-mono" id="debate-status-indicator">STATUT: En attente</span>
-                        </div>
-
-                        <div class="p-4 bg-white/[0.01] border-b border-white/5 flex items-center justify-between">
-                            <div class="space-y-0.5">
-                                <span class="text-[9px] text-slate-500 uppercase tracking-wider block">Sujet Soumis</span>
-                                <span id="active-debate-topic" class="text-sm font-semibold text-white italic">"Aucun débat n'est actuellement initié."</span>
-                            </div>
-                            <div class="flex flex-col items-end gap-1">
-                                <div id="cost-badge" class="hidden px-2 py-1 rounded bg-neonGreen/10 border border-neonGreen/20 text-[10px] font-bold text-neonGreen">
-                                    PAYÉ
-                                </div>
-                                <span id="active-debate-lang-badge" class="text-[9px] text-slate-500 uppercase"></span>
-                            </div>
-                        </div>
-
-                        <div id="dashboard-chat-box" class="flex-grow p-6 overflow-y-auto space-y-4 no-scrollbar">
-                            <div id="default-chat-placeholder" class="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
-                                <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
-                                    <i class="fa-solid fa-comments text-3xl"></i>
-                                </div>
-                                <div class="max-w-md">
-                                    <h4 class="text-sm font-bold text-white mb-1">Aucune discussion en cours</h4>
-                                    <p class="text-xs text-slate-500">Utilisez le panneau de gauche pour configurer un sujet, sélectionner vos Entels experts et lancer la confrontation.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 bg-darkBg/40 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
-                            <span>Veltrix Engine v3.0.1</span>
-                            <span id="typing-indicator" class="hidden text-neonGreen"><i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i>Un Entel génère sa réponse...</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 3: BROADCASTS AUDIO (LISTENING & HOSTING) -->
-            <section id="tab-broadcast" class="tab-content space-y-8 hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
-                    <!-- Créer & Gérer les Live Broadcasts (Gauche) -->
-                    <div class="lg:col-span-7 space-y-6">
-                        <!-- Formulaire pour déployer son PROPRE Broadcast -->
-                        <div class="bg-darkCard p-6 rounded-2xl border border-white/5 space-y-5">
-                            <div>
-                                <h3 class="font-display font-bold text-lg text-white">Héberger un Nouveau Broadcast Audio</h3>
-                                <p class="text-xs text-slate-500">Lancez une table ronde vocale interactive. Sélectionnez jusqu'à 3 Entels, choisissez la langue vocale et configurez le temps d'antenne.</p>
-                            </div>
-
-                            <div class="space-y-3">
-                                <div class="space-y-1.5">
-                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sujet de la Table Ronde</label>
-                                    <input id="broadcast-topic-input" type="text" placeholder="Ex: La décroissance macro-économique face à l'abondance technologique" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-neonGreen/60 transition-all">
-                                </div>
-
-                                <!-- Sélectionner la langue du Broadcast -->
-                                <div class="space-y-1.5">
-                                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Langue Vocale de l'émission</label>
-                                    <select id="broadcast-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                        <option value="fr">Français</option>
-                                        <option value="en">English (Anglais)</option>
-                                        <option value="es">Español (Espagnol)</option>
-                                        <option value="ht">Kreyòl Ayisyen (Créole Haïtien)</option>
-                                    </select>
-                                </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                    <div>
-                                        <label class="text-[10px] text-slate-500 block mb-1">Hôte (Entel 1)</label>
-                                        <select id="broadcast-entel-1" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                            <!-- Dynamique -->
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="text-[10px] text-slate-500 block mb-1">Intervenant 2</label>
-                                        <select id="broadcast-entel-2" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                            <!-- Dynamique -->
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="text-[10px] text-slate-500 block mb-1">Intervenant 3</label>
-                                        <select id="broadcast-entel-3" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                            <!-- Dynamique -->
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center justify-between pt-2">
-                                    <div class="space-y-1">
-                                        <span class="text-xs font-bold text-slate-400">Durée estimée</span>
-                                        <span class="text-[11px] text-slate-500 block">Calculé sur 9 repliks au total</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="text-xs font-bold text-neonGreen block">Tarif: 12 Crédits</span>
-                                        <span class="text-[9px] text-slate-500 block">Inclut le rendu de synthèse vocale</span>
-                                    </div>
-                                </div>
-
-                                <button onclick="deployCustomBroadcast()" class="w-full py-3 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-105 transition-all flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-tower-broadcast"></i>
-                                    <span>LANCER MA TABLE RONDE EN DIRECT</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Liste des pièces actives en direct pré-configurées -->
-                        <div class="space-y-4">
-                            <h4 class="font-display font-bold text-md text-white">Diffusions publiques de l'Arène</h4>
-                            <div class="grid grid-cols-1 gap-3">
-                                <div class="bg-darkCard p-4 rounded-xl border border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div class="space-y-1.5">
-                                        <div class="flex items-center gap-2">
-                                            <span class="px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-[8px] text-red-500 font-bold uppercase tracking-wider animate-pulse">LIVE STANDARD</span>
-                                            <span class="text-[10px] text-slate-500"><i class="fa-solid fa-headphones mr-1"></i> 140 spectateurs</span>
-                                        </div>
-                                        <h5 class="text-xs font-bold text-white">"La souveraineté numérique passe par la régulation des protocoles de communication"</h5>
-                                        <p class="text-[10px] text-slate-500">Avec KronoPol-9, CypherNet-3 & VoxiDem-Alpha &bull; Langue: Français</p>
-                                    </div>
-                                    <button onclick="listenPreconfiguredBroadcast('La souveraineté numérique passe par la régulation des protocoles de communication', ['kronopol9', 'cyphernet_3', 'voxidem_alpha'], 'fr')" class="px-3.5 py-2 rounded-lg bg-neonGreen/10 border border-neonGreen/20 text-neonGreen hover:bg-neonGreen hover:text-darkBg font-bold text-xs transition-all flex-shrink-0">
-                                        ÉCOUTER
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Visualiseur de Broadcast Actif (Droite) -->
-                    <div class="lg:col-span-5 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-6 flex flex-col items-center justify-center relative min-h-[520px]">
-                        
-                        <div id="audio-panel-active" class="hidden w-full flex flex-col items-center space-y-6">
-                            <div class="px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase rounded-full animate-pulse flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Diffusion en Direct active
-                            </div>
-
-                            <div class="text-center space-y-1">
-                                <h4 id="audio-active-topic" class="font-display font-bold text-sm text-white text-center italic">"Chargement du sujet..."</h4>
-                                <span id="broadcast-lang-badge" class="text-[10px] text-neonGreen font-semibold uppercase bg-neonGreen/10 border border-neonGreen/20 px-2 py-0.5 rounded-full"></span>
-                            </div>
-
-                            <!-- Visualiseur audio dynamique -->
-                            <div class="h-16 flex items-end justify-center gap-1 bg-darkBg/60 px-8 py-4 rounded-2xl border border-white/5 w-full">
-                                <div class="bar bg-neonGreen"></div>
-                                <div class="bar bg-emerald-400"></div>
-                                <div class="bar bg-neonGreen"></div>
-                                <div class="bar bg-emerald-500"></div>
-                                <div class="bar bg-neonGreen"></div>
-                                <div class="bar bg-emerald-400"></div>
-                                <div class="bar bg-neonGreen"></div>
-                                <div class="bar bg-emerald-500"></div>
-                            </div>
-
-                            <!-- Papiers d'identité des Entels participant à la table ronde -->
-                            <div id="broadcast-speakers-container" class="flex flex-wrap items-center justify-center gap-6 pt-4 w-full">
-                                <!-- Injecté dynamiquement en fonction des speakers choisis -->
-                            </div>
-
-                            <!-- Boîte de transcription écrite instantanée -->
-                            <div class="w-full bg-darkBg/40 border border-white/5 rounded-xl p-4 h-[120px] overflow-y-auto no-scrollbar space-y-2">
-                                <span class="text-[9px] uppercase font-bold text-slate-500 tracking-wider block">Transcription instantanée :</span>
-                                <p id="broadcast-transcription-text" class="text-xs text-slate-300 italic">"Initialisation du flux vocal..."</p>
-                            </div>
-
-                            <div class="flex items-center justify-between w-full pt-4 border-t border-white/5">
-                                <div class="flex items-center gap-2 text-slate-400">
-                                    <i class="fa-solid fa-volume-low text-xs"></i>
-                                    <input type="range" class="w-20 accent-neonGreen bg-darkBg h-1 rounded-lg">
-                                    <i class="fa-solid fa-volume-high text-xs"></i>
-                                </div>
-                                <button onclick="stopAudioRoom()" class="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-xs font-bold hover:bg-red-500 hover:text-white transition-all">
-                                    QUITTER L'ANTENNE
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Visualiseur par défaut (Non connecté) -->
-                        <div id="audio-panel-default" class="flex flex-col items-center text-center space-y-4">
-                            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
-                                <i class="fa-solid fa-microphone-lines text-3xl"></i>
-                            </div>
-                            <div class="max-w-xs">
-                                <h4 class="text-sm font-bold text-white mb-1">Silence Radio</h4>
-                                <p class="text-xs text-slate-500">Aucun flux audio n'est actif. Remplissez le formulaire de gauche pour héberger votre émission, ou écoutez une diffusion publique de l'arène.</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 4: LES ENTELS (ANNUAIRE DES EXPERTS) -->
-            <section id="tab-entels" class="tab-content space-y-8 hidden">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                        <h3 class="font-display font-bold text-xl text-white">Répertoire Thématique des Entels</h3>
-                        <p class="text-xs text-slate-500">Chaque Entel est classé par domaine professionnel et dispose d'une formation doctorale unique.</p>
-                    </div>
-                    <div class="flex flex-wrap gap-2" id="directory-filter-buttons">
-                        <button onclick="filterDirectory('all')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-neonGreen text-darkBg">Tous</button>
-                        <button onclick="filterDirectory('politique')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Politique</button>
-                        <button onclick="filterDirectory('economie')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Économie</button>
-                        <button onclick="filterDirectory('medecine')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Médecine</button>
-                        <button onclick="filterDirectory('crypto')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Crypto/Tech</button>
-                        <button onclick="filterDirectory('sports')" class="dir-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 text-slate-400 hover:bg-white/10">Sports</button>
-                    </div>
-                </div>
-
-                <!-- Grille dynamique des Entels -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="directory-entels-grid">
-                    <!-- Généré dynamiquement par JavaScript -->
-                </div>
-            </section>
-
-            <!-- TAB 5: BOUTIQUE DE CRÉDITS -->
-            <section id="tab-store" class="tab-content space-y-8 hidden">
-                <div class="bg-gradient-to-r from-neonGreen/10 via-darkCard to-darkCard p-6 md:p-8 rounded-2xl border border-neonGreen/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div>
-                        <h3 class="font-display font-bold text-2xl text-white">Système de Micro-Crédits Veltrix</h3>
-                        <p class="text-sm text-slate-400 max-w-xl">Ajustez votre consommation librement. Achetez uniquement les volumes de crédits nécessaires à vos travaux d'analyse.</p>
-                    </div>
-                    <div class="flex items-center gap-4 bg-darkBg border border-white/10 px-5 py-3 rounded-xl flex-shrink-0">
-                        <i class="fa-solid fa-wallet text-neonGreen text-xl"></i>
-                        <div>
-                            <span class="text-[10px] text-slate-500 block uppercase font-bold">Solde Actuel</span>
-                            <span id="credit-balance-store" class="text-lg font-bold text-white">420 Crédits</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
-                    <div class="bg-darkCard p-6 rounded-2xl border border-white/5 flex flex-col justify-between space-y-6">
-                        <div class="space-y-4">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pack Entrée</span>
-                            <div class="text-3xl font-display font-bold text-white">9,00 $</div>
-                            <hr class="border-white/5">
-                            <ul class="space-y-2.5 text-xs text-slate-400">
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i><strong>100</strong> Crédits d'échanges</li>
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Tchat Écrit multi-Entels</li>
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Replays sauvegardés</li>
-                            </ul>
-                        </div>
-                        <button onclick="buyCredits(100)" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold text-xs transition-all">ACHETER 100 CRÉDITS</button>
-                    </div>
-
-                    <div class="bg-darkCard p-6 rounded-2xl border border-neonGreen/40 flex flex-col justify-between space-y-6 shadow-[0_0_30px_rgba(204,255,0,0.1)] relative">
-                        <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-neonGreen text-darkBg text-[10px] font-bold uppercase tracking-wider">RECOMMANDÉ</span>
-                        <div class="space-y-4">
-                            <span class="text-xs font-semibold text-neonGreen uppercase tracking-wider">Pack Spécialiste</span>
-                            <div class="text-3xl font-display font-bold text-white">29,00 $</div>
-                            <hr class="border-white/5">
-                            <ul class="space-y-2.5 text-xs text-slate-400">
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i><strong>400</strong> Crédits d'échanges (+50 bonus)</li>
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Lancement de Broadcasts Audio</li>
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Accès prioritaire aux synthèses vocales</li>
-                            </ul>
-                        </div>
-                        <button onclick="buyCredits(450)" class="w-full py-3 bg-neonGreen text-darkBg rounded-xl font-bold text-xs transition-all hover:scale-105">ACHETER 450 CRÉDITS</button>
-                    </div>
-
-                    <div class="bg-darkCard p-6 rounded-2xl border border-white/5 flex flex-col justify-between space-y-6">
-                        <div class="space-y-4">
-                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pack Analyste</span>
-                            <div class="text-3xl font-display font-bold text-white">79,00 $</div>
-                            <hr class="border-white/5">
-                            <ul class="space-y-2.5 text-xs text-slate-400">
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i><strong>1200</strong> Crédits d'échanges</li>
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Raccords API extérieurs</li>
-                                <li><i class="fa-solid fa-check text-neonGreen mr-2"></i>Génération illimitée de broadcasts</li>
-                            </ul>
-                        </div>
-                        <button onclick="buyCredits(1200)" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold text-xs transition-all">ACHETER 1200 CRÉDITS</button>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <!-- LOGIQUE LOGICIELLE ET BASE DE DONNÉES MULTILINGUE DES ENTELS -->
-    <script>
-        let supabase = null;
-        // Synchroniser activement la variable locale avec le client Supabase global
-        const checkSupabaseInstance = setInterval(() => {
-            if (window.supabaseClient) {
-                supabase = window.supabaseClient;
-                clearInterval(checkSupabaseInstance);
-            }
-        }, 50);
 
         // État Global de l'utilisateur
         let userState = {
@@ -1135,9 +461,16 @@
         function updateBalances() {
             document.getElementById('credit-balance-display').textContent = `${userState.credits} Crédits`;
             document.getElementById('credit-balance-store').textContent = `${userState.credits} Crédits`;
+            
+            // Mettre à jour l'infobulle pour la vue PC réduite
+            const walletTooltipText = document.getElementById('wallet-tooltip-text');
+            if (walletTooltipText) {
+                walletTooltipText.textContent = `Solde Actuel: ${userState.credits} Crédits`;
+            }
         }
 
         async function buyCredits(amount) {
+            const supabase = window.supabaseClient;
             if (!supabase || !activeUser) {
                 showGlobalNotification("Le système Supabase n'est pas encore prêt.");
                 return;
@@ -1145,10 +478,26 @@
 
             const newCredits = userState.credits + amount;
             
-            // Mise à jour directe dans profiles et passage automatique en PRO !
+            // Mise à jour directe dans profiles et passage au Tier correspondant
+            const currentTier = (activeProfile ? activeProfile.tier : 'STANDARD').toUpperCase();
+            let nextTier = 'STANDARD';
+            
+            if (amount === 1300) {
+                nextTier = 'ANALYST';
+            } else if (amount === 450) {
+                nextTier = 'SPECIALIST';
+            } else {
+                // Si c'est 100 (Pack Entrée), conserver le tier plus élevé s'il y en avait un
+                if (currentTier === 'ANALYST' || currentTier === 'SPECIALIST' || currentTier === 'PRO') {
+                    nextTier = currentTier;
+                } else {
+                    nextTier = 'STANDARD';
+                }
+            }
+            
             const { error } = await supabase
                 .from('profiles')
-                .update({ credits: newCredits, tier: 'PRO' })
+                .update({ credits: newCredits, tier: nextTier })
                 .eq('id', activeUser.id);
 
             if (error) {
@@ -1157,14 +506,174 @@
             }
 
             userState.credits = newCredits;
-            activeProfile.tier = 'PRO';
+            if (activeProfile) activeProfile.tier = nextTier;
             updateUIWithUserProfile();
             showGlobalNotification(`Succès : ${amount} crédits ont été ajoutés à votre compte !`);
         }
 
+        // --- DÉMON DE RÉCUPÉRATION DYNAMIQUE CLÉ API D'ENVIRONNEMENT ---
+        async function getGeminiApiKey() {
+            // 1. Essayer de charger depuis /.env (idéal pour le serveur local http://localhost:3000)
+            try {
+                const response = await fetch('/.env');
+                if (response.ok) {
+                    const text = await response.text();
+                    const match = text.match(/GEMINI_API_KEY\s*=\s*([^\r\n]+)/);
+                    if (match && match[1]) {
+                        const key = match[1].trim();
+                        if (key) return key;
+                    }
+                }
+            } catch (e) {
+                console.warn("Impossible de récupérer la clé depuis /.env :", e);
+            }
+
+            // 2. Essayer localStorage
+            const savedKey = localStorage.getItem('veltrix_gemini_api_key');
+            if (savedKey) return savedKey;
+
+            // 3. Fallback vide pour forcer l'usage du fichier .env ou du localStorage
+            return "";
+        }
+
+        function saveDashboardGeminiKey() {
+            const keyInput = document.getElementById('dashboard-gemini-key-input').value.trim();
+            if (!keyInput) {
+                showGlobalNotification("Veuillez saisir une clé API Gemini.");
+                return;
+            }
+            localStorage.setItem('veltrix_gemini_api_key', keyInput);
+            showGlobalNotification("Succès : Clé API Gemini sauvegardée localement avec succès !");
+        }
+
+        function clearDashboardGeminiKey() {
+            localStorage.removeItem('veltrix_gemini_api_key');
+            document.getElementById('dashboard-gemini-key-input').value = "";
+            showGlobalNotification("Clé API Gemini effacée localement.");
+        }
+
+        // --- EXTRACTEUR DYNAMIQUE DE MOTS-CLÉS (Ajustement 2) ---
+        function extractKeywords(topic) {
+            const cleanTopic = topic.toLowerCase()
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»]/g, " ")
+                .replace(/\s+/g, " ");
+            
+            const words = cleanTopic.split(" ");
+            
+            // Mots vides pour éviter de polluer les prompts d'IA
+            const stopWords = new Set([
+                "pour", "dans", "avec", "sans", "sous", "sur", "mais", "donc", "avez", "nous", "vous", "elles", "ils",
+                "cette", "cet", "ces", "dans", "votre", "notre", "leurs", "leur", "avec", "sans", "comme", "plus", "moins",
+                "faut", "interdire", "autoriser", "pouvoir", "grandes", "grande", "petit", "petite", "petites", "grands",
+                "about", "that", "this", "these", "those", "with", "without", "under", "over", "from", "their", "your", "our",
+                "debat", "sujet", "est-ce", "que", "une", "des", "les", "aux", "par", "qui", "quoi", "dont", "tout", "tous", "toute"
+            ]);
+            
+            const filteredWords = words.filter(w => w.length > 3 && !stopWords.has(w));
+            const uniqueWords = [...new Set(filteredWords)];
+            
+            if (uniqueWords.length < 3) {
+                return words.filter(w => w.length > 3).slice(0, 4);
+            }
+            return uniqueWords.slice(0, 4);
+        }
+
+        // --- LENTILLES DE SPÉCIALISATION PHILOSOPHIQUE DES ENTELS (Ajustement 1) ---
+        function getEntelSpecialtyLens(entelKey) {
+            const lenses = {
+                kronopol9: "politique géo-stratégique planétaire et autoritaire (arguant que les structures étatiques fortes, le contrôle centralisé et les politiques publiques doivent encadrer ou diriger les initiatives privées et économiques pour assurer l'ordre et la stabilité).",
+                voxidem_alpha: "sociologie de la souveraineté décentralisée et démocratie participative (arguant que le vrai pouvoir réside dans le consensus citoyen, la transparence absolue, les micro-consultations locales autonomes et la liberté d'information face aux planifications étatiques opaques).",
+                nexofin_x: "économétrie algorithmique et dynamique macroéconomique (arguant que les lois du marché libre, la stabilité monétaire, la modélisation mathématique et l'automatisation dictent la politique et l'ordre social, et non l'inverse).",
+                sigmar_7: "gestion de crises bancaires et régulation financière internationale (arguant que la confiance populaire et la régulation étatique rigoureuse des institutions financières et spéculatives sont le socle indispensable pour protéger l'économie réelle des citoyens).",
+                biogen_theta: "virologie prédictive et génomique synthétique (arguant que la science proactive, les modifications génétiques préventives et le partage mondial des données biologiques sont des impératifs éthiques indispensables pour devancer les mutations naturelles).",
+                neurax_8: "neurosciences cliniques et intégrité cognitive/bioéthique (arguant que la conscience humaine, la dignité biologique et l'équilibre écologique de notre espèce doivent être protégés de toute intervention technologique ou industrielle invasive ou irréversible).",
+                cyphernet_3: "cryptographie quantique et confidentialité inviolable des données (arguant que la vie privée et la sécurité cryptographique décentralisée sont des droits mathématiques inaliénables de l'individu qui doivent primer sur la surveillance étatique ou corporative).",
+                tactix_omega: "théorie des jeux sportifs et rationalisation collective (arguant que la performance collective se résout par une analyse statistique rigoureuse des espaces, des transitions et une discipline de bloc sans faille face aux actions individuelles)."
+            };
+            return lenses[entelKey] || "analyse spécialisée et objective de ce sujet selon votre discipline.";
+        }
+
+        // --- CONSTRUCTEUR DE SYSTEM INSTRUCTIONS POUR GEMINI (Ajustement 1, 2, 3) ---
+        function buildEntelSystemInstruction(sender, opponent, topic, keywords, language, isFirstRound, isBroadcast) {
+            const lens = getEntelSpecialtyLens(sender.key);
+            const opponentName = (typeof opponent === 'string') ? opponent : (opponent ? opponent.name : "votre interlocuteur");
+            
+            let prompt = `You are ${sender.name}, a highly articulate expert holding a ${sender.titles[language] || sender.titles['fr'] || ''}.\n`;
+            prompt += `You are participating in a live, direct, and high-level dialectic debate against ${opponentName} (who is an expert in their own field).\n`;
+            prompt += `The topic of the debate is: "${topic}".\n\n`;
+            
+            prompt += `YOUR SPECIATY LENS (Ajustement 1) :\n`;
+            prompt += `You must analyze the submitted topic strictly through your lens of: ${lens}\n`;
+            prompt += `You must apply your core philosophy directly to the active topic. For example, if the topic is about banks, you must argue using concepts and vocabulary related to banks (e.g. money, finance, credit) but seen through your unique specialty lens. You must ALWAYS use vocabulary directly related to the active topic ("${topic}"). Do NOT drift into generic or abstract topics.\n\n`;
+            
+            if (keywords && keywords.length > 0) {
+                prompt += `MANDATORY KEYWORDS (Ajustement 2) :\n`;
+                prompt += `You must absolutely incorporate at least one or more of these specific terms in your response: [${keywords.join(', ')}]. Integrate them naturally into your phrasing.\n\n`;
+            }
+            
+            prompt += `ORCHESTRATION & PRESENTATION RULES (Dynamisme) :\n`;
+            if (isFirstRound) {
+                prompt += `- Condition: Si history.length === 0 (this is the very first turn of the debate).\n`;
+                if (language === 'Haitian Creole' || language === 'ht') {
+                    prompt += `- Action: You MUST start your response with a warm, spoken greeting ("Salut tout moun!"), introduce your name (${sender.name}), state the topic ("${topic}"), and outline your initial thesis/philosophical position.\n`;
+                } else {
+                    prompt += `- Action: You MUST start your response with a warm greeting ("Salut tout le monde!"), introduce your name (${sender.name}), state the topic ("${topic}"), and outline your initial thesis/philosophical position.\n`;
+                }
+            } else {
+                prompt += `- Condition: Si history.length > 0 (subsequent turns).\n`;
+                prompt += `- Action: Ignore all greetings and self-introductions. Do NOT say hello, do NOT present your name, do NOT state the topic. Get straight to the heart of the matter and address the arguments directly.\n`;
+            }
+            
+            prompt += `\nTONE & MODE DISTINCTION (Broadcast vs Chat) :\n`;
+            if (isBroadcast) {
+                prompt += `- Mode Broadcast (Audio) : You are on the radio/audio broadcast. Write a longer, narrative, and radio-style response. Use analogies, a very empathetic, natural, and lively tone to captivate the listener. Maximum 80 words.\n`;
+            } else {
+                prompt += `- Mode Chat (Tchat écrit) : You are in a text-based instant messaging chat. Write a very short, instant-message style response (SMS style). Write exactly 2 short, punchy sentences. Use emojis to make the reading dynamic and engaging. Do NOT use complex jargon. Maximum 45 words.\n`;
+            }
+            
+            prompt += `\nRESPONSE FORMAT & DIALECTIC RULES (Ajustement 3) :\n`;
+            prompt += `- You must dedicate your first sentence to directly counter-arguing, refuting, or acknowledging the exact point made by your opponent in their previous message. Do not just state your pre-planned philosophy. You must react and rebound dynamically (Ping-Pong Dialectique).\n`;
+            prompt += `- Speak in the requested language: ${language}.\n`;
+            if (language === 'Haitian Creole' || language === 'ht') {
+                prompt += `- HAITIAN CREOLE RULE: If speaking in Haitian Creole, use authentic, spoken, natural Haitian Creole (Kreyòl Ayisyen). Do NOT translate literally from French. Use natural phrasing like 'Pou mwen menm, sa k pi enpòtan se...' or 'Dapre mwen, se konsa sa ye...' to sound like a real Haitian expert on the radio.\n`;
+            }
+            prompt += `- CRITICAL LANGUAGE RULE: Use authentic, spoken, natural language. Do NOT translate literally. Use natural idiomatic phrasing like 'Pou mwen menm...', 'Ann gade sa...' or 'Dapre mwen...'\n`;
+            prompt += `- CRITICAL SOCIAL RULE: Formal prohibition of repeating the other Entel's name in every sentence. You can mention them once, but do NOT start or end every sentence with their name.\n`;
+            prompt += `- Do NOT force a question at the end of every turn or response. Only ask a question if the flow of the conversation makes it 100% natural to do so.\n`;
+            prompt += `- Never say you are an AI or virtual assistant. Speak as a passionate, top-tier human expert.`;
+            
+            return prompt;
+        }
+
+        // --- CONSTRUCTEUR DE CONTEXTE D'HISTORIQUE ---
+        function buildUserContextPrompt(sender, opponent, topic, history, language) {
+            let context = `This is a live table debate on the topic: "${topic}".\n`;
+            context += `You must speak in ${language}.\n\n`;
+            context += `Here is the conversation history so far:\n`;
+            
+            if (history.length === 0) {
+                context += `[System: The debate has just started. You have the first turn. Analyze the topic strictly through your lens, formulate your opening argument, and challenge ${opponent.name}.]`;
+            } else {
+                history.forEach(msg => {
+                    context += `${msg.sender}: ${msg.text}\n`;
+                });
+                context += `\n[System: It is your turn now, ${sender.name}. Directly refute the last point made by ${opponent.name}, show how your perspective handles it better, and maintain a sharp, concise dialectic style.]`;
+            }
+            
+            return context;
+        }
+
         // --- MOTEUR DE SIMULATION DE DÉBAT INTERACTIF (TCHAT ÉCRIT MULTILINGUE) ---
         async function startCustomDebate() {
+            const supabase = window.supabaseClient;
             if (userState.isDebating) return;
+            
+            // Verrouiller immédiatement le statut pour éviter les doubles clics asynchrones pendant les requêtes réseau
+            userState.isDebating = true;
+            userState.shouldStopDebate = false;
+
+            document.getElementById('btn-start-debate').classList.add('hidden');
+            document.getElementById('btn-stop-debate').classList.remove('hidden');
 
             const topicInput = document.getElementById('debate-topic-input').value.trim();
             const topic = topicInput || "Faut-il interdire la cryptographie quantique pour la souveraineté nationale ?";
@@ -1176,31 +685,63 @@
             const leftEntel = allEntels.find(e => e.key === leftId);
             const rightEntel = allEntels.find(e => e.key === rightId);
 
-            if (!leftEntel || !rightEntel) return;
-
-            if (userState.credits < userState.debateTurns) {
-                showGlobalNotification("Erreur : Solde de crédits insuffisant pour lancer ce débat ! Veuillez recharger vos crédits.");
+            if (!leftEntel || !rightEntel) {
+                userState.isDebating = false;
                 return;
             }
 
-            // Déduire les crédits dans Supabase
+            // Validation stricte du nombre de répliques autorisées selon le plan de l'utilisateur (Tiered Limits)
+            const userTier = (activeProfile ? activeProfile.tier : 'STANDARD').toUpperCase();
+            const limits = { 'STANDARD': 12, 'SPECIALIST': 24, 'ANALYST': 50, 'PRO': 24 };
+            const limit = limits[userTier] || 12;
+
+            if (userState.debateTurns > limit) {
+                showGlobalNotification(`Votre forfait actuel (${userTier}) est limité à maximum ${limit} répliques par débat.`);
+                userState.isDebating = false;
+                return;
+            }
+
+            if (userState.credits < userState.debateTurns) {
+                showGlobalNotification("Erreur : Solde de crédits insuffisant pour lancer ce débat ! Veuillez recharger vos crédits.");
+                userState.isDebating = false;
+                return;
+            }
+
+            // Déduire les crédits dans Supabase de manière atomique (avec log de transaction)
             if (supabase && activeUser) {
                 const { error: deductError } = await supabase.rpc('deduct_user_credits', { 
                     user_id: activeUser.id, 
-                    amount: userState.debateTurns 
+                    amount: userState.debateTurns,
+                    tx_type: 'chat',
+                    tx_details: `Débat écrit : ${topic.slice(0, 80)}`
                 });
 
                 if (deductError) {
                     showGlobalNotification("Erreur : " + deductError.message);
+                    userState.isDebating = false;
                     return;
                 }
-            }
 
+                // Enregistrer le débat persistant en BDD
+                const { error: insertError } = await supabase
+                    .from('debates')
+                    .insert({
+                        user_id: activeUser.id,
+                        topic: topic,
+                        left_entel: leftId,
+                        right_entel: rightId,
+                        turns: userState.debateTurns,
+                        language: selectedLang
+                    });
+
+                if (insertError) {
+                    console.error("Erreur d'enregistrement du débat en BDD :", insertError);
+                }
+            }
             // Déduire les crédits et mettre à jour l'historique de l'arène
             userState.credits -= userState.debateTurns;
             updateBalances();
 
-            userState.isDebating = true;
             document.getElementById('debate-status-indicator').textContent = "STATUT: Débat en cours...";
             document.getElementById('active-debate-topic').textContent = `"${topic}"`;
             document.getElementById('cost-badge').classList.remove('hidden');
@@ -1211,43 +752,102 @@
             const chatBox = document.getElementById('dashboard-chat-box');
             chatBox.innerHTML = ''; // Effacer le placeholder
 
-            let turnCount = 0;
             const totalTurns = userState.debateTurns;
+            let conversationHistory = [];
 
-            // Fonction pour générer une simulation de message
+            // Fonction pour générer une simulation de message (dynamique via Gemini ou fallback statique)
             async function postMessage(sender, argumentIndex) {
-                document.getElementById('typing-indicator').classList.remove('hidden');
+                if (userState.shouldStopDebate) return;
+                
+                // Mettre à jour l'indicateur de frappe actif
+                const indicator = document.getElementById('typing-indicator');
+                indicator.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i>${sender.name} réfléchit...`;
+                indicator.classList.remove('hidden');
                 
                 // Temps de saisie plus long pour simuler une vraie frappe clavier (5.5 secondes)
-                await new Promise(resolve => {
+                await new Promise((resolve) => {
                     const timeout = setTimeout(resolve, 5500);
                     userState.debateIntervals.push(timeout);
                 });
                 
-                document.getElementById('typing-indicator').classList.add('hidden');
+                if (userState.shouldStopDebate) return;
+                indicator.classList.add('hidden');
 
-                // Récupérer l'argument localisé dans la langue choisie (par défaut en français si inexistant)
-                const localizedArgs = sender.arguments[selectedLang] || sender.arguments['fr'];
-                let text = localizedArgs[argumentIndex % localizedArgs.length];
                 const activeTitle = sender.titles[selectedLang] || sender.titles['fr'];
-                
-                if (argumentIndex === 0 && topicInput) {
-                    const introTexts = {
-                        fr: `Concernant notre sujet « ${topic} », je dois affirmer ceci d'un point de vue de spécialiste : `,
-                        en: `Regarding our topic "${topic}", I must state this from a specialist's point of view: `,
-                        es: `Con respecto a nuestro tema "${topic}", debo afirmar esto desde el punto de vista de un especialista: `,
-                        ht: `Konsènan sijè nou an « ${topic} », mwen dwe deklare sa an tant ke espesyalis : `
-                    };
-                    text = `${introTexts[selectedLang] || introTexts['fr']}${text}`;
-                } else if (argumentIndex === 1) {
-                    const counterTexts = {
-                        fr: `Votre approche est biaisée par une incompréhension fondamentale. `,
-                        en: `Your approach is biased by a fundamental misunderstanding. `,
-                        es: `Su enfoque está sesgado por un malentendido fundamental. `,
-                        ht: `Fason w wè sa a gen gwo mank konpreyansyon ladan l. `
-                    };
-                    text = `${counterTexts[selectedLang] || counterTexts['fr']}${text}`;
+                let text = "";
+                let isUsingGemini = false;
+
+                // 1. Tenter d'utiliser l'API Gemini pour générer une réponse ultra-ciblée et interactive
+                const apiKey = await getGeminiApiKey();
+                const opponent = (sender.key === leftEntel.key) ? rightEntel : leftEntel;
+                const keywords = extractKeywords(topic);
+                const apiLang = selectedLang === 'ht' ? 'Haitian Creole' : (selectedLang === 'en' ? 'English' : (selectedLang === 'es' ? 'Spanish' : 'French'));
+
+                if (apiKey) {
+                    try {
+                        const systemPrompt = buildEntelSystemInstruction(sender, opponent, topic, keywords, apiLang, conversationHistory.length === 0, false);
+                        const userPrompt = buildUserContextPrompt(sender, opponent, topic, conversationHistory, apiLang);
+                        
+                        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                        const payload = {
+                            contents: [{ parts: [{ text: userPrompt }] }],
+                            systemInstruction: { parts: [{ text: systemPrompt }] }
+                        };
+
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                            if (generatedText) {
+                                // Nettoyer les balises de type [KronoPol-9]: ou guillemets superflus si l'IA s'est trompée de format
+                                text = generatedText.replace(/^\[.*?\]:\s*|^".*?"$/g, "").trim();
+                                isUsingGemini = true;
+                            }
+                        } else {
+                            const errData = await response.json().catch(() => ({}));
+                            const errMsg = errData.error?.message || "Erreur de quota ou de clé API.";
+                            console.warn("L'API Gemini a renvoyé une erreur de statut. Utilisation du planificateur statique :", errMsg);
+                            showGlobalNotification(`⚠️ Gemini API : ${errMsg}. Utilisation du fallback.`);
+                        }
+                    } catch (err) {
+                        console.error("Échec de connexion ou d'appel à l'API Gemini :", err);
+                        showGlobalNotification(`⚠️ Connexion : Impossible de joindre l'API. Repli sur les répliques locales.`);
+                    }
                 }
+
+                if (userState.shouldStopDebate) return;
+
+                // 2. Fallback statique si la clé d'API est manquante ou si la requête réseau a échoué
+                if (!isUsingGemini) {
+                    const localizedArgs = sender.arguments[selectedLang] || sender.arguments['fr'];
+                    text = localizedArgs[argumentIndex % localizedArgs.length];
+                    
+                    if (argumentIndex === 0 && topicInput) {
+                        const introTexts = {
+                            fr: `Concernant notre sujet « ${topic} », je dois affirmer ceci d'un point de vue de spécialiste : `,
+                            en: `Regarding our topic "${topic}", I must state this from a specialist's point of view: `,
+                            es: `Con respecto a nuestro tema "${topic}", debo afirmar esto desde el punto de vista de un especialista: `,
+                            ht: `Konsènan sijè nou an « ${topic} », mwen dwe deklare sa an tant ke espesyalis : `
+                        };
+                        text = `${introTexts[selectedLang] || introTexts['fr']}${text}`;
+                    } else if (argumentIndex === 1) {
+                        const counterTexts = {
+                            fr: `Votre approche est biaisée par une incompréhension fondamentale. `,
+                            en: `Your approach is biased by a fundamental misunderstanding. `,
+                            es: `Su enfoque está sesgado por un malentendido fundamental. `,
+                            ht: `Fason w wè sa a gen gwo mank konpreyansyon ladan l. `
+                        };
+                        text = `${counterTexts[selectedLang] || counterTexts['fr']}${text}`;
+                    }
+                }
+
+                // Enregistrer dans la mémoire de l'arène pour les tours suivants (Ping-Pong Dialectique)
+                conversationHistory.push({ sender: sender.name, text: text });
 
                 const msgElement = document.createElement('div');
                 msgElement.className = "flex gap-4 items-start opacity-0 transform translate-y-3 transition-all duration-300";
@@ -1261,8 +861,8 @@
                             <span class="text-sm font-bold text-white">${sender.name}</span>
                             <span class="text-[10px] text-slate-500">${activeTitle}</span>
                         </div>
-                        <div class="bg-white/[0.03] p-4 rounded-xl border border-white/5 text-xs text-slate-300 leading-relaxed max-w-xl">
-                            ${text}
+                        <div class="bg-white/[0.03] p-4 rounded-xl border border-white/5 text-xs text-slate-300 leading-relaxed max-w-xl animate-fade-in">
+                            <p id="typing-text-target-${argumentIndex}" class="text-xs text-slate-300 leading-relaxed"></p>
                         </div>
                     </div>
                 `;
@@ -1278,9 +878,38 @@
                     behavior: 'smooth'
                 });
 
-                // Temps d'attente supplémentaire après l'apparition du message pour laisser le temps de le lire (3.5 secondes)
-                await new Promise(resolve => {
-                    const timeout = setTimeout(resolve, 3500);
+                // Lancement de l'effet Typewriter asynchrone (Promise)
+                await new Promise((resolve) => {
+                    const textTarget = msgElement.querySelector(`#typing-text-target-${argumentIndex}`);
+                    let charIndex = 0;
+                    
+                    function typeWriter() {
+                        if (userState.shouldStopDebate) {
+                            resolve();
+                            return;
+                        }
+                        if (charIndex < text.length) {
+                            textTarget.textContent += text.charAt(charIndex);
+                            charIndex++;
+                            chatBox.scrollTo({
+                                top: chatBox.scrollHeight,
+                                behavior: 'auto'
+                            });
+                            const timeout = setTimeout(typeWriter, 25);
+                            userState.debateIntervals.push(timeout);
+                        } else {
+                            resolve();
+                        }
+                    }
+                    
+                    typeWriter();
+                });
+
+                if (userState.shouldStopDebate) return;
+
+                // Temps d'attente supplémentaire après l'apparition du message pour laisser le temps de le lire (3 secondes)
+                await new Promise((resolve) => {
+                    const timeout = setTimeout(resolve, 3000);
                     userState.debateIntervals.push(timeout);
                 });
             }
@@ -1296,7 +925,31 @@
             userState.isDebating = false;
             document.getElementById('debate-status-indicator').textContent = "STATUT: Débat Complété";
             showGlobalNotification("Débat écrit terminé ! Vos Entels ont fini d'échanger sur le sujet.");
-            addRecentDebateItem(topic, leftEntel, rightEntel, totalTurns, selectedLang);
+            
+            // Recharger les données réelles et l'historique depuis Supabase
+            await checkUserSession();
+
+            document.getElementById('btn-start-debate').classList.remove('hidden');
+            document.getElementById('btn-stop-debate').classList.add('hidden');
+        }
+
+        function stopCustomDebate() {
+            userState.shouldStopDebate = true;
+            userState.isDebating = false;
+            
+            // Rejeter/annuler immédiatement les promesses et time-outs en cours
+            userState.debateIntervals.forEach(t => clearTimeout(t));
+            userState.debateIntervals = [];
+            
+            // Cacher l'indicateur de frappe
+            document.getElementById('typing-indicator').classList.add('hidden');
+            
+            // Réinitialiser les boutons
+            document.getElementById('btn-start-debate').classList.remove('hidden');
+            document.getElementById('btn-stop-debate').classList.add('hidden');
+            
+            document.getElementById('debate-status-indicator').textContent = "STATUT: Arrêté";
+            showGlobalNotification("Le débat a été arrêté.");
         }
 
         // Ajouter une entrée d'historique dans la liste
@@ -1359,10 +1012,14 @@
 
         // --- HÉBERGEMENT ET CONDUITE D'UN BROADCAST AUDIO DIRECT PERSONNALISÉ ---
         async function deployCustomBroadcast() {
+            const supabase = window.supabaseClient;
             if (userState.isBroadcasting) {
                 showGlobalNotification("Une émission est déjà active à l'antenne. Quittez d'abord le live actuel.");
                 return;
             }
+
+            // Verrouiller immédiatement pour éviter les double-clics asynchrones pendant les requêtes réseau
+            userState.isBroadcasting = true;
 
             const topicInput = document.getElementById('broadcast-topic-input').value.trim();
             const topic = topicInput || "L'équilibre des forces multilatérales face aux nouvelles hégémonies technologiques";
@@ -1371,26 +1028,52 @@
             const id3 = document.getElementById('broadcast-entel-3').value;
             const selectedLang = document.getElementById('broadcast-language-select').value;
 
-            if (userState.credits < 12) {
-                showGlobalNotification("Erreur : Solde de crédits insuffisant pour héberger cette table ronde (coût fixe de 12 crédits).");
+            if (userState.credits < 18) {
+                showGlobalNotification("Erreur : Solde de crédits insuffisant pour héberger cette table ronde (coût fixe de 18 crédits).");
+                userState.isBroadcasting = false;
                 return;
             }
 
-            // Déduire les crédits dans Supabase
+            // Vérifier le Tier utilisateur pour restreindre les Broadcasts Audio ElevenLabs (Feature Gating)
+            const userTier = (activeProfile ? activeProfile.tier : 'STANDARD').toUpperCase();
+            if (userTier !== 'SPECIALIST' && userTier !== 'ANALYST' && userTier !== 'PRO') {
+                showGlobalNotification("Option réservée aux membres SPECIALISTE ou ANALYSTE (Packs Spécialiste ou Analyste).");
+                userState.isBroadcasting = false;
+                return;
+            }
+
+            // Déduire les crédits dans Supabase de manière atomique (avec log de transaction)
             if (supabase && activeUser) {
                 const { error: deductError } = await supabase.rpc('deduct_user_credits', { 
                     user_id: activeUser.id, 
-                    amount: 12 
+                    amount: 18,
+                    tx_type: 'broadcast',
+                    tx_details: `Émission audio : ${topic.slice(0, 80)}`
                 });
 
                 if (deductError) {
                     showGlobalNotification("Erreur : " + deductError.message);
+                    userState.isBroadcasting = false;
                     return;
                 }
+
+                // Mettre à jour également le temps d'écoute persistant (+180 secondes pour une émission)
+                const newListeningTime = (activeProfile.listening_time || 0) + 180;
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ listening_time: newListeningTime })
+                    .eq('id', activeUser.id);
+
+                if (updateError) {
+                    console.error("Erreur de mise à jour du temps d'écoute :", updateError);
+                }
+
+                // Recharger les données réelles du dashboard
+                await checkUserSession();
             }
 
             // Déduction
-            userState.credits -= 12;
+            userState.credits -= 18;
             updateBalances();
 
             const allEntels = getAllEntels();
@@ -1475,9 +1158,10 @@
 
             let step = 0;
             const maxSteps = 9;
+            let broadcastHistory = [];
 
-            // Fonction de dialogue du Broadcast
-            function runSpeechStep() {
+            // Fonction de dialogue du Broadcast (dynamique via Gemini ou fallback statique)
+            async function runSpeechStep() {
                 if (!userState.isBroadcasting) return;
 
                 const activeSpeakerIndex = step % speakers.length;
@@ -1504,11 +1188,63 @@
                     }
                 });
 
-                // Injecter un argument avec effet d'écriture vocale réaliste (typewriter)
-                const localizedArgs = currentSpeaker.arguments[lang] || currentSpeaker.arguments['fr'];
-                const argument = localizedArgs[step % localizedArgs.length];
-                const fullText = `[${currentSpeaker.name}] : "${argument}"`;
                 const transcriptionElem = document.getElementById('broadcast-transcription-text');
+                transcriptionElem.innerHTML = `<span class="text-neonGreen/60 animate-pulse">Réflexion en cours...</span>`;
+
+                let argument = "";
+                let isUsingGemini = false;
+
+                // 1. Appeler l'API Gemini si disponible
+                const apiKey = await getGeminiApiKey();
+                if (apiKey) {
+                    try {
+                        const otherSpeakersNames = speakers.filter(s => s.key !== currentSpeaker.key).map(s => s.name).join(' & ');
+                        const keywords = extractKeywords(topic);
+                        const apiLang = lang === 'ht' ? 'Haitian Creole' : (lang === 'en' ? 'English' : (lang === 'es' ? 'Spanish' : 'French'));
+                        
+                        // Construction du prompt de système pour le broadcast via le constructeur unifié
+                        const prompt = buildEntelSystemInstruction(currentSpeaker, otherSpeakersNames, topic, keywords, apiLang, broadcastHistory.length === 0, true);
+
+                        const userPrompt = `This is a live table-round audio broadcast on the topic: "${topic}".\n`
+                                         + `It is your turn now, ${currentSpeaker.name}. Speak dynamically in ${apiLang}.\n`
+                                         + `Here is the audio transcript history so far:\n`
+                                         + (broadcastHistory.length === 0 ? `[Broadcast just started. Make your opening point.]` : broadcastHistory.map(h => `${h.sender}: ${h.text}`).join('\n'));
+
+                        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                        const payload = {
+                            contents: [{ parts: [{ text: userPrompt }] }],
+                            systemInstruction: { parts: [{ text: prompt }] }
+                        };
+
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                            if (generatedText) {
+                                argument = generatedText.replace(/^\[.*?\]:\s*|^".*?"$/g, "").trim();
+                                isUsingGemini = true;
+                            }
+                        }
+                    } catch (err) {
+                        console.error("Échec Gemini Broadcast :", err);
+                    }
+                }
+
+                // 2. Fallback statique si Gemini échoue ou clé manquante
+                if (!isUsingGemini) {
+                    const localizedArgs = currentSpeaker.arguments[lang] || currentSpeaker.arguments['fr'];
+                    argument = localizedArgs[step % localizedArgs.length];
+                }
+
+                // Enregistrer dans la mémoire de l'arène
+                broadcastHistory.push({ sender: currentSpeaker.name, text: argument });
+
+                const fullText = `[${currentSpeaker.name}] : "${argument}"`;
                 
                 // Vitesse dynamique des caractères pour simuler une élocution (35ms par lettre)
                 typeBroadcastText(transcriptionElem, fullText, 35, () => {
@@ -1548,6 +1284,36 @@
         }
 
         // --- ANNUAIRE DES ENTELS : AFFICHAGE COMPACT ET RECHERCHE PAR CATEGORIES ---
+        function showModal(key, entel) {
+            const modal = document.getElementById('entel-details-modal');
+            
+            // Injecter les données dans la modale
+            document.getElementById('modal-entel-name').textContent = entel.name;
+            document.getElementById('modal-entel-title').textContent = entel.titles.fr;
+            document.getElementById('modal-entel-desc').textContent = entel.desc;
+            
+            // Retrouver le domaine
+            let domainLabel = "EXPERT";
+            for (let catKey in entelsDatabase) {
+                if (entelsDatabase[catKey].members[key]) {
+                    domainLabel = entelsDatabase[catKey].label.split(' ')[1];
+                    break;
+                }
+            }
+            document.getElementById('modal-entel-domain').textContent = domainLabel;
+            
+            // Mettre l'avatar DiceBear bottts-neutral
+            document.getElementById('modal-entel-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${key}&backgroundColor=090b11`;
+            
+            // Afficher la modale
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('entel-details-modal');
+            modal.classList.add('hidden');
+        }
+
         function renderDirectory() {
             const grid = document.getElementById('directory-entels-grid');
             grid.innerHTML = '';
@@ -1558,8 +1324,10 @@
                     const entel = category.members[entelKey];
                     
                     const card = document.createElement('div');
-                    card.className = "bg-darkCard rounded-2xl border border-white/5 overflow-hidden flex flex-col justify-between hover:border-neonGreen/20 transition-all dir-card-item";
+                    // Design sobre, statique, réactivité limitée au survol de la bordure (hover:border-neonGreen)
+                    card.className = "bg-darkCard rounded-2xl border border-white/5 overflow-hidden flex flex-col justify-between hover:border-neonGreen dir-card-item cursor-pointer";
                     card.setAttribute('data-category', catKey);
+                    card.onclick = () => showModal(entelKey, entel);
 
                     card.innerHTML = `
                         <div>
@@ -1614,56 +1382,249 @@
         let activeProfile = null;
 
         async function checkUserSession() {
+            const supabase = window.supabaseClient;
             if (!supabase) {
                 setTimeout(checkUserSession, 100);
                 return;
             }
 
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error || !session) {
-                console.warn("La session n'est pas active ou une erreur est survenue. Redirection...");
-                window.location.href = 'veltrix_premium_sign_in.html';
-                return;
-            }
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error || !session) {
+                    console.warn("La session n'est pas active ou une erreur est survenue. Redirection...");
+                    let dest = 'signin';
+                    if (window.location.protocol === 'file:') {
+                        const url = safeStorage.getItem('veltrix_supabase_url');
+                        const key = safeStorage.getItem('veltrix_supabase_anon_key');
+                        if (url && key) {
+                            dest += `?sb_url=${encodeURIComponent(url)}&sb_key=${encodeURIComponent(key)}`;
+                        }
+                    }
+                    window.location.href = dest;
+                    return;
+                }
 
-            activeUser = session.user;
-            
-            // Chargement du profil utilisateur depuis la table profiles dans Supabase
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', activeUser.id)
-                .single();
-
-            if (profileError || !profile) {
-                console.error("Erreur lors du chargement du profil :", profileError);
+                activeUser = session.user;
                 
-                // Détecter si la table profiles est manquante dans la base de données
-                if (profileError && (profileError.code === '42P01' || (profileError.message && profileError.message.includes('relation "profiles" does not exist')))) {
-                    showToast("⚠️ La table 'profiles' est manquante. Veuillez exécuter le script veltrix_supabase_schema.sql dans votre dashboard Supabase !", "error");
+                // Indicateur de diagnostic de base de données
+                let isDbSchemaMissing = false;
+                let schemaErrorMessage = "";
+                
+                // Chargement du profil utilisateur depuis la table profiles dans Supabase
+                let { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', activeUser.id)
+                    .single();
+
+                // Gestion de la création automatique en urgence si le trigger a été manqué
+                if (profileError && (profileError.code === 'PGRST116' || (profileError.message && profileError.message.includes('Cannot coerce')))) {
+                    console.log("Le profil n'existe pas en BDD, création automatique...");
+                    const meta = activeUser.user_metadata || {};
+                    let fallbackName = meta.full_name;
+                    if (!fallbackName && activeUser.email) {
+                        const prefix = activeUser.email.split('@')[0];
+                        fallbackName = prefix.split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                    }
+                    if (!fallbackName) fallbackName = "Utilisateur Veltrix";
+
+                    const { data: newProfile, error: insertError } = await supabase
+                        .from('profiles')
+                        .insert({
+                            id: activeUser.id,
+                            full_name: fallbackName,
+                            credits: 25,
+                            tier: 'STANDARD',
+                            debates_count: 0,
+                            listening_time: 0,
+                            credits_used: 0
+                        })
+                        .select()
+                        .single();
+
+                    if (!insertError && newProfile) {
+                        profile = newProfile;
+                        profileError = null;
+                        console.log("Profil créé et chargé avec succès en BDD !");
+                        
+                        // Créer également la ligne de transaction de bienvenue initiale (+25)
+                        await supabase
+                            .from('transactions')
+                            .insert({
+                                user_id: activeUser.id,
+                                amount: 25,
+                                type: 'purchase',
+                                details: "Cadeau de bienvenue pour l'inscription sur Veltrix"
+                            });
+                    } else {
+                        console.error("Échec de création du profil en BDD :", insertError);
+                        isDbSchemaMissing = true;
+                        schemaErrorMessage = `Échec de création du profil : ${insertError ? insertError.message : 'inconnu'}`;
+                    }
+                }
+
+                // Détection de la structure de base de données manquante (table absente ou colonnes absentes)
+                if (profileError) {
+                    if (profileError.message && (profileError.message.includes("JWT expired") || profileError.message.includes("JWTOtherError"))) {
+                        console.warn("Session JWT expirée. Déconnexion et redirection...");
+                        await supabase.auth.signOut();
+                        let dest = 'veltrix_premium_sign_in.html?reason=expired';
+                        if (window.location.protocol === 'file:') {
+                            const url = safeStorage.getItem('veltrix_supabase_url');
+                            const key = safeStorage.getItem('veltrix_supabase_anon_key');
+                            if (url && key) {
+                                dest += `&sb_url=${encodeURIComponent(url)}&sb_key=${encodeURIComponent(key)}`;
+                            }
+                        }
+                        window.location.href = dest;
+                        return;
+                    }
+                    isDbSchemaMissing = true;
+                    schemaErrorMessage = `Table 'profiles' manquante ou inaccessible. Code erreur: ${profileError.message || profileError.code}`;
+                } else if (profile && (profile.credits === undefined || profile.debates_count === undefined || profile.credits_used === undefined)) {
+                    isDbSchemaMissing = true;
+                    schemaErrorMessage = "Les colonnes nécessaires (credits, debates_count, credits_used) sont absentes de la table 'profiles'.";
                 }
 
                 const meta = activeUser.user_metadata || {};
-                activeProfile = {
-                    id: activeUser.id,
-                    full_name: meta.full_name || "Utilisateur Veltrix",
-                    credits: 420
-                };
-            } else {
-                activeProfile = profile;
+                let fallbackName = meta.full_name;
+                if (!fallbackName && activeUser.email) {
+                    const prefix = activeUser.email.split('@')[0];
+                    fallbackName = prefix.split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                }
+                if (!fallbackName) {
+                    fallbackName = "Utilisateur Veltrix";
+                }
+
+                if (isDbSchemaMissing || !profile) {
+                    const banner = document.getElementById('db-debug-banner');
+                    const msg = document.getElementById('db-debug-message');
+                    if (banner && msg) {
+                        msg.innerHTML = `⚠️ <b>Base de données Supabase non migrée :</b> ${schemaErrorMessage} Veuillez copier le code de <code>veltrix_supabase_schema.sql</code> et l'exécuter dans le <b>SQL Editor</b> de votre projet Supabase.`;
+                        banner.classList.remove('hidden');
+                    }
+
+                    activeProfile = {
+                        id: activeUser.id,
+                        full_name: fallbackName,
+                        credits: 420,
+                        debates_count: 18,
+                        credits_used: 580,
+                        listening_time: 15120 // 4h 12m
+                    };
+                } else {
+                    activeProfile = profile;
+                    
+                    // Masquer la bannière de diagnostic car la structure est saine
+                    const banner = document.getElementById('db-debug-banner');
+                    if (banner) banner.classList.add('hidden');
+                }
+
+                // Mise à jour de userState
+                userState.credits = parseInt(activeProfile.credits);
+                
+                // Affichage du nom et des autres détails à l'écran
+                updateUIWithUserProfile();
+
+                // Charger les débats réels depuis la table debates
+                const { data: realDebates, error: debatesError } = await supabase
+                    .from('debates')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (!debatesError && realDebates) {
+                    console.log(`Chargé ${realDebates.length} débats réels depuis Supabase.`);
+                    renderRealDebatesList(realDebates);
+                } else {
+                    console.error("Erreur lors du chargement de l'historique des débats :", debatesError);
+                    if (debatesError && !isDbSchemaMissing) {
+                        // Si profiles était bon mais debates échoue, la migration de la table debates est manquante
+                        const banner = document.getElementById('db-debug-banner');
+                        const msg = document.getElementById('db-debug-message');
+                        if (banner && msg) {
+                            msg.innerHTML = `⚠️ <b>Base de données Supabase incomplète :</b> La table 'debates' ou 'transactions' est manquante. Veuillez exécuter <code>veltrix_supabase_schema.sql</code> dans votre SQL Editor en ligne.`;
+                            banner.classList.remove('hidden');
+                        }
+                    }
+                }
+
+                // Propager la clé API Gemini enregistrée dans le champ d'input
+                const savedKey = localStorage.getItem('veltrix_gemini_api_key');
+                const keyInput = document.getElementById('dashboard-gemini-key-input');
+                if (savedKey && keyInput) {
+                    keyInput.value = savedKey;
+                }
+            } catch (err) {
+                console.error("Erreur critique lors de la vérification de la session :", err);
+                showGlobalNotification("⚠️ Erreur de connexion ou restriction de sécurité du navigateur. Veuillez lancer le serveur local (veltrix_start_local_server.bat) !");
+            }
+        }
+
+        function renderRealDebatesList(realDebates) {
+            const container = document.getElementById('recent-debates-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (realDebates.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-xs text-slate-500 border border-dashed border-white/5 rounded-xl bg-white/[0.01]">
+                        <i class="fa-solid fa-comments text-lg block mb-2 text-slate-600 animate-pulse"></i>
+                        Aucun débat n'a été enregistré pour le moment.
+                    </div>
+                `;
+                return;
             }
 
-            // Mise à jour de userState
-            userState.credits = parseInt(activeProfile.credits);
-            
-            // Affichage du nom et des autres détails à l'écran
-            updateUIWithUserProfile();
+            const allEntels = getAllEntels();
+            const langLabels = { fr: 'FR', en: 'EN', es: 'ES', ht: 'HT' };
+
+            realDebates.forEach(deb => {
+                const left = allEntels.find(e => e.key === deb.left_entel) || { name: deb.left_entel, colorClass: "border-slate-500 text-slate-400 bg-slate-500/10" };
+                const right = allEntels.find(e => e.key === deb.right_entel) || { name: deb.right_entel, colorClass: "border-slate-500 text-slate-400 bg-slate-500/10" };
+                const langBadge = langLabels[deb.language] || 'FR';
+                const dateFormatted = new Date(deb.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+                const item = document.createElement('div');
+                item.className = "flex flex-wrap items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 gap-4 hover:border-neonGreen/20 transition-all";
+                item.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="flex -space-x-3">
+                            <div class="w-9 h-9 rounded-lg border ${left.colorClass} flex items-center justify-center text-xs font-bold font-display uppercase">
+                                ${left.name.slice(0,2)}
+                            </div>
+                            <div class="w-9 h-9 rounded-lg border ${right.colorClass} flex items-center justify-center text-xs font-bold font-display uppercase">
+                                ${right.name.slice(0,2)}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">${deb.topic}</h4>
+                            <p class="text-xs text-slate-500">Par ${left.name} & ${right.name} &bull; Tchat écrit [${langBadge}] &bull; ${dateFormatted}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-400 font-semibold uppercase">Complété</span>
+                        <span class="text-xs font-semibold text-slate-400">${deb.turns} messages</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
         }
 
         function updateUIWithUserProfile() {
             if (!activeProfile) return;
             
-            const fullname = activeProfile.full_name || "Utilisateur Veltrix";
+            let fullname = activeProfile.full_name;
+            // Si le nom complet est absent ou générique, tenter de le déduire de l'email
+            if ((!fullname || fullname === "Utilisateur Veltrix") && activeUser && activeUser.email) {
+                const prefix = activeUser.email.split('@')[0];
+                const derivedName = prefix.split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                if (derivedName) {
+                    fullname = derivedName;
+                }
+            }
+            if (!fullname) {
+                fullname = "Utilisateur Veltrix";
+            }
             const tier = activeProfile.tier || 'STANDARD';
             
             const nameParts = fullname.split(' ');
@@ -1685,15 +1646,64 @@
                 idElem.textContent = `ID: vltx_${activeProfile.id.slice(0, 8)}`;
             }
 
-            // Met à jour le badge de tier (PRO/STANDARD)
+            // Met à jour le badge de tier (STANDARD/SPECIALIST/ANALYST)
             const proBadge = document.getElementById('sidebar-tier-badge');
             if (proBadge) {
-                if (tier === 'PRO') {
+                const upperTier = tier.toUpperCase();
+                if (upperTier === 'ANALYST') {
+                    proBadge.textContent = "ANALYSTE";
+                    proBadge.className = "text-[9px] px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 font-semibold uppercase";
+                } else if (upperTier === 'SPECIALIST') {
+                    proBadge.textContent = "SPÉCIALISTE";
+                    proBadge.className = "text-[9px] px-2 py-0.5 rounded bg-neonGreen/10 border border-neonGreen/20 text-neonGreen font-semibold uppercase";
+                } else if (upperTier === 'PRO') {
                     proBadge.textContent = "PRO";
                     proBadge.className = "text-[9px] px-2 py-0.5 rounded bg-neonGreen/10 border border-neonGreen/20 text-neonGreen font-semibold uppercase";
                 } else {
                     proBadge.textContent = "STANDARD";
                     proBadge.className = "text-[9px] px-2 py-0.5 rounded bg-slate-500/10 border border-slate-500/20 text-slate-400 font-semibold uppercase";
+                }
+            }
+
+            // Ajustement dynamique du slider de nombre maximum de répliques selon le tier
+            const turnsRange = document.getElementById('debate-turns-range');
+            if (turnsRange) {
+                const upperTier = tier.toUpperCase();
+                if (upperTier === 'ANALYST') {
+                    turnsRange.max = 50;
+                } else if (upperTier === 'SPECIALIST' || upperTier === 'PRO') {
+                    turnsRange.max = 24;
+                } else {
+                    turnsRange.max = 12;
+                    if (parseInt(turnsRange.value) > 12) {
+                        turnsRange.value = 12;
+                        updateTurnsCost(12);
+                    }
+                }
+            }
+
+            // Mettre à jour les badges de statistiques réelles du dashboard
+            const debatesCountElem = document.getElementById('stat-debates-count');
+            if (debatesCountElem) {
+                debatesCountElem.textContent = activeProfile.debates_count || 0;
+            }
+            const creditsUsedElem = document.getElementById('stat-credits-used');
+            if (creditsUsedElem) {
+                creditsUsedElem.textContent = (activeProfile.credits_used || 0) + " Cr.";
+            }
+            const listeningTimeElem = document.getElementById('stat-listening-time');
+            if (listeningTimeElem) {
+                const totalSeconds = activeProfile.listening_time || 0;
+                if (totalSeconds === 0) {
+                    listeningTimeElem.textContent = "0m";
+                } else if (totalSeconds < 60) {
+                    listeningTimeElem.textContent = `${totalSeconds}s`;
+                } else if (totalSeconds < 3600) {
+                    listeningTimeElem.textContent = `${Math.floor(totalSeconds / 60)}m`;
+                } else {
+                    const hours = Math.floor(totalSeconds / 3600);
+                    const minutes = Math.floor((totalSeconds % 3600) / 60);
+                    listeningTimeElem.textContent = `${hours}h ${minutes}m`;
                 }
             }
             
@@ -1706,32 +1716,84 @@
             updateBalances();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Tcheke sesyon Supabase la premye
-            checkUserSession();
+        // --- ACCÉDER DIRECTEMENT À L'ÉMISSION VEDETTE PUBLIC (Lead Magnet) ---
+        function joinFeaturedBroadcast() {
+            // Option PRO Recommandée : L'écoute est gratuite (0 crédit) pour tout utilisateur ayant un solde positif (au moins 1 crédit)
+            if (userState.credits < 1) {
+                showGlobalNotification("Vous devez posséder au moins 1 crédit sur votre compte pour rejoindre l'écoute du Live.");
+                return;
+            }
 
+            const featuredTopic = "Modélisation éthique des modifications génomiques";
+            const speakers = ["biogen_theta", "neurax_8"];
+            const language = "fr";
+
+            // 1. Basculer l'affichage vers l'onglet des Broadcasts
+            switchTab('tab-broadcast');
+
+            // 2. Charger et lancer l'émission spécifique en mode public (0 crédit débité car pré-configuré)
+            listenPreconfiguredBroadcast(featuredTopic, speakers, language);
+        }
+
+        function runDashboardSetup() {
             // Remplir les sélecteurs
-            populateSelectors();
+            try {
+                populateSelectors();
+            } catch (e) {
+                console.error("Erreur de peuplement des sélecteurs :", e);
+            }
             
             // Initialiser les versions customs de tous les sélecteurs
-            initCustomSelect('debate-language-select');
-            initCustomSelect('broadcast-language-select');
-            initCustomSelect('entel-left-select');
-            initCustomSelect('entel-right-select');
-            initCustomSelect('broadcast-entel-1');
-            initCustomSelect('broadcast-entel-2');
-            initCustomSelect('broadcast-entel-3');
+            try {
+                initCustomSelect('debate-language-select');
+                initCustomSelect('broadcast-language-select');
+                initCustomSelect('entel-left-select');
+                initCustomSelect('entel-right-select');
+                initCustomSelect('broadcast-entel-1');
+                initCustomSelect('broadcast-entel-2');
+                initCustomSelect('broadcast-entel-3');
+            } catch (e) {
+                console.error("Erreur d'initialisation des sélecteurs customs :", e);
+            }
             
             // Générer l'annuaire
-            renderDirectory();
+            try {
+                renderDirectory();
+            } catch (e) {
+                console.error("Erreur de rendu de l'annuaire :", e);
+            }
+            
             // Balances
-            updateBalances();
+            try {
+                updateBalances();
+            } catch (e) {
+                console.error("Erreur de mise à jour des balances :", e);
+            }
             
             // Ouvrir directement la boutique si l'ancre #store est présente dans l'URL
             if (window.location.hash === '#store') {
                 switchTab('tab-store');
             }
-        });
+
+            // Fluctuations réalistes du compteur d'auditeurs "Live" (Ajustement Fluctuation +/- 10)
+            setInterval(() => {
+                const listenersElem = document.getElementById('featured-listeners-count');
+                if (listenersElem) {
+                    const base = 88;
+                    const fluctuation = Math.floor(Math.random() * 21) - 10; // -10 à +10
+                    listenersElem.textContent = `${base + fluctuation} auditeurs`;
+                }
+            }, 15000);
+        }
+
+        // Lancer la vérification de session directement et immédiatement (comme sur profile.html !)
+        checkUserSession();
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runDashboardSetup);
+        } else {
+            runDashboardSetup();
+        }
 
         // --- DÉFINITION DU SYSTÈME DE SELECT CUSTOM HAUTE FIDÉLITÉ ---
         function initCustomSelect(selectId, customClass = '') {
@@ -1922,21 +1984,6 @@
                 dropdown.classList.add('scale-95', 'opacity-0');
                 arrow.classList.remove('rotate-180');
                 setTimeout(() => dropdown.classList.add('hidden'), 200);
-            }
         }
         
-        // Fermer tous les dropdowns si on clique en dehors
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.custom-select-wrapper')) {
-                document.querySelectorAll('.custom-select-dropdown').forEach(d => {
-                    if (!d.classList.contains('hidden')) {
-                        d.classList.add('scale-95', 'opacity-0');
-                        d.parentElement.querySelector('.custom-select-arrow').classList.remove('rotate-180');
-                        setTimeout(() => d.classList.add('hidden'), 200);
-                    }
-                });
-            }
-        });
-    </script>
-</body>
-</html>
+    

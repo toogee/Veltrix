@@ -1,7 +1,7 @@
 /**
  * VELTRIX - INITIALISATION CLIENT SUPABASE
  * Ce fichier gère la connexion entre le navigateur et la base de données Supabase.
- * Il dispose d'un système intelligent demandant la clé publique Anon directement dans l'interface si elle n'est pas encore enregistrée.
+ * Il est configuré pour se connecter automatiquement sans modal de configuration.
  */
 
 function isLocalStorageWorking() {
@@ -49,18 +49,24 @@ const safeStorage = {
     if (keyParam) safeStorage.setItem('veltrix_supabase_anon_key', keyParam);
 })();
 
-let SUPABASE_URL = safeStorage.getItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
+const DEFAULT_SUPABASE_URL = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
+const DEFAULT_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwaHp6eHhydmZhcXhneXp6ZWJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjQzODksImV4cCI6MjA5NTc0MDM4OX0.4xolo6bSh2td55h0dGxRlzxGdeCaIKK8Q13eDke--Cw";
 
+let SUPABASE_URL = safeStorage.getItem('veltrix_supabase_url') || DEFAULT_SUPABASE_URL;
+if (SUPABASE_URL === "undefined" || SUPABASE_URL === "null" || SUPABASE_URL === "[object Object]" || SUPABASE_URL === "" || !SUPABASE_URL.startsWith("http")) {
+    SUPABASE_URL = DEFAULT_SUPABASE_URL;
+    safeStorage.setItem('veltrix_supabase_url', DEFAULT_SUPABASE_URL);
+}
 
 // Chargement de la clé Anon depuis le localStorage sécurisé
-let supabaseAnonKey = safeStorage.getItem('veltrix_supabase_anon_key') || "";
+let supabaseAnonKey = safeStorage.getItem('veltrix_supabase_anon_key') || DEFAULT_SUPABASE_KEY;
 // Nettoyage automatique des valeurs invalides de localStorage
-if (supabaseAnonKey === "undefined" || supabaseAnonKey === "null" || supabaseAnonKey === "[object Object]") {
-    safeStorage.removeItem('veltrix_supabase_anon_key');
-    supabaseAnonKey = "";
+if (supabaseAnonKey === "undefined" || supabaseAnonKey === "null" || supabaseAnonKey === "[object Object]" || supabaseAnonKey === "" || supabaseAnonKey.length < 20) {
+    supabaseAnonKey = DEFAULT_SUPABASE_KEY;
+    safeStorage.setItem('veltrix_supabase_anon_key', DEFAULT_SUPABASE_KEY);
 }
+
 window.supabaseClient = null;
-let supabase = null;
 
 // Fonction pour initialiser le client Supabase
 function initSupabaseClient() {
@@ -68,20 +74,9 @@ function initSupabaseClient() {
         console.warn("Le SDK Supabase n'est pas encore chargé sur cette page. Attente...");
         return false;
     }
-    
-    if (!supabaseAnonKey) {
-        injectSupabaseKeyModal();
-        return false;
-    }
 
     try {
-        // Validation basique de la longueur de la clé Anon
-        if (supabaseAnonKey.length < 20) {
-            throw new Error("Clé Anon trop courte ou invalide.");
-        }
-
         window.supabaseClient = window.supabase.createClient(SUPABASE_URL, supabaseAnonKey);
-        supabase = window.supabaseClient;
         
         // Auto-détection d'une instance corrompue/incomplète (auth non disponible)
         if (!window.supabaseClient || !window.supabaseClient.auth) {
@@ -91,138 +86,49 @@ function initSupabaseClient() {
         console.log("Client Supabase initialisé avec succès !");
         return true;
     } catch (error) {
-        console.error("Erreur d'initialisation de Supabase :", error);
+        console.error("Erreur d'initialisation de Supabase, tentative de restauration par défaut :", error);
         
-        // Réinitialisation automatique du localStorage pour forcer la saisie d'une nouvelle clé
-        safeStorage.removeItem('veltrix_supabase_anon_key');
-        supabaseAnonKey = "";
-        window.supabaseClient = null;
-        supabase = null;
-        
-        injectSupabaseKeyModal();
-        return false;
+        try {
+            SUPABASE_URL = DEFAULT_SUPABASE_URL;
+            supabaseAnonKey = DEFAULT_SUPABASE_KEY;
+            safeStorage.setItem('veltrix_supabase_url', DEFAULT_SUPABASE_URL);
+            safeStorage.setItem('veltrix_supabase_anon_key', DEFAULT_SUPABASE_KEY);
+            
+            window.supabaseClient = window.supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_KEY);
+            console.log("Client Supabase restauré et initialisé avec succès avec les identifiants par défaut !");
+            return true;
+        } catch (innerError) {
+            console.error("Échec critique de l'initialisation de Supabase :", innerError);
+            window.supabaseClient = null;
+            return false;
+        }
     }
 }
 
-// Injecte un Modal Premium pour demander la clé Anon Supabase si elle est absente
+// Version simplifiée et inoffensive de injectSupabaseKeyModal (pas de modal affiché)
 function injectSupabaseKeyModal() {
-    // Si le modal est déjà là, on ne fait rien
-    if (document.getElementById('supabase-key-modal')) return;
-
-    const currentUrl = safeStorage.getItem('veltrix_supabase_url') || "https://cphzzxxrvfaqxgyzzebo.supabase.co";
-    const currentVal = safeStorage.getItem('veltrix_supabase_anon_key') || "";
-
-    const modal = document.createElement('div');
-    modal.id = "supabase-key-modal";
-    modal.className = "fixed inset-0 bg-darkBg/90 backdrop-blur-md flex items-center justify-center z-[9999] p-4";
-    
-    modal.innerHTML = `
-        <div class="bg-darkCard border border-neonGreen/30 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-[0_0_50px_rgba(204,255,0,0.15)] text-center transform scale-95 transition-all duration-300">
-            <div class="w-12 h-12 bg-neonGreen/10 border border-neonGreen/20 rounded-xl flex items-center justify-center mx-auto text-neonGreen text-xl">
-                <i class="fa-solid fa-database"></i>
-            </div>
-            <div class="space-y-1.5">
-                <h3 class="font-display font-bold text-lg text-white">Connexion Veltrix & Supabase</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Pour connecter la création de compte, la connexion et les soldes de vos Crédits à Supabase, veuillez saisir l'**URL du Projet** et la **Clé Publique Anon** de votre projet ci-dessous.
-                </p>
-            </div>
-            
-            <div class="space-y-3 text-left">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">URL du Projet Supabase</label>
-                    <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
-                        <i class="fa-solid fa-link text-slate-500 text-xs"></i>
-                        <input id="supabase-url-input" type="text" value="${currentUrl}" placeholder="https://xxxx.supabase.co" class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clé Publique Anon</label>
-                    <div class="neon-glow-border bg-darkBg rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
-                        <i class="fa-solid fa-key text-slate-500 text-xs"></i>
-                        <input id="supabase-key-input" type="password" value="${currentVal}" placeholder="Entrez votre clé Anon Supabase..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600">
-                    </div>
-                </div>
-                
-                <p class="text-[10px] text-amber-400 leading-relaxed bg-amber-400/5 p-2.5 rounded-lg border border-amber-400/10">
-                    ⚠️ <strong>Attention Clé :</strong> Veuillez utiliser la clé publique **<code>anon</code> / <code>public</code>** (qui est un très long jeton commençant par <code>eyJ...</code>). N'utilisez pas la clé <em>service_role</em> ni le <em>JWT Secret</em>.
-                </p>
-                
-                <a href="https://supabase.com/dashboard" target="_blank" class="text-[10px] text-neonGreen hover:underline block font-semibold text-right pt-1">
-                    Où puis-je trouver ces informations ? <i class="fa-solid fa-up-right-from-square text-[8px]"></i>
-                </a>
-            </div>
-
-            <div class="flex gap-3">
-                <button onclick="saveSupabaseKey()" class="flex-1 py-3 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-xs hover:scale-[1.01] transition-transform shadow-[0_0_15px_rgba(204,255,0,0.15)]">
-                    CONNECTER LA BASE DE DONNÉES
-                </button>
-            </div>
-            
-            <div class="border-t border-white/5 pt-4 text-left space-y-1.5">
-                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Configuration Actuelle Active</span>
-                <div class="text-[10px] text-slate-400 space-y-1 bg-white/5 p-2 rounded-lg border border-white/5 font-mono">
-                    <div class="truncate">URL : <span class="text-white">${SUPABASE_URL || "Non configuré"}</span></div>
-                    <div class="truncate">Clé : <span class="text-white">${supabaseAnonKey ? (supabaseAnonKey.substring(0, 15) + "...") : "Non configuré"}</span></div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    
-    // Animation d'apparition
-    setTimeout(() => {
-        modal.querySelector('.transform').classList.remove('scale-95');
-        modal.querySelector('.transform').classList.add('scale-100');
-    }, 50);
+    console.warn("L'affichage du modal Supabase a été court-circuité. Rétablissement des identifiants par défaut...");
+    try {
+        safeStorage.setItem('veltrix_supabase_url', DEFAULT_SUPABASE_URL);
+        safeStorage.setItem('veltrix_supabase_anon_key', DEFAULT_SUPABASE_KEY);
+        SUPABASE_URL = DEFAULT_SUPABASE_URL;
+        supabaseAnonKey = DEFAULT_SUPABASE_KEY;
+        initSupabaseClient();
+    } catch (e) {
+        console.error("Erreur lors de la réinitialisation automatique :", e);
+    }
 }
 
 // Enregistrement de la clé Supabase
 window.saveSupabaseKey = function() {
-    const urlInput = document.getElementById('supabase-url-input');
-    const keyInput = document.getElementById('supabase-key-input');
-    const url = urlInput ? urlInput.value.trim() : "";
-    const key = keyInput ? keyInput.value.trim() : "";
-    
-    if (!url) {
-        alert("Veuillez d'abord entrer l'URL de votre projet Supabase !");
-        return;
-    }
-    if (!key) {
-        alert("Veuillez d'abord entrer votre clé Anon Supabase !");
-        return;
-    }
-
-    safeStorage.setItem('veltrix_supabase_url', url);
-    safeStorage.setItem('veltrix_supabase_anon_key', key);
-    SUPABASE_URL = url;
-    supabaseAnonKey = key;
-    
-    // Initialisation du client
-    const success = initSupabaseClient();
-    
-    if (success) {
-        const modal = document.getElementById('supabase-key-modal');
-        if (modal) modal.remove();
-        
-        // Si localStorage est bloqué, on recharge en passant les clés dans l'URL pour ne pas les perdre
-        if (!isLocalStorageWorking()) {
-            const separator = window.location.search ? '&' : '?';
-            const cleanSearch = window.location.search.replace(/[?&]sb_url=[^&]*/g, '').replace(/[?&]sb_key=[^&]*/g, '');
-            const separatorCorrected = (cleanSearch ? '&' : '?');
-            window.location.href = window.location.pathname + cleanSearch + separatorCorrected + `sb_url=${encodeURIComponent(url)}&sb_key=${encodeURIComponent(key)}` + window.location.hash;
-        } else {
-            window.location.reload();
-        }
-    } else {
-        alert("Erreur d'initialisation. Assurez-vous que l'URL et la clé sont correctes !");
-    }
+    console.warn("saveSupabaseKey appelée manuellement. Utilisation des paramètres par défaut.");
+    safeStorage.setItem('veltrix_supabase_url', DEFAULT_SUPABASE_URL);
+    safeStorage.setItem('veltrix_supabase_anon_key', DEFAULT_SUPABASE_KEY);
+    window.location.reload();
 };
 
 // Déclenche l'initialisation dès que le script est chargé
-window.addEventListener('DOMContentLoaded', () => {
+function runSupabaseSetup() {
     // Si le SDK n'est pas encore complètement chargé, on réessaye après 100ms
     const checkInterval = setInterval(() => {
         if (typeof window.supabase !== 'undefined') {
@@ -232,7 +138,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 100);
 
     // Auto-propagation des clés dans tous les liens internes pour le fallback file:///
-    if (!isLocalStorageWorking()) {
+    if (!isLocalStorageWorking() || window.location.protocol === 'file:') {
         const url = safeStorage.getItem('veltrix_supabase_url');
         const key = safeStorage.getItem('veltrix_supabase_anon_key');
         if (url && key) {
@@ -245,7 +151,13 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', runSupabaseSetup);
+} else {
+    runSupabaseSetup();
+}
 
 // Exposition des fonctions pour un contrôle manuel sur toutes les pages
 window.injectSupabaseKeyModal = injectSupabaseKeyModal;

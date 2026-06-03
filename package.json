@@ -1,0 +1,13 @@
+{
+  "name": "veltrix",
+  "version": "1.0.0",
+  "description": "Veltrix - Plateforme d'analyse vocale et de débats",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "pdf-lib": "^1.17.1"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

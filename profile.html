@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veltrix - Profil Utilisateur</title>
+    <title>GetVeltrix - Profil Utilisateur</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -66,14 +66,23 @@
 </head>
 <body class="bg-darkBg text-slate-100 font-sans h-full flex flex-col overflow-hidden">
 
+    <!-- BANNIÈRE DE DÉBOGAGE SUPABASE -->
+    <div id="db-debug-banner" class="hidden fixed top-0 left-0 right-0 bg-red-950/95 border-b border-red-500/30 px-6 py-3.5 text-xs text-red-200 z-50 flex items-center justify-between gap-4 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-circle-exclamation text-red-500 text-sm animate-pulse"></i>
+            <span id="db-debug-message">Initialisation du débogueur...</span>
+        </div>
+        <button onclick="document.getElementById('db-debug-banner').classList.add('hidden')" class="text-slate-400 hover:text-white px-2 py-1 rounded transition-all"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
     <!-- HEADER / NAVIGATION NAVBAR -->
     <header class="w-full bg-darkCard/80 border-b border-white/5 backdrop-blur-md px-6 py-4 flex items-center justify-between z-30 shrink-0">
         <!-- Logo -->
-        <a href="veltrix_premium_dashboard (1).html" class="flex items-center gap-3 group">
+        <a href="dashboard" class="flex items-center gap-3 group">
             <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <i class="fa-solid fa-brain text-neonGreen text-md"></i>
             </div>
-            <span class="font-display font-bold text-xl tracking-wider text-white">VELTRIX</span>
+            <span class="font-display font-bold text-xl tracking-wider text-white">GETVELTRIX</span>
         </a>
 
         <!-- Centre de Contrôle et Crédits -->
@@ -86,7 +95,7 @@
             </div>
 
             <!-- Retour au Dashboard -->
-            <a href="veltrix_premium_dashboard (1).html" class="px-4 py-2 bg-white/5 hover:bg-neonGreen/10 border border-white/5 hover:border-neonGreen/30 text-[11px] font-bold text-slate-300 hover:text-neonGreen rounded-xl transition-all flex items-center gap-2">
+            <a href="dashboard" class="px-4 py-2 bg-white/5 hover:bg-neonGreen/10 border border-white/5 hover:border-neonGreen/30 text-[11px] font-bold text-slate-300 hover:text-neonGreen rounded-xl transition-all flex items-center gap-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>TABLEAU DE BORD</span>
             </a>
@@ -94,7 +103,7 @@
     </header>
 
     <!-- MAIN BODY LAYOUT -->
-    <div class="flex-1 flex overflow-hidden w-full max-w-7xl mx-auto">
+    <div class="flex-1 flex min-h-0 overflow-hidden w-full max-w-7xl mx-auto">
         
         <!-- SIDEBAR DE NAVIGATION DU PROFIL (Masqué ou réduit sur mobile) -->
         <aside class="hidden md:flex w-72 bg-darkCard/40 border-r border-white/5 p-6 flex-col justify-between shrink-0">
@@ -142,27 +151,13 @@
         <!-- MAIN SCROLLABLE CONTENT -->
         <main class="flex-1 bg-darkBg flex flex-col overflow-y-auto custom-scrollbar p-6 lg:p-8">
 
-            <!-- Onglets sur Mobile (Visible seulement sur petit écran) -->
-            <div class="flex md:hidden items-center gap-2 overflow-x-auto pb-4 mb-4 border-b border-white/5">
-                <button onclick="switchTab('pwofil')" id="m-btn-tab-pwofil" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold bg-neonGreen/10 text-neonGreen border border-neonGreen/20">
-                    Profil
-                </button>
-                <button onclick="switchTab('sekirite')" id="m-btn-tab-sekirite" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200">
-                    Sécurité
-                </button>
-                <button onclick="switchTab('transaksyon')" id="m-btn-tab-transaksyon" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200">
-                    Transactions
-                </button>
-                <button onclick="switchTab('preferans')" id="m-btn-tab-preferans" class="shrink-0 px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200">
-                    Préférences
-                </button>
-            </div>
+
 
             <!-- TAB 1: INFORMATIONS PERSONNELLES -->
             <section id="tab-content-pwofil" class="space-y-6">
                 <div class="space-y-1">
                     <h2 class="font-display font-bold text-2xl text-white">Informations Personnelles</h2>
-                    <p class="text-xs text-slate-400">Ajustez votre identité numérique et la façon dont votre profil apparaît sur le réseau Veltrix.</p>
+                    <p class="text-xs text-slate-400">Ajustez votre identité numérique et la façon dont votre profil apparaît sur le réseau GetVeltrix.</p>
                 </div>
 
                 <!-- Choisir l'Avatar -->
@@ -179,8 +174,8 @@
                                 <button onclick="changeAvatar('Alex')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
                                     <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Alex&backgroundColor=090b11" alt="Robot 2">
                                 </button>
-                                <button onclick="changeAvatar('Veltrix')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
-                                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Veltrix&backgroundColor=090b11" alt="Robot 3">
+                                <button onclick="changeAvatar('GetVeltrix')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
+                                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=GetVeltrix&backgroundColor=090b11" alt="Robot 3">
                                 </button>
                                 <button onclick="changeAvatar('Krono')" class="w-10 h-10 rounded-lg bg-darkBg border border-white/5 hover:border-neonGreen/50 transition-all p-1">
                                     <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Krono&backgroundColor=090b11" alt="Robot 4">
@@ -237,7 +232,7 @@
             <section id="tab-content-sekirite" class="space-y-6 hidden">
                 <div class="space-y-1">
                     <h2 class="font-display font-bold text-2xl text-white">Sécurité & Mot de passe</h2>
-                    <p class="text-xs text-slate-400">Protégez votre compte, modifiez votre mot de passe et gérez les appareils connectés à votre compte Veltrix.</p>
+                    <p class="text-xs text-slate-400">Protégez votre compte, modifiez votre mot de passe et gérez les appareils connectés à votre compte GetVeltrix.</p>
                 </div>
 
                 <!-- Formulaire modifier le mot de passe -->
@@ -326,7 +321,7 @@
                             <span id="trans-credit-balance" class="text-4xl font-display font-bold text-white neon-text-glow">150 Crédits</span>
                             <span class="block text-[10px] text-slate-500 uppercase mt-1">Équivalent à ~150 messages de débat</span>
                         </div>
-                        <a href="veltrix_premium_dashboard (1).html#store" class="w-full py-2 bg-neonGreen/10 hover:bg-neonGreen border border-neonGreen/30 hover:border-transparent text-[11px] font-bold text-neonGreen hover:text-darkBg rounded-lg transition-all text-center block">
+                        <a href="dashboard#store" class="w-full py-2 bg-neonGreen/10 hover:bg-neonGreen border border-neonGreen/30 hover:border-transparent text-[11px] font-bold text-neonGreen hover:text-darkBg rounded-lg transition-all text-center block">
                             Acheter des Crédits <i class="fa-solid fa-plus ml-1"></i>
                         </a>
                     </div>
@@ -337,7 +332,7 @@
                             <span class="text-[10px] font-bold text-neonGreen uppercase tracking-wider block">Comment fonctionnent les micro-paiements ?</span>
                             <h3 class="text-sm font-bold text-white">Payez exactement ce que vous consommez</h3>
                             <p class="text-xs text-slate-400 leading-relaxed">
-                                Contrairement aux autres plateformes, Veltrix n'impose aucun abonnement mensuel obligatoire. Vous rechargez vos crédits et ils sont déduits en temps réel :
+                                Contrairement aux autres plateformes, GetVeltrix n'impose aucun abonnement mensuel obligatoire. Vous rechargez vos crédits et ils sont déduits en temps réel :
                             </p>
                         </div>
                         <div class="grid grid-cols-2 gap-3 pt-3 border-t border-white/5 mt-3">
@@ -367,7 +362,7 @@
                                     <th class="pb-3 font-semibold text-right">Montant (Crédits)</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5">
+                            <tbody class="divide-y divide-white/5" id="transactions-tbody">
                                 <tr class="text-slate-300">
                                     <td class="py-3.5 text-slate-500 font-mono">30 Mai 2026, 10:14</td>
                                     <td class="py-3.5"><span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-bold text-[10px] uppercase">Achat</span></td>
@@ -389,7 +384,7 @@
                                 <tr class="text-slate-300">
                                     <td class="py-3.5 text-slate-500 font-mono">26 Mai 2026, 09:12</td>
                                     <td class="py-3.5"><span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-bold text-[10px] uppercase">Bonus</span></td>
-                                    <td class="py-3.5 font-medium">Cadeau de bienvenue pour l'inscription sur Veltrix</td>
+                                    <td class="py-3.5 font-medium">Cadeau de bienvenue pour l'inscription sur GetVeltrix</td>
                                     <td class="py-3.5 text-right font-bold text-emerald-400 font-mono">+50</td>
                                 </tr>
                             </tbody>
@@ -456,67 +451,246 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        let supabase = null;
-        // Synchroniser activement la variable locale avec le client Supabase global
-        const checkSupabaseInstance = setInterval(() => {
-            if (window.supabaseClient) {
-                supabase = window.supabaseClient;
-                clearInterval(checkSupabaseInstance);
-            }
-        }, 50);
 
         let activeUser = null;
         let activeProfile = null;
 
         async function checkUserSession() {
+            const supabase = window.supabaseClient;
             if (!supabase) {
                 setTimeout(checkUserSession, 100);
                 return;
             }
 
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error || !session) {
-                console.warn("La session n'est pas active ou une erreur est survenue. Redirection...");
-                window.location.href = 'veltrix_premium_sign_in.html';
-                return;
-            }
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error || !session) {
+                    console.warn("La session n'est pas active ou une erreur est survenue. Redirection...");
+                    let dest = 'signin';
+                    if (window.location.protocol === 'file:') {
+                        const url = safeStorage.getItem('veltrix_supabase_url');
+                        const key = safeStorage.getItem('veltrix_supabase_anon_key');
+                        if (url && key) {
+                            dest += `?sb_url=${encodeURIComponent(url)}&sb_key=${encodeURIComponent(key)}`;
+                        }
+                    }
+                    window.location.href = dest;
+                    return;
+                }
 
-            activeUser = session.user;
-            
-            // Charger le profil utilisateur à partir de la table profiles dans Supabase
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', activeUser.id)
-                .single();
-
-            if (profileError || !profile) {
-                console.error("Erreur lors du chargement du profil :", profileError);
+                activeUser = session.user;
                 
-                // Détecter si la table profiles est manquante dans la base de données
-                if (profileError && (profileError.code === '42P01' || (profileError.message && profileError.message.includes('relation "profiles" does not exist')))) {
-                    showToast("⚠️ La table 'profiles' est manquante. Veuillez exécuter le script veltrix_supabase_schema.sql dans votre dashboard Supabase !", "error");
+                // Indicateur de diagnostic de base de données
+                let isDbSchemaMissing = false;
+                let schemaErrorMessage = "";
+                
+                // Charger le profil utilisateur à partir de la table profiles dans Supabase
+                let { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', activeUser.id)
+                    .single();
+
+                // Création automatique en urgence si le trigger a été manqué
+                if (profileError && (profileError.code === 'PGRST116' || (profileError.message && profileError.message.includes('Cannot coerce')))) {
+                    console.log("Le profil n'existe pas en BDD, création automatique...");
+                    const meta = activeUser.user_metadata || {};
+                    let fallbackName = meta.full_name;
+                    if (!fallbackName && activeUser.email) {
+                        const prefix = activeUser.email.split('@')[0];
+                        fallbackName = prefix.split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                    }
+                    if (!fallbackName) fallbackName = "Utilisateur GetVeltrix";
+
+                    const { data: newProfile, error: insertError } = await supabase
+                        .from('profiles')
+                        .insert({
+                            id: activeUser.id,
+                            full_name: fallbackName,
+                            credits: 25,
+                            tier: 'STANDARD',
+                            debates_count: 0,
+                            listening_time: 0,
+                            credits_used: 0
+                        })
+                        .select()
+                        .single();
+
+                    if (!insertError && newProfile) {
+                        profile = newProfile;
+                        profileError = null;
+                        console.log("Profil créé et chargé avec succès en BDD !");
+                        
+                        // Créer également la ligne de transaction de bienvenue initiale (+25)
+                        await supabase
+                            .from('transactions')
+                            .insert({
+                                user_id: activeUser.id,
+                                amount: 25,
+                                type: 'purchase',
+                                details: "Cadeau de bienvenue pour l'inscription sur GetVeltrix"
+                            });
+                    } else {
+                        console.error("Échec de création du profil en BDD :", insertError);
+                        isDbSchemaMissing = true;
+                        schemaErrorMessage = `Échec de création du profil : ${insertError ? insertError.message : 'inconnu'}`;
+                    }
+                }
+
+                // Détection de la structure de base de données manquante (table absente ou colonnes absentes)
+                if (profileError) {
+                    if (profileError.message && (profileError.message.includes("JWT expired") || profileError.message.includes("JWTOtherError"))) {
+                        console.warn("Session JWT expirée. Déconnexion et redirection...");
+                        await supabase.auth.signOut();
+                        let dest = 'signin?reason=expired';
+                        if (window.location.protocol === 'file:') {
+                            const url = safeStorage.getItem('veltrix_supabase_url');
+                            const key = safeStorage.getItem('veltrix_supabase_anon_key');
+                            if (url && key) {
+                                dest += `&sb_url=${encodeURIComponent(url)}&sb_key=${encodeURIComponent(key)}`;
+                            }
+                        }
+                        window.location.href = dest;
+                        return;
+                    }
+                    isDbSchemaMissing = true;
+                    schemaErrorMessage = `Table 'profiles' manquante ou inaccessible. Code erreur: ${profileError.message || profileError.code}`;
+                } else if (profile && (profile.credits === undefined || profile.debates_count === undefined)) {
+                    isDbSchemaMissing = true;
+                    schemaErrorMessage = "Les colonnes nécessaires (credits, debates_count, credits_used) sont absentes de la table 'profiles'.";
                 }
 
                 const meta = activeUser.user_metadata || {};
-                activeProfile = {
-                    id: activeUser.id,
-                    full_name: meta.full_name || "Utilisateur Veltrix",
-                    credits: 420,
-                    avatar_url: ""
-                };
-            } else {
-                activeProfile = profile;
+                let fallbackName = meta.full_name;
+                if (!fallbackName && activeUser.email) {
+                    const prefix = activeUser.email.split('@')[0];
+                    fallbackName = prefix.split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                }
+                if (!fallbackName) {
+                    fallbackName = "Utilisateur GetVeltrix";
+                }
+
+                if (isDbSchemaMissing || !profile) {
+                    const banner = document.getElementById('db-debug-banner');
+                    const msg = document.getElementById('db-debug-message');
+                    if (banner && msg) {
+                        msg.innerHTML = `⚠️ <b>Base de données Supabase non migrée :</b> ${schemaErrorMessage} Veuillez copier le code de <code>veltrix_supabase_schema.sql</code> et l'exécuter dans le <b>SQL Editor</b> de votre projet Supabase.`;
+                        banner.classList.remove('hidden');
+                    }
+
+                    activeProfile = {
+                        id: activeUser.id,
+                        full_name: fallbackName,
+                        credits: 420,
+                        avatar_url: ""
+                    };
+                } else {
+                    activeProfile = profile;
+                    
+                    // Masquer la bannière de diagnostic car la structure est saine
+                    const banner = document.getElementById('db-debug-banner');
+                    if (banner) banner.classList.add('hidden');
+                }
+
+                // Mettre à jour le nom et les autres détails à l'écran
+                updateProfileUI();
+
+                // Charger les transactions réelles depuis Supabase
+                const { data: realTransactions, error: txError } = await supabase
+                    .from('transactions')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (!txError && realTransactions) {
+                    console.log(`Chargé ${realTransactions.length} transactions réelles depuis Supabase.`);
+                    renderRealTransactions(realTransactions);
+                } else {
+                    console.error("Erreur lors du chargement de l'historique des transactions :", txError);
+                    if (txError && !isDbSchemaMissing) {
+                        const banner = document.getElementById('db-debug-banner');
+                        const msg = document.getElementById('db-debug-message');
+                        if (banner && msg) {
+                            msg.innerHTML = `⚠️ <b>Base de données Supabase incomplète :</b> La table 'transactions' est manquante. Veuillez exécuter <code>veltrix_supabase_schema.sql</code> dans votre SQL Editor.`;
+                            banner.classList.remove('hidden');
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Erreur critique session :", err);
+                showToast("⚠️ Erreur de connexion ou restriction locale du navigateur. Utilisez le serveur local !", "error");
+            }
+        }
+
+        function renderRealTransactions(transactions) {
+            const tbody = document.getElementById('transactions-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (transactions.length === 0) {
+                tbody.innerHTML = `
+                    <tr class="text-slate-500">
+                        <td colspan="4" class="py-6 text-center text-xs">
+                            Aucune transaction ou utilisation de crédits enregistrée pour le moment.
+                        </td>
+                    </tr>
+                `;
+                return;
             }
 
-            // Mettre à jour le nom et les autres détails à l'écran
-            updateProfileUI();
+            const badgeStyles = {
+                chat: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
+                broadcast: 'bg-sky-500/10 text-sky-400 border border-sky-500/20',
+                purchase: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+                refund: 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+            };
+
+            const typeLabels = {
+                chat: 'Chat',
+                broadcast: 'Broadcast',
+                purchase: 'Achat',
+                refund: 'Remboursement'
+            };
+
+            transactions.forEach(tx => {
+                const badge = badgeStyles[tx.type] || 'bg-slate-500/10 text-slate-400 border border-slate-500/20';
+                const label = typeLabels[tx.type] || tx.type.toUpperCase();
+                const sign = tx.amount >= 0 ? '+' : '';
+                const amountClass = tx.amount >= 0 ? 'text-emerald-400' : 'text-red-400';
+                const dateFormatted = new Date(tx.created_at).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const row = document.createElement('tr');
+                row.className = "text-slate-300 border-b border-white/5 hover:bg-white/[0.01] transition-colors";
+                row.innerHTML = `
+                    <td class="py-3.5 text-slate-500 font-mono">${dateFormatted}</td>
+                    <td class="py-3.5"><span class="px-2 py-0.5 rounded-md ${badge} font-bold text-[10px] uppercase">${label}</span></td>
+                    <td class="py-3.5 font-medium text-slate-400">${tx.details || "Utilisation système GetVeltrix"}</td>
+                    <td class="py-3.5 text-right font-bold ${amountClass} font-mono">${sign}${tx.amount}</td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
         function updateProfileUI() {
             if (!activeProfile) return;
 
-            const fullname = activeProfile.full_name || "Utilisateur Veltrix";
+            let fullname = activeProfile.full_name;
+            // Si le nom complet est absent ou générique, tenter de le déduire de l'email
+            if ((!fullname || fullname === "Utilisateur GetVeltrix") && activeUser && activeUser.email) {
+                const prefix = activeUser.email.split('@')[0];
+                const derivedName = prefix.split(/[._-]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                if (derivedName) {
+                    fullname = derivedName;
+                }
+            }
+            if (!fullname) {
+                fullname = "Utilisateur GetVeltrix";
+            }
             const tier = activeProfile.tier || 'STANDARD';
             const nameParts = fullname.split(' ');
             const firstName = nameParts[0] || "";
@@ -546,7 +720,7 @@
             }
 
             // Avatar seed
-            const seed = activeProfile.avatar_url || firstName || "Veltrix";
+            const seed = activeProfile.avatar_url || firstName || "GetVeltrix";
             document.getElementById('current-avatar-preview').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
             document.getElementById('sidebar-avatar').src = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}&backgroundColor=090b11`;
 
@@ -558,6 +732,16 @@
         // Chargement automatique immédiat sans attendre les images/assets externes
         checkUserSession();
 
+        // Auto-détection de l'onglet actif passé en paramètre URL (?tab=...)
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const tabParam = params.get('tab');
+            if (tabParam && ['pwofil', 'sekirite', 'transaksyon', 'preferans'].includes(tabParam)) {
+                // Petit délai pour laisser la session et l'UI s'initialiser
+                setTimeout(() => switchTab(tabParam), 80);
+            }
+        })();
+
         // Commutation entre les onglets
         function switchTab(tabId) {
             const tabs = ['pwofil', 'sekirite', 'transaksyon', 'preferans'];
@@ -565,30 +749,39 @@
             tabs.forEach(t => {
                 const content = document.getElementById(`tab-content-${t}`);
                 const desktopBtn = document.getElementById(`btn-tab-${t}`);
-                const mobileBtn = document.getElementById(`m-btn-tab-${t}`);
+                const mobileBtn = document.getElementById(`m-btn-tab-${t}`); // peut être null
                 
                 if (t === tabId) {
-                    content.classList.remove('hidden');
+                    if (content) content.classList.remove('hidden');
                     // Style actif bureau
-                    desktopBtn.classList.add('text-neonGreen', 'bg-neonGreen/10', 'border-neonGreen/20');
-                    desktopBtn.classList.remove('text-slate-400', 'hover:bg-white/5', 'border-transparent');
-                    // Style actif mobile
-                    mobileBtn.classList.add('bg-neonGreen/10', 'text-neonGreen', 'border', 'border-neonGreen/20');
-                    mobileBtn.classList.remove('text-slate-400');
+                    if (desktopBtn) {
+                        desktopBtn.classList.add('text-neonGreen', 'bg-neonGreen/10', 'border-neonGreen/20');
+                        desktopBtn.classList.remove('text-slate-400', 'hover:bg-white/5', 'border-transparent');
+                    }
+                    // Style actif mobile (si présent)
+                    if (mobileBtn) {
+                        mobileBtn.classList.add('bg-neonGreen/10', 'text-neonGreen', 'border', 'border-neonGreen/20');
+                        mobileBtn.classList.remove('text-slate-400');
+                    }
                 } else {
-                    content.classList.add('hidden');
+                    if (content) content.classList.add('hidden');
                     // Style inactif bureau
-                    desktopBtn.classList.remove('text-neonGreen', 'bg-neonGreen/10', 'border-neonGreen/20');
-                    desktopBtn.classList.add('text-slate-400', 'hover:bg-white/5', 'border-transparent');
-                    // Style inactif mobile
-                    mobileBtn.classList.remove('bg-neonGreen/10', 'text-neonGreen', 'border', 'border-neonGreen/20');
-                    mobileBtn.classList.add('text-slate-400');
+                    if (desktopBtn) {
+                        desktopBtn.classList.remove('text-neonGreen', 'bg-neonGreen/10', 'border-neonGreen/20');
+                        desktopBtn.classList.add('text-slate-400', 'hover:bg-white/5', 'border-transparent');
+                    }
+                    // Style inactif mobile (si présent)
+                    if (mobileBtn) {
+                        mobileBtn.classList.remove('bg-neonGreen/10', 'text-neonGreen', 'border', 'border-neonGreen/20');
+                        mobileBtn.classList.add('text-slate-400');
+                    }
                 }
             });
         }
 
         // Changer l'Avatar
         async function changeAvatar(seed) {
+            const supabase = window.supabaseClient;
             if (!supabase || !activeUser) return;
 
             // Enregistrer dans Supabase
@@ -609,6 +802,7 @@
 
         // Enregistrer les Informations Personnelles
         async function savePersonalInfo(event) {
+            const supabase = window.supabaseClient;
             event.preventDefault();
             
             const fName = document.getElementById('profile-firstname').value.trim();
@@ -648,6 +842,7 @@
 
         // Enregistrer Sécurité et Mot de passe
         async function saveSecurity(event) {
+            const supabase = window.supabaseClient;
             event.preventDefault();
             
             const newPass = document.getElementById('sec-new-pass').value;
@@ -692,13 +887,15 @@
 
         // Simulation d'achat de crédits
         async function buyCredits() {
+            const supabase = window.supabaseClient;
             if (!supabase || !activeUser) return;
 
             const newCredits = activeProfile.credits + 100;
+            const currentTier = activeProfile.tier || 'STANDARD';
 
             const { error } = await supabase
                 .from('profiles')
-                .update({ credits: newCredits, tier: 'PRO' })
+                .update({ credits: newCredits, tier: currentTier })
                 .eq('id', activeUser.id);
 
             if (error) {
@@ -707,10 +904,9 @@
             }
 
             activeProfile.credits = newCredits;
-            activeProfile.tier = 'PRO';
             updateProfileUI();
             
-            showToast("Pack de 100 crédits ajouté à votre compte avec succès ! +$10.00", "success");
+            showToast("Pack de 100 crédits ajouté à votre compte avec succès !", "success");
         }
 
         // Déconnecter un appareil
@@ -720,12 +916,13 @@
 
         // Déconnexion générale
         async function handleLogout() {
+            const supabase = window.supabaseClient;
             showToast("Déconnexion en cours...");
             if (supabase) {
                 await supabase.auth.signOut();
             }
             setTimeout(() => {
-                window.location.href = 'veltrix_premium_sign_in.html';
+                window.location.href = 'signin';
             }, 1000);
         }
 

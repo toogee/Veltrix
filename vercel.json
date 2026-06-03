@@ -1,0 +1,17 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/veltrix_premium_dashboard (1).html", "destination": "/dashboard", "permanent": true },
+    { "source": "/veltrix_premium_dashboard%20(1).html", "destination": "/dashboard", "permanent": true },
+    { "source": "/veltrix_premium_sign_in.html", "destination": "/signin", "permanent": true },
+    { "source": "/veltrix_premium_sign_up (1).html", "destination": "/signup", "permanent": true },
+    { "source": "/veltrix_premium_sign_up%20(1).html", "destination": "/signup", "permanent": true },
+    { "source": "/veltrix_confirm_email.html", "destination": "/confirm", "permanent": true },
+    { "source": "/veltrix_reset_password.html", "destination": "/reset-password", "permanent": true },
+    { "source": "/veltrix_user_profile.html", "destination": "/profile", "permanent": true },
+    { "source": "/veltrix_premium_landing_page (1).html", "destination": "/", "permanent": true },
+    { "source": "/veltrix_premium_landing_page%20(1).html", "destination": "/", "permanent": true },
+    { "source": "/terms.html", "destination": "/terms", "permanent": true },
+    { "source": "/privacy.html", "destination": "/privacy", "permanent": true }
+  ]
+}
