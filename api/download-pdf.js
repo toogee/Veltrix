@@ -25,6 +25,16 @@ function wrapText(text, width, font, fontSize) {
   return lines;
 }
 
+function sanitizeText(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/[\u2018\u2019]/g, "'") // curly single quotes/apostrophes
+    .replace(/[\u201C\u201D]/g, '"') // curly double quotes
+    .replace(/[\u2013\u2014]/g, '-') // en-dash and em-dash
+    .replace(/[\u2026]/g, '...') // ellipsis
+    .replace(/[^\x00-\xFF]/g, '?'); // replace any other non-latin1 characters with '?'
+}
+
 module.exports = async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -120,7 +130,7 @@ module.exports = async function handler(req, res) {
       currentY = pageHeight - margin;
       
       // En-tête de page discret
-      currentPage.drawText('GETVELTRIX — TRANSCRIPTION OFFICIELLE', {
+      currentPage.drawText('GETVELTRIX - TRANSCRIPTION OFFICIELLE', {
         x: margin,
         y: pageHeight - 35,
         size: 8,
@@ -149,7 +159,7 @@ module.exports = async function handler(req, res) {
     currentY -= 40;
 
     // Sujet du Débat (encadré)
-    const wrappedTopic = wrapText(`Sujet : ${topic}`, printableWidth - 20, fontOblique, 12);
+    const wrappedTopic = wrapText(sanitizeText(`Sujet : ${topic}`), printableWidth - 20, fontOblique, 12);
     
     // Dessiner le fond de l'encadré du sujet
     const boxHeight = wrappedTopic.length * 15 + 20;
@@ -178,8 +188,8 @@ module.exports = async function handler(req, res) {
 
     // Historique des messages
     for (const msg of history) {
-      const speakerName = msg.sender || 'Expert';
-      const speakerText = msg.text || '';
+      const speakerName = sanitizeText(msg.sender || 'Expert');
+      const speakerText = sanitizeText(msg.text || '');
 
       // Calculer la hauteur estimée requise
       const wrappedLines = wrapText(speakerText, printableWidth, font, 10);
@@ -231,7 +241,7 @@ module.exports = async function handler(req, res) {
         });
 
         // Filigrane en pied de page récurrent
-        page.drawText('Créé avec GetVeltrix — getveltrix.com', {
+        page.drawText('Créé avec GetVeltrix - getveltrix.com', {
           x: margin,
           y: 25,
           size: 8,
