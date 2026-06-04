@@ -187,50 +187,6 @@
             transform: scale(1.2);
         }
 
-        /* Mode de rendu radio styling */
-        .debate-mode-card {
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-        .debate-mode-card:has(input[type="radio"]:checked) {
-            border-color: #CCFF00 !important;
-            box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
-        }
-        .debate-mode-card input[type="radio"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.02);
-            outline: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-        .debate-mode-card input[type="radio"]::before {
-            content: "";
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: transparent;
-            transition: all 0.2s ease;
-        }
-        .debate-mode-card input[type="radio"]:checked {
-            border-color: #CCFF00;
-        }
-        .debate-mode-card input[type="radio"]:checked::before {
-            background: #CCFF00;
-        }
-        .debate-mode-card input[type="radio"]:disabled {
-            border-color: rgba(255, 255, 255, 0.15);
-            cursor: not-allowed;
-        }
         /* Style pour l'autofill des inputs du tableau de bord */
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
@@ -699,21 +655,6 @@
                                     <span>2 messages</span>
                                     <span>6 messages</span>
                                     <span>12 messages</span>
-                                </div>
-                            </div>
-
-                            <!-- 5. MODE DE RENDU (Pill Style) -->
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">5. MODE DE RENDU</label>
-                                <div class="flex flex-wrap gap-2">
-                                    <label class="debate-mode-card px-4 py-2 bg-darkBg rounded-full cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
-                                        <input type="radio" name="debate-mode" value="text" checked class="accent-neonGreen">
-                                        <span>Tchat Écrit</span>
-                                    </label>
-                                    <label class="debate-mode-card px-4 py-2 bg-darkBg rounded-full cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500 opacity-60">
-                                        <input type="radio" name="debate-mode" value="audio" disabled class="accent-neonGreen">
-                                        <span class="flex items-center gap-1.5">Audio <span class="text-[9px] bg-neonGreen/20 text-neonGreen px-1 rounded font-bold">PRO</span></span>
-                                    </label>
                                 </div>
                             </div>
 
@@ -2876,7 +2817,7 @@
             const arenaPanel = document.getElementById('debate-arena-panel');
             
             if (inDebate) {
-                // Masquer le formulaire de config (et donc le mode de rendu)
+                // Masquer le formulaire de config
                 if (formContainer) formContainer.classList.add('hidden');
                 
                 // Afficher l'arène de débat
