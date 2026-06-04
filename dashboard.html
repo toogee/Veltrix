@@ -95,9 +95,102 @@
         .custom-select-trigger {
             transition: all 0.3s ease;
         }
-        .custom-select-trigger:hover {
-            box-shadow: 0 0 25px rgba(204, 255, 0, 0.25);
-            border-color: rgba(204, 255, 0, 0.6);
+        .custom-select-trigger:hover, .custom-select-trigger.active {
+            border-color: rgba(204, 255, 0, 0.5) !important;
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.15) !important;
+        }
+
+        /* Custom range slider styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: transparent;
+            border: none;
+        }
+        input[type="range"]::-moz-range-track {
+            background: transparent;
+            border: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #CCFF00;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(204, 255, 0, 0.8);
+            border: 2px solid #111520;
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #111520;
+            border-radius: 50%;
+            background: #CCFF00;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(204, 255, 0, 0.8);
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Mode de rendu radio styling */
+        .debate-mode-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .debate-mode-card:has(input[type="radio"]:checked) {
+            border-color: #CCFF00 !important;
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
+        }
+        .debate-mode-card input[type="radio"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.02);
+            outline: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .debate-mode-card input[type="radio"]::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+        .debate-mode-card input[type="radio"]:checked {
+            border-color: #CCFF00;
+        }
+        .debate-mode-card input[type="radio"]:checked::before {
+            background: #CCFF00;
+        }
+        .debate-mode-card input[type="radio"]:disabled {
+            border-color: rgba(255, 255, 255, 0.15);
+            cursor: not-allowed;
         }
         /* Style pour l'autofill des inputs du tableau de bord */
         input:-webkit-autofill,
@@ -571,13 +664,13 @@
 
                         <!-- 1. Saisir le Sujet -->
                         <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. Saisir le Sujet du Débat</label>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. SAISIR LE SUJET DU DÉBAT</label>
                             <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neonGreen/60 transition-all resize-none overflow-hidden" rows="2" oninput="autoResizeTextarea(this)"></textarea>
                         </div>
 
                         <!-- 2. Sélectionner la langue -->
                         <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">2. Choisir la Langue d'Échange</label>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">2. CHOISIR LA LANGUE D'ÉCHANGE</label>
                             <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
                                 <option value="fr">Français</option>
                                 <option value="en">English (Anglais)</option>
@@ -588,7 +681,7 @@
 
                         <!-- 3. Sélectionner les deux Entels par catégorie -->
                         <div class="space-y-3">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">3. Choisir les 2 Entels Face-à-Face</label>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">3. CHOISIR LES 2 ENTELS FACE-À-FACE</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div class="space-y-1.5">
                                     <span class="text-[10px] text-slate-500">Entel 1</span>
@@ -608,7 +701,7 @@
                         <!-- 4. Définir le volume / nombre de tours -->
                         <div class="space-y-2">
                             <div class="flex justify-between items-center">
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">4. Nombre d'Échanges</label>
+                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">4. NOMBRE D'ÉCHANGES</label>
                                 <span class="text-xs text-neonGreen font-semibold" id="turns-cost-display">4 messages (4 crédits)</span>
                             </div>
                             <input id="debate-turns-range" type="range" min="2" max="12" step="2" value="4" oninput="updateTurnsCost(this.value)" class="w-full accent-neonGreen bg-darkBg">
@@ -621,15 +714,15 @@
 
                         <!-- 5. Mode de Débat -->
                         <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">5. Mode de Rendu</label>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">5. MODE DE RENDU</label>
                             <div class="grid grid-cols-2 gap-3">
-                                <label class="p-3 bg-darkBg border border-neonGreen/40 rounded-xl cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
+                                <label class="debate-mode-card p-3 bg-darkBg rounded-xl cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
                                     <input type="radio" name="debate-mode" value="text" checked class="accent-neonGreen">
                                     <span>Tchat Écrit</span>
                                 </label>
-                                <label class="p-3 bg-darkBg border border-white/5 rounded-xl cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500">
+                                <label class="debate-mode-card p-3 bg-darkBg rounded-xl cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500 opacity-60">
                                     <input type="radio" name="debate-mode" value="audio" disabled class="accent-neonGreen">
-                                    <span class="flex items-center gap-1.5">Audio <span class="text-[9px] bg-neonGreen/20 text-neonGreen px-1 rounded">PRO</span></span>
+                                    <span class="flex items-center gap-1.5">Audio <span class="text-[9px] bg-neonGreen/20 text-neonGreen px-1 rounded font-bold">PRO</span></span>
                                 </label>
                             </div>
                         </div>
@@ -791,13 +884,13 @@
                                                 <div class="flex justify-between text-[9px] text-slate-400">
                                                     <span>Stabilité: <span id="broadcast-stability-val" class="font-mono text-neonGreen font-bold">45%</span></span>
                                                 </div>
-                                                <input id="broadcast-stability-range" type="range" min="0" max="1" step="0.05" value="0.45" oninput="document.getElementById('broadcast-stability-val').textContent = Math.round(this.value * 100) + '%'" class="w-full accent-neonGreen bg-darkBg h-1 rounded-lg">
+                                                <input id="broadcast-stability-range" type="range" min="0" max="1" step="0.05" value="0.45" oninput="document.getElementById('broadcast-stability-val').textContent = Math.round(this.value * 100) + '%'; updateSliderGradient(this);" class="w-full accent-neonGreen bg-darkBg h-1 rounded-lg">
                                             </div>
                                             <div class="space-y-1">
                                                 <div class="flex justify-between text-[9px] text-slate-400">
                                                     <span>Fidélité: <span id="broadcast-similarity-val" class="font-mono text-neonGreen font-bold">85%</span></span>
                                                 </div>
-                                                <input id="broadcast-similarity-range" type="range" min="0" max="1" step="0.05" value="0.85" oninput="document.getElementById('broadcast-similarity-val').textContent = Math.round(this.value * 100) + '%'" class="w-full accent-neonGreen bg-darkBg h-1 rounded-lg">
+                                                <input id="broadcast-similarity-range" type="range" min="0" max="1" step="0.05" value="0.85" oninput="document.getElementById('broadcast-similarity-val').textContent = Math.round(this.value * 100) + '%'; updateSliderGradient(this);" class="w-full accent-neonGreen bg-darkBg h-1 rounded-lg">
                                             </div>
                                         </div>
                                     </div>
@@ -1887,10 +1980,21 @@
             userState.activeTab = tabId;
         }
 
+        // --- GRADIENT DYNAMIQUE DES SLIDERS ---
+        function updateSliderGradient(slider) {
+            if (!slider) return;
+            const min = parseFloat(slider.min) || 0;
+            const max = parseFloat(slider.max) || 100;
+            const val = parseFloat(slider.value) || 0;
+            const percent = ((val - min) / (max - min)) * 100;
+            slider.style.background = `linear-gradient(to right, #CCFF00 0%, #CCFF00 ${percent}%, rgba(255, 255, 255, 0.08) ${percent}%, rgba(255, 255, 255, 0.08) 100%)`;
+        }
+
         // --- COMPORTEMENT DE MISE À JOUR DE TOURS ---
         function updateTurnsCost(val) {
             userState.debateTurns = parseInt(val);
             document.getElementById('turns-cost-display').textContent = `${val} messages (${val} crédits)`;
+            updateSliderGradient(document.getElementById('debate-turns-range'));
         }
 
         // --- DEBIT & CREDIT DES CRÉDITS ---
@@ -3244,6 +3348,7 @@
             if (broadcastGainNode) {
                 broadcastGainNode.gain.value = broadcastVolume;
             }
+            updateSliderGradient(document.getElementById('broadcast-volume-slider'));
         }
 
         const entelVoiceIds = {
@@ -4517,6 +4622,16 @@
             document.getElementById('entel-left-select').addEventListener('change', checkDebateButtonStatus);
             document.getElementById('entel-right-select').addEventListener('change', checkDebateButtonStatus);
 
+            // Initialiser les gradients des sliders de manière synchrone au chargement
+            try {
+                updateSliderGradient(document.getElementById('debate-turns-range'));
+                updateSliderGradient(document.getElementById('broadcast-stability-range'));
+                updateSliderGradient(document.getElementById('broadcast-similarity-range'));
+                updateSliderGradient(document.getElementById('broadcast-volume-slider'));
+            } catch (e) {
+                console.error("Erreur d'initialisation des gradients de range sliders :", e);
+            }
+
             // Rendu initial de l'état du bouton et logs système de démarrage
             checkDebateButtonStatus();
             addSystemLog("Moteur Veltrix initialisé. Version 3.0.1 prête.");
@@ -4779,7 +4894,7 @@
             const activeOption = select.options[select.selectedIndex] || select.options[0];
             
             const trigger = document.createElement('div');
-            trigger.className = "custom-select-trigger neon-glow-border bg-darkCard rounded-xl px-4 py-2.5 flex items-center justify-between cursor-pointer text-xs text-white";
+            trigger.className = "custom-select-trigger neon-glow-border bg-darkBg rounded-xl px-4 py-2.5 flex items-center justify-between cursor-pointer text-xs text-white";
             trigger.onclick = (e) => {
                 e.stopPropagation();
                 toggleDropdown(selectId);
@@ -4889,10 +5004,10 @@
                 icon = 'fa-futbol';
                 color = 'text-amber-500';
             } else if (nameLower.includes('kronopol') || nameLower.includes('strateg')) {
-                icon = 'fa-building-shield';
+                icon = 'fa-robot';
                 color = 'text-emerald-500';
             } else if (nameLower.includes('voxidem') || nameLower.includes('democ')) {
-                icon = 'fa-users-line';
+                icon = 'fa-users';
                 color = 'text-purple-400';
             }
             
@@ -4920,17 +5035,21 @@
             const wrapper = select.parentNode.querySelector(`.custom-select-wrapper[data-select="${selectId}"]`);
             const dropdown = wrapper.querySelector('.custom-select-dropdown');
             const arrow = wrapper.querySelector('.custom-select-arrow');
+            const trigger = wrapper.querySelector('.custom-select-trigger');
             
             document.querySelectorAll('.custom-select-dropdown').forEach(d => {
                 if (d !== dropdown && !d.classList.contains('hidden')) {
                     d.classList.add('scale-95', 'opacity-0');
                     d.parentElement.querySelector('.custom-select-arrow').classList.remove('rotate-180');
+                    const trig = d.parentElement.querySelector('.custom-select-trigger');
+                    if (trig) trig.classList.remove('active');
                     setTimeout(() => d.classList.add('hidden'), 200);
                 }
             });
             
             if (dropdown.classList.contains('hidden')) {
                 dropdown.classList.remove('hidden');
+                if (trigger) trigger.classList.add('active');
                 setTimeout(() => {
                     dropdown.classList.remove('scale-95', 'opacity-0');
                     arrow.classList.add('rotate-180');
@@ -4938,6 +5057,7 @@
             } else {
                 dropdown.classList.add('scale-95', 'opacity-0');
                 arrow.classList.remove('rotate-180');
+                if (trigger) trigger.classList.remove('active');
                 setTimeout(() => dropdown.classList.add('hidden'), 200);
             }
         }
@@ -4947,10 +5067,12 @@
             const wrapper = select.parentNode.querySelector(`.custom-select-wrapper[data-select="${selectId}"]`);
             const dropdown = wrapper.querySelector('.custom-select-dropdown');
             const arrow = wrapper.querySelector('.custom-select-arrow');
+            const trigger = wrapper.querySelector('.custom-select-trigger');
             
             if (dropdown && !dropdown.classList.contains('hidden')) {
                 dropdown.classList.add('scale-95', 'opacity-0');
                 arrow.classList.remove('rotate-180');
+                if (trigger) trigger.classList.remove('active');
                 setTimeout(() => dropdown.classList.add('hidden'), 200);
             }
         }
@@ -5209,6 +5331,8 @@
                     if (!d.classList.contains('hidden')) {
                         d.classList.add('scale-95', 'opacity-0');
                         d.parentElement.querySelector('.custom-select-arrow').classList.remove('rotate-180');
+                        const trigger = d.parentElement.querySelector('.custom-select-trigger');
+                        if (trigger) trigger.classList.remove('active');
                         setTimeout(() => d.classList.add('hidden'), 200);
                     }
                 });
