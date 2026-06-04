@@ -4165,8 +4165,17 @@
                 });
 
                 if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.error || "Une erreur est survenue lors de la génération du fichier.");
+                    let errMsg = "";
+                    try {
+                        const errData = await response.json();
+                        errMsg = errData.error;
+                    } catch (e) {
+                        try {
+                            const rawText = await response.text();
+                            errMsg = rawText ? rawText.substring(0, 150) : "";
+                        } catch (textErr) {}
+                    }
+                    throw new Error(errMsg || `Erreur serveur (Status: ${response.status}) lors de la génération.`);
                 }
 
                 const blob = await response.blob();
