@@ -108,6 +108,89 @@
             -webkit-text-fill-color: #f1f5f9 !important;
             transition: background-color 5000s ease-in-out 0s;
         }
+
+        /* Transition Premium Arène */
+        #debate-arena-panel {
+            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.7s ease-in-out, height 0.7s ease-in-out, visibility 0.7s ease-in-out;
+        }
+        
+        #debate-config-panel {
+            transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease-in-out;
+        }
+
+        /* Console rétractable style premium */
+        #console-log-drawer {
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        #console-log-content {
+            scrollbar-width: thin;
+        }
+
+        /* Responsive Mobile Layout pour l'Arène */
+        @media (max-width: 1023px) {
+            .debate-grid-mobile {
+                position: relative;
+                overflow: hidden;
+                width: 100%;
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: stretch !important;
+            }
+            
+            #debate-config-panel {
+                width: 100%;
+                flex-shrink: 0;
+                transform: translateX(0);
+                transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease-in-out, visibility 0.7s ease-in-out;
+                opacity: 1;
+                visibility: visible;
+                position: relative;
+            }
+            
+            #debate-arena-wrapper {
+                width: 100%;
+                flex-shrink: 0;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                transform: translateX(100%);
+                transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease-in-out, visibility 0.7s ease-in-out;
+                opacity: 0;
+                visibility: hidden;
+            }
+            
+            /* Quand l'arène est déployée */
+            .arena-mobile-deployed #debate-config-panel {
+                transform: translateX(-100%) !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                position: absolute !important;
+                pointer-events: none;
+            }
+            
+            .arena-mobile-deployed #debate-arena-wrapper {
+                transform: translateX(0) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                position: relative !important;
+                height: auto !important;
+                min-height: 650px;
+            }
+            
+            /* Bouton déployer fixé en bas sur mobile */
+            .mobile-sticky-btn-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 1rem;
+                background: rgba(9, 11, 17, 0.85);
+                backdrop-filter: blur(12px);
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                z-index: 30;
+            }
+        }
     </style>
 </head>
 <body class="bg-darkBg text-slate-100 font-sans h-full overflow-hidden flex flex-col md:flex-row">
@@ -172,6 +255,30 @@
                         <div class="bg-darkBg/50 border border-white/5 rounded-xl px-4 py-3 text-xs text-slate-400 flex items-center gap-2.5 opacity-60">
                             <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
                             <span id="drawer-user-email">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Clé API Gemini (Local storage) -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Clé API Gemini</label>
+                            <button onclick="clearDashboardGeminiKey()" class="text-[9px] text-red-400 hover:underline">Effacer</button>
+                        </div>
+                        <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
+                            <i class="fa-solid fa-key text-slate-500 text-xs"></i>
+                            <input id="dashboard-gemini-key-input" type="password" placeholder="Saisir votre clé Gemini..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600" oninput="saveDashboardGeminiKey()">
+                        </div>
+                    </div>
+
+                    <!-- Clé API ElevenLabs (Local storage) -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Clé API ElevenLabs</label>
+                            <button onclick="clearDashboardElevenKey()" class="text-[9px] text-red-400 hover:underline">Effacer</button>
+                        </div>
+                        <div class="neon-glow-border bg-darkCard rounded-xl flex items-center px-3.5 py-2.5 gap-2.5">
+                            <i class="fa-solid fa-key text-slate-500 text-xs"></i>
+                            <input id="broadcast-eleven-key" type="password" placeholder="Saisir votre clé ElevenLabs..." class="w-full bg-transparent text-xs text-white focus:outline-none placeholder-slate-600" oninput="saveDashboardElevenKey()">
                         </div>
                     </div>
 
@@ -293,6 +400,11 @@
                     <div class="hidden md:block absolute left-full ml-4 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-white text-darkBg text-xs font-bold rounded-lg shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3),0_8px_10px_-6px_rgba(0,0,0,0.3)] border border-slate-100 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 pointer-events-none transition-all duration-150 whitespace-nowrap z-50 origin-left before:content-[''] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:border-y-4 before:border-y-transparent before:border-r-4 before:border-r-white">
                         Boutique de Crédits
                     </div>
+                </button>
+                <!-- Bouton Console Logs Mobile -->
+                <button onclick="toggleConsoleLogDrawer(true); toggleMobileSidebar(false);" class="md:hidden w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all relative">
+                    <i class="fa-solid fa-terminal text-lg text-slate-500"></i>
+                    <span>Console Logs</span>
                 </button>
             </nav>
         </div>
@@ -448,10 +560,10 @@
 
             <!-- TAB 2: CRÉER / PARTICIPER À UN DÉBAT (SIMULATEUR INTERACTIF) -->
             <section id="tab-debate" class="tab-content space-y-8 hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start debate-grid-mobile">
                     
                     <!-- Formulaire de configuration (Gauche) -->
-                    <div class="lg:col-span-5 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-5">
+                    <div id="debate-config-panel" class="lg:col-span-5 bg-darkCard rounded-2xl border border-white/5 p-6 pb-24 lg:pb-6 space-y-5">
                         <div>
                             <h3 class="font-display font-bold text-xl text-white">Configurer votre Débat</h3>
                             <p class="text-xs text-slate-500">Instanciez les Entels de votre choix, sélectionnez la langue d'expression et lancez la confrontation.</p>
@@ -460,7 +572,7 @@
                         <!-- 1. Saisir le Sujet -->
                         <div class="space-y-2">
                             <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. Saisir le Sujet du Débat</label>
-                            <input id="debate-topic-input" type="text" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neonGreen/60 transition-all">
+                            <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neonGreen/60 transition-all resize-none overflow-hidden" rows="2" oninput="autoResizeTextarea(this)"></textarea>
                         </div>
 
                         <!-- 2. Sélectionner la langue -->
@@ -522,64 +634,83 @@
                             </div>
                         </div>
 
-                        <!-- Lancer le Débat CTA -->
-                        <button id="btn-start-debate" onclick="startCustomDebate()" class="w-full py-4 bg-neonGreen text-darkBg font-display font-bold rounded-xl text-sm transition-all hover:scale-[1.01] flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-play"></i>
-                            <span>DÉPLOYER L'ARÈNE DE DÉBAT</span>
-                        </button>
-                        <button id="btn-stop-debate" onclick="stopCustomDebate()" class="w-full py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-display font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 border border-red-500/20 hidden">
-                            <i class="fa-solid fa-stop"></i>
-                            <span>ARRÊTER LE DÉBAT</span>
-                        </button>
+                        <!-- Conteneur Boutons (Normal sur PC, Fixé en bas sur Mobile) -->
+                        <div class="max-lg:mobile-sticky-btn-container max-lg:fixed max-lg:bottom-0 max-lg:left-0 max-lg:right-0 max-lg:p-4 max-lg:bg-darkBg/90 max-lg:backdrop-blur-md max-lg:border-t max-lg:border-white/5 max-lg:z-30">
+                            <!-- Lancer le Débat CTA -->
+                            <button id="btn-start-debate" onclick="startCustomDebate()" class="w-full py-4 bg-slate-800 text-slate-500 opacity-50 cursor-not-allowed pointer-events-none font-display font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2" disabled>
+                                <i class="fa-solid fa-play"></i>
+                                <span>DÉPLOYER L'ARÈNE DE DÉBAT</span>
+                            </button>
+                            <button id="btn-stop-debate" onclick="stopCustomDebate()" class="w-full py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-display font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 border border-red-500/20 hidden">
+                                <i class="fa-solid fa-stop"></i>
+                                <span>ARRÊTER LE DÉBAT</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Visualisation du Débat interactif (Droite) -->
-                    <div class="lg:col-span-7 bg-darkCard rounded-2xl border border-white/5 overflow-hidden flex flex-col h-[650px]">
-                        <div class="p-4 bg-darkBg/60 border-b border-white/10 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
-                                <span class="text-xs text-slate-500 font-mono ml-2">veltrix_debate_engine_active.log</span>
+                    <!-- Conteneur Enveloppe de l'Arène (Droite) -->
+                    <div class="lg:col-span-7 relative min-h-[650px] flex flex-col justify-start" id="debate-arena-wrapper">
+                        <!-- Indicateur visuel : Logo GetVeltrix statique centré dans la zone vide -->
+                        <div id="arena-placeholder-logo" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 transition-all duration-700 ease-in-out opacity-20">
+                            <div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 mb-4 animate-pulse" style="animation-duration: 4s;">
+                                <i class="fa-solid fa-brain text-4xl text-white/30"></i>
                             </div>
-                            <span class="text-[10px] text-slate-500 font-mono" id="debate-status-indicator">STATUT: En attente</span>
+                            <h3 class="font-display font-bold text-2xl text-white/30 tracking-widest uppercase">GETVELTRIX</h3>
+                            <p class="text-xs text-slate-500 max-w-xs mt-2">Configurez le sujet, la langue et les Entels à gauche puis cliquez sur Déployer pour commencer la confrontation dans l'Arène.</p>
                         </div>
 
-                        <div class="p-4 bg-white/[0.01] border-b border-white/5 flex items-center justify-between">
-                            <div class="space-y-0.5">
-                                <span class="text-[9px] text-slate-500 uppercase tracking-wider block">Sujet Soumis</span>
-                                <span id="active-debate-topic" class="text-sm font-semibold text-white italic">"Aucun débat n'est actuellement initié."</span>
-                            </div>
-                            <div class="flex flex-col items-end gap-1">
-                                <div id="cost-badge" class="hidden px-2 py-1 rounded bg-neonGreen/10 border border-neonGreen/20 text-[10px] font-bold text-neonGreen">
-                                    PAYÉ
-                                </div>
-                                <span id="active-debate-lang-badge" class="text-[9px] text-slate-500 uppercase"></span>
-                            </div>
-                        </div>
-
-                        <div id="dashboard-chat-box" class="flex-grow p-6 overflow-y-auto space-y-4 no-scrollbar">
-                            <div id="default-chat-placeholder" class="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
-                                <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
-                                    <i class="fa-solid fa-comments text-3xl"></i>
-                                </div>
-                                <div class="max-w-md">
-                                    <h4 class="text-sm font-bold text-white mb-1">Aucune discussion en cours</h4>
-                                    <p class="text-xs text-slate-500">Utilisez le panneau de gauche pour configurer un sujet, sélectionner vos Entels experts et lancer la confrontation.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 bg-darkBg/40 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
-                            <div class="flex items-center gap-3">
-                                <span>GetVeltrix Engine v3.0.1</span>
-                                <div id="debate-export-actions" class="hidden flex items-center gap-2">
-                                    <button onclick="openDownloadPreview('pdf')" class="px-2.5 py-1 bg-neonGreen/10 border border-neonGreen/30 text-neonGreen rounded-lg font-bold text-[9px] hover:bg-neonGreen hover:text-darkBg transition-all flex items-center gap-1.5 uppercase tracking-wider">
-                                        <i class="fa-solid fa-file-pdf"></i> Exporter PDF
+                        <!-- Visualisation du Débat interactif (L'Arène) -->
+                        <div id="debate-arena-panel" class="w-full bg-darkCard rounded-2xl border border-white/5 overflow-hidden flex flex-col transition-all duration-700 ease-in-out opacity-0 translate-y-[50px] invisible" style="height: 0;">
+                            <div class="p-4 bg-darkBg/60 border-b border-white/10 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <!-- Bouton Retour Mobile -->
+                                    <button onclick="exitMobileArena()" class="lg:hidden w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+                                        <i class="fa-solid fa-arrow-left text-xs"></i>
                                     </button>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-comments text-neonGreen text-xs"></i>
+                                        <span class="text-xs font-display font-bold text-white uppercase tracking-wider">Arène de Débat GetVeltrix</span>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-500 font-mono" id="debate-status-indicator">STATUT: En attente</span>
+                            </div>
+
+                            <div class="p-4 bg-white/[0.01] border-b border-white/5 flex items-center justify-between">
+                                <div class="space-y-0.5">
+                                    <span class="text-[9px] text-slate-500 uppercase tracking-wider block">Sujet Soumis</span>
+                                    <span id="active-debate-topic" class="text-sm font-semibold text-white italic">"Aucun débat n'est actuellement initié."</span>
+                                </div>
+                                <div class="flex flex-col items-end gap-1">
+                                    <div id="cost-badge" class="hidden px-2 py-1 rounded bg-neonGreen/10 border border-neonGreen/20 text-[10px] font-bold text-neonGreen">
+                                        PAYÉ
+                                    </div>
+                                    <span id="active-debate-lang-badge" class="text-[9px] text-slate-500 uppercase"></span>
                                 </div>
                             </div>
-                            <span id="typing-indicator" class="hidden text-neonGreen"><i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i>Un Entel génère sa réponse...</span>
+
+                            <div id="dashboard-chat-box" class="flex-grow p-6 overflow-y-auto space-y-4 no-scrollbar">
+                                <div id="default-chat-placeholder" class="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
+                                    <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
+                                        <i class="fa-solid fa-comments text-3xl"></i>
+                                    </div>
+                                    <div class="max-w-md">
+                                        <h4 class="text-sm font-bold text-white mb-1">Aucune discussion en cours</h4>
+                                        <p class="text-xs text-slate-500">Utilisez le panneau de gauche pour configurer un sujet, sélectionner vos Entels experts et lancer la confrontation.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-darkBg/40 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
+                                <div class="flex items-center gap-3">
+                                    <span>GetVeltrix Engine v3.0.1</span>
+                                    <div id="debate-export-actions" class="hidden flex items-center gap-2">
+                                        <button onclick="openDownloadPreview('pdf')" class="px-2.5 py-1 bg-neonGreen/10 border border-neonGreen/30 text-neonGreen rounded-lg font-bold text-[9px] hover:bg-neonGreen hover:text-darkBg transition-all flex items-center gap-1.5 uppercase tracking-wider">
+                                            <i class="fa-solid fa-file-pdf"></i> Exporter PDF
+                                        </button>
+                                    </div>
+                                </div>
+                                <span id="typing-indicator" class="hidden text-neonGreen"><i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i>Un Entel génère sa réponse...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1442,6 +1573,86 @@
                 }
             }
             return list;
+        }
+
+        // --- HELPER FONCTIONS CONSOLE LOGS & TEXTAREA AUTO-RESIZE ---
+        
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+            checkDebateButtonStatus();
+        }
+
+        function checkDebateButtonStatus() {
+            const topic = document.getElementById('debate-topic-input').value.trim();
+            const lang = document.getElementById('debate-language-select').value;
+            const leftEntel = document.getElementById('entel-left-select').value;
+            const rightEntel = document.getElementById('entel-right-select').value;
+            const btn = document.getElementById('btn-start-debate');
+
+            const isValid = topic !== "" && lang !== "" && leftEntel !== "" && rightEntel !== "";
+
+            if (isValid) {
+                btn.disabled = false;
+                btn.classList.remove('bg-slate-800', 'text-slate-500', 'opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                btn.classList.add('bg-neonGreen', 'text-darkBg', 'cursor-pointer', 'hover:scale-[1.01]');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-slate-800', 'text-slate-500', 'opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                btn.classList.remove('bg-neonGreen', 'text-darkBg', 'cursor-pointer', 'hover:scale-[1.01]');
+            }
+        }
+
+        // Ajouter un log système dans le tiroir rétractable
+        function addSystemLog(message, type = 'INFO') {
+            const consoleBox = document.getElementById('console-log-content');
+            if (!consoleBox) return;
+
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            const logEl = document.createElement('div');
+            
+            let colorClass = 'text-slate-400';
+            if (type === 'SUCCESS') colorClass = 'text-neonGreen';
+            if (type === 'ERROR') colorClass = 'text-red-400';
+            if (type === 'WARNING') colorClass = 'text-yellow-400';
+
+            logEl.className = `${colorClass} leading-normal`;
+            logEl.innerHTML = `<span class="text-slate-600">[${timeStr}]</span> <span class="font-bold">${type}:</span> ${message}`;
+            
+            consoleBox.appendChild(logEl);
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        // Effacer les logs de la console
+        function clearSystemLogs() {
+            const consoleBox = document.getElementById('console-log-content');
+            if (consoleBox) {
+                consoleBox.innerHTML = '';
+                addSystemLog("Console nettoyée.", "SUCCESS");
+            }
+        }
+
+        // Contrôler l'ouverture/fermeture du tiroir
+        function toggleConsoleLogDrawer(isOpen) {
+            const drawer = document.getElementById('console-log-drawer');
+            if (!drawer) return;
+
+            if (isOpen) {
+                drawer.classList.remove('translate-y-full');
+                addSystemLog("Affichage de la console système.");
+            } else {
+                drawer.classList.add('translate-y-full');
+            }
+        }
+
+        // Quitter l'arène sur mobile
+        function exitMobileArena() {
+            const grid = document.querySelector('#tab-debate > .grid');
+            if (grid) {
+                grid.classList.remove('arena-mobile-deployed');
+                addSystemLog("Retour au panneau de configuration mobile.");
+            }
         }
 
         // Remplir les menus Select au démarrage
@@ -2530,7 +2741,11 @@
             // RÈGLE 8 : TON ET FORMAT
             p += `═ TON ET FORMAT ═\n`;
             if (isBroadcast) {
-                p += `Mode radio : ton narratif, vivant, avec analogies. 3-4 phrases. 80 mots max.\n`;
+                if (isFirstTurn) {
+                    p += `Mode radio : ton narratif, vivant, avec analogies. 5-7 phrases. 130 mots max.\n`;
+                } else {
+                    p += `Mode radio : ton narratif, vivant, avec analogies. 3-4 phrases. 80 mots max.\n`;
+                }
             } else {
                 p += `Mode tchat : direct, humain, incisif. 3-4 phrases. 70-90 mots. 1-2 émojis si naturel.\n`;
             }
@@ -2583,13 +2798,6 @@
             // Masquer les boutons d'exportation pendant la génération
             document.getElementById('debate-export-actions').classList.add('hidden');
             
-            // Verrouiller immédiatement le statut pour éviter les doubles clics asynchrones pendant les requêtes réseau
-            userState.isDebating = true;
-            userState.shouldStopDebate = false;
-
-            document.getElementById('btn-start-debate').classList.add('hidden');
-            document.getElementById('btn-stop-debate').classList.remove('hidden');
-
             const topicInput = document.getElementById('debate-topic-input').value.trim();
             const topic = topicInput || "Faut-il interdire la cryptographie quantique pour la souveraineté nationale ?";
             const leftId = document.getElementById('entel-left-select').value;
@@ -2601,10 +2809,48 @@
             const rightEntel = allEntels.find(e => e.key === rightId);
 
             if (!leftEntel || !rightEntel) {
-                userState.isDebating = false;
+                showGlobalNotification("Erreur : Entels non sélectionnés.");
                 return;
             }
 
+            // 1. DÉPLOYER L'ARÈNE ET ANIMATION (700ms)
+            // Verrouiller immédiatement le statut pour éviter les doubles clics asynchrones pendant les requêtes réseau
+            userState.isDebating = true;
+            userState.shouldStopDebate = false;
+
+            document.getElementById('btn-start-debate').classList.add('hidden');
+            document.getElementById('btn-stop-debate').classList.remove('hidden');
+
+            addSystemLog(`Lancement de la transition de déploiement pour le sujet: "${topic.slice(0, 60)}..."`);
+            
+            // Réduction du panneau de configuration (Gauche)
+            const configPanel = document.getElementById('debate-config-panel');
+            configPanel.classList.add('lg:scale-[0.98]', 'lg:-translate-x-4', 'lg:opacity-85');
+
+            // Disparition du placeholder logo
+            const placeholderLogo = document.getElementById('arena-placeholder-logo');
+            placeholderLogo.style.opacity = '0';
+            placeholderLogo.style.visibility = 'hidden';
+
+            // Apparition de l'Arène (Droite)
+            const arenaPanel = document.getElementById('debate-arena-panel');
+            const isMobile = window.innerWidth < 1024;
+            if (isMobile) {
+                const grid = document.querySelector('#tab-debate > .grid');
+                grid.classList.add('arena-mobile-deployed');
+                addSystemLog("Transition mobile Slide-Left activée.");
+            } else {
+                arenaPanel.style.height = '650px';
+                arenaPanel.classList.remove('invisible', 'opacity-0', 'translate-y-[50px]');
+                arenaPanel.classList.add('visible', 'opacity-100', 'translate-y-0');
+                addSystemLog("Transition bureau Slide-Up active.");
+            }
+
+            // Attente de l'animation de déploiement (700ms) pour éviter tout lag visuel pendant l'appel API
+            await new Promise(resolve => setTimeout(resolve, 700));
+            addSystemLog("Déploiement de l'Arène terminé.", "SUCCESS");
+
+            // 2. LOGIQUE API & CRÉDITS (LAZY LOADING)
             // Validation stricte du nombre de répliques autorisées selon le plan de l'utilisateur (Tiered Limits)
             const userTier = (activeProfile ? activeProfile.tier : 'STANDARD').toUpperCase();
             const limits = { 'STANDARD': 12, 'SPECIALIST': 24, 'ANALYST': 50, 'PRO': 24 };
@@ -2612,17 +2858,18 @@
 
             if (userState.debateTurns > limit) {
                 showGlobalNotification(`Votre forfait actuel (${userTier}) est limité à maximum ${limit} répliques par débat.`);
-                userState.isDebating = false;
+                resetArenaUI();
                 return;
             }
 
             if (userState.credits < userState.debateTurns) {
                 showGlobalNotification("Erreur : Solde de crédits insuffisant pour lancer ce débat ! Veuillez recharger vos crédits.");
-                userState.isDebating = false;
+                resetArenaUI();
                 return;
             }
 
             // Déduire les crédits dans Supabase de manière atomique (avec log de transaction)
+            addSystemLog(`Déduction de ${userState.debateTurns} crédits pour ce débat...`);
             if (supabase && activeUser) {
                 const { error: deductError } = await supabase.rpc('deduct_user_credits', { 
                     user_id: activeUser.id, 
@@ -2633,9 +2880,11 @@
 
                 if (deductError) {
                     showGlobalNotification("Erreur : " + deductError.message);
-                    userState.isDebating = false;
+                    addSystemLog(`Erreur de déduction de crédits: ${deductError.message}`, "ERROR");
+                    resetArenaUI();
                     return;
                 }
+                addSystemLog("Crédits déduits de Supabase avec succès.", "SUCCESS");
 
                 // Enregistrer le débat persistant en BDD
                 const { error: insertError } = await supabase
@@ -2651,8 +2900,12 @@
 
                 if (insertError) {
                     console.error("Erreur d'enregistrement du débat en BDD :", insertError);
+                    addSystemLog(`Erreur d'enregistrement en BDD: ${insertError.message}`, "WARNING");
+                } else {
+                    addSystemLog("Débat enregistré dans la base de données.", "SUCCESS");
                 }
             }
+            
             // Déduire les crédits et mettre à jour l'historique de l'arène
             userState.credits -= userState.debateTurns;
             updateBalances();
@@ -2680,7 +2933,10 @@
 
             const userName = activeProfile?.full_name?.split(' ')[0] || activeUser?.email?.split('@')[0] || '';
             const apiLang = selectedLang === 'ht' ? 'Haitian Creole' : (selectedLang === 'en' ? 'English' : (selectedLang === 'es' ? 'Spanish' : 'French'));
+            
+            addSystemLog("Chargement de la clé API Gemini...");
             const apiKey = await getGeminiApiKey();
+            addSystemLog(apiKey ? "Clé API Gemini chargée." : "Aucune clé API Gemini trouvée. Utilisation du Fallback local.", apiKey ? "SUCCESS" : "WARNING");
 
             // Fonction principale de génération d'un message de débat
             async function postMessage(sender, turnIndex) {
@@ -2707,6 +2963,8 @@
                 indicator.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i>${thinkPhrases[turnIndex % thinkPhrases.length]}`;
                 indicator.classList.remove('hidden');
 
+                addSystemLog(`Tour ${turnIndex + 1}/${totalTurns} - ${sender.name} prépare son argument...`);
+
                 const thinkTime = 3000 + Math.floor(Math.random() * 3000);
                 await new Promise(resolve => { const t = setTimeout(resolve, thinkTime); userState.debateIntervals.push(t); });
                 if (userState.shouldStopDebate) return;
@@ -2732,6 +2990,7 @@
                             isQuestionTurn, pendingQuestion, lastOpponentMsg
                         );
 
+                        addSystemLog(`Envoi de la requête à Gemini pour ${sender.name}...`);
                         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
                         const resp = await fetch(url, {
                             method: 'POST',
@@ -2745,19 +3004,27 @@
                         if (resp.ok) {
                             const data = await resp.json();
                             const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-                            if (raw) { text = raw.replace(/^\[.*?\]:\s*|^"|"$/g, '').trim(); isUsingGemini = true; }
+                            if (raw) { 
+                                text = raw.replace(/^\[.*?\]:\s*|^"|"$/g, '').trim(); 
+                                isUsingGemini = true; 
+                                addSystemLog(`Argument de ${sender.name} généré avec succès par Gemini.`, "SUCCESS");
+                            }
                         } else {
                             const errD = await resp.json().catch(() => ({}));
                             showGlobalNotification(`⚠️ Gemini: ${errD.error?.message || 'Erreur'}. Fallback activé.`);
+                            addSystemLog(`Échec Gemini pour ${sender.name} (Status: ${resp.status}): ${errD.error?.message || 'Erreur'}. Bascule sur Fallback.`, "WARNING");
                         }
-                    } catch (e) { console.error('Gemini échec:', e); }
+                    } catch (e) { 
+                        console.error('Gemini échec:', e);
+                        addSystemLog(`Exception lors de l'appel Gemini pour ${sender.name}. Bascule sur Fallback.`, "WARNING");
+                    }
                 }
 
                 if (userState.shouldStopDebate) return;
 
                 // ——— FALLBACK : Gemini avec prompt minimal centré sur le sujet ———
                 if (!isUsingGemini) {
-                    // Tenter Gemini sans clé stockée via une clé publique de démo si disponible
+                    addSystemLog(`Génération de l'argument de ${sender.name} via le moteur de simulation local...`);
                     const fallbackPrompt = buildFallbackDebateMessage(sender, opponent, topic, selectedLang, isFirstTurn, isQuestionTurn, pendingQuestion, lastOpponentMsg, userName, myPastArgs.length);
                     text = fallbackPrompt;
                 }
@@ -2798,6 +3065,8 @@
                 setTimeout(() => msgEl.classList.remove('opacity-0', 'translate-y-3'), 50);
                 chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
 
+                addSystemLog(`Saisie en cours pour ${sender.name}...`);
+
                 // Effet typewriter
                 await new Promise(resolve => {
                     const target = msgEl.querySelector(`#typing-target-${turnIndex}`);
@@ -2814,6 +3083,7 @@
                 });
 
                 if (userState.shouldStopDebate) return;
+                addSystemLog(`Argument de ${sender.name} publié.`, "SUCCESS");
 
                 // Pause lecture (2.5-4s)
                 await new Promise(resolve => { const t = setTimeout(resolve, 2500 + Math.floor(Math.random() * 1500)); userState.debateIntervals.push(t); });
@@ -2825,6 +3095,8 @@
                 await postMessage((i % 2 === 0) ? leftEntel : rightEntel, i);
             }
 
+            if (userState.shouldStopDebate) return;
+
             // Débat terminé
             userState.isDebating = false;
             userState.lastDebateTopic = topic;
@@ -2833,12 +3105,16 @@
             document.getElementById('debate-status-indicator').textContent = "STATUT: Débat Complété";
             document.getElementById('debate-export-actions').classList.remove('hidden');
             showGlobalNotification("Débat écrit terminé ! Vos Entels ont fini d'échanger sur le sujet.");
+            addSystemLog("Débat écrit terminé avec succès. Prêt pour exportation.", "SUCCESS");
             
             // Recharger les données réelles et l'historique depuis Supabase
             await checkUserSession();
 
             document.getElementById('btn-start-debate').classList.remove('hidden');
             document.getElementById('btn-stop-debate').classList.add('hidden');
+            
+            // Restaurer le panneau config gauche
+            configPanel.classList.remove('lg:scale-[0.98]', 'lg:-translate-x-4', 'lg:opacity-85');
         }
 
         function stopCustomDebate() {
@@ -2858,6 +3134,35 @@
             
             document.getElementById('debate-status-indicator').textContent = "STATUT: Arrêté";
             showGlobalNotification("Le débat a été arrêté.");
+            addSystemLog("Le débat a été arrêté manuellement par l'utilisateur.", "WARNING");
+
+            // Rétablir le panneau de configuration (Gauche)
+            const configPanel = document.getElementById('debate-config-panel');
+            configPanel.classList.remove('lg:scale-[0.98]', 'lg:-translate-x-4', 'lg:opacity-85');
+        }
+
+        // Fonction pour réinitialiser l'arène en cas d'erreur de crédit/validation
+        function resetArenaUI() {
+            userState.isDebating = false;
+            document.getElementById('btn-start-debate').classList.remove('hidden');
+            document.getElementById('btn-stop-debate').classList.add('hidden');
+            
+            // Rétablir le panneau de configuration (Gauche)
+            const configPanel = document.getElementById('debate-config-panel');
+            configPanel.classList.remove('lg:scale-[0.98]', 'lg:-translate-x-4', 'lg:opacity-85');
+
+            // Rétablir le placeholder
+            const placeholderLogo = document.getElementById('arena-placeholder-logo');
+            placeholderLogo.style.opacity = '0.2';
+            placeholderLogo.style.visibility = 'visible';
+
+            // Masquer l'Arène (Droite)
+            const arenaPanel = document.getElementById('debate-arena-panel');
+            const grid = document.querySelector('#tab-debate > .grid');
+            grid.classList.remove('arena-mobile-deployed');
+            arenaPanel.style.height = '0';
+            arenaPanel.classList.add('invisible', 'opacity-0', 'translate-y-[50px]');
+            arenaPanel.classList.remove('visible', 'opacity-100', 'translate-y-0');
         }
 
         // Ajouter une entrée d'historique dans la liste
@@ -2936,20 +3241,23 @@
 
         function changeBroadcastVolume(val) {
             broadcastVolume = parseFloat(val);
-            if (broadcastGainNode && broadcastAudioCtx) {
-                broadcastGainNode.gain.setValueAtTime(broadcastVolume, broadcastAudioCtx.currentTime);
+            if (broadcastGainNode) {
+                broadcastGainNode.gain.value = broadcastVolume;
             }
         }
 
         const entelVoiceIds = {
-            kronopol9: "pNInz6ob9g9j9YGCt834",     // KronoPol-9
-            nexofin_x: "ErXwobaYiN019tU2b10X",     // NexoFin-X
-            voxidem_alpha: "21m00Tcm4TlvDq8ikWAM", // Rachel fallback
-            sigmar_7: "ErXwobaYiN019PkySvjV",      // Antoni fallback
-            biogen_theta: "21m00Tcm4TlvDq8ikWAM",  // Rachel fallback
-            neurax_8: "ErXwobaYiN019PkySvjV",      // Antoni fallback
-            cyphernet_3: "pNInz6ob9g9j9YGCt834",  // Male voice
-            tactix_omega: "ErXwobaYiN019PkySvjV"  // Antoni fallback
+            kronopol9: "pNInz6ob9g9j9YGCt834",     // KronoPol-9 (Adam)
+            nexofin_x: "ErXwobaYiN019tU2b10X",     // NexoFin-X (Antoni)
+            voxidem_alpha: "21m00Tcm4TlvDq8ikWAM", // VoxiDem-Alpha (Rachel)
+            sigmar_7: "VR6A1ElHj4d7vo8aZClL",      // SigmAr-7 (Arnold)
+            biogen_theta: "AZnzlk1XvdvUeBnXmlld",  // BioGen-Theta (Domi)
+            neurax_8: "EXAVITQu4vr4xnSDOCMa",      // NeurAx-8 (Bella)
+            cyphernet_3: "MF3mGyEYCl7XYWbMs88y",   // CypherNet-3 (Elli)
+            tactix_omega: "TxGEqn7nUa5To4laKfCj",  // TactiX-Omega (Josh)
+            omnix_7: "bV52Bp75A77Z1w76sdeP",       // OmniX-7 (Jeremy)
+            luminax_3: "flq65ml14lJ9E7399341",     // LuminaX-3 (Michael)
+            veve_sage: "IKne3meq5aBnO1rMsExF"      // VévéSage (MètKonsey)
         };
 
         // --- AFFICHAGE / MASQUAGE DES OPTIONS ELEVENLABS ---
@@ -3109,7 +3417,7 @@
                     broadcastGainNode.connect(broadcastAudioCtx.destination);
                     
                     // Appliquer le volume courant
-                    broadcastGainNode.gain.setValueAtTime(broadcastVolume, broadcastAudioCtx.currentTime);
+                    broadcastGainNode.gain.value = broadcastVolume;
                     
                     isBroadcastAudioPlaying = true;
                     animateWaveform();
@@ -3308,6 +3616,7 @@
             stopAudioRoom();
 
             userState.isBroadcasting = true;
+            userState.currentBroadcastAudioBuffers = []; // Stockage local des buffers audio
             document.getElementById('audio-panel-default').classList.add('hidden');
             const panel = document.getElementById('audio-panel-active');
             panel.classList.remove('hidden');
@@ -3513,6 +3822,19 @@
                         transcriptionElem.innerHTML = `<span class="text-neonGreen/60 animate-pulse">${currentSpeaker.name} prépare le flux vocal ElevenLabs...</span>`;
                         const audioBuffer = await fetchElevenLabsVoice(elevenKey, argument, voiceId, stability, similarity);
                         
+                        // Sauvegarder une copie du buffer en local pour le téléchargement client-side (car decodeAudioData va le détacher)
+                        if (audioBuffer) {
+                            try {
+                                const audioBufferCopy = audioBuffer.slice(0);
+                                if (!userState.currentBroadcastAudioBuffers) {
+                                    userState.currentBroadcastAudioBuffers = [];
+                                }
+                                userState.currentBroadcastAudioBuffers.push(audioBufferCopy);
+                            } catch (e) {
+                                console.warn("Impossible de cloner le buffer audio :", e);
+                            }
+                        }
+
                         transcriptionElem.innerHTML = `<span class="text-white font-bold font-mono">${currentSpeaker.name}</span> : "${argument}"`;
                         await playAudioBuffer(audioBuffer);
                     } else {
@@ -3586,6 +3908,7 @@
                 id: 'bc_' + Date.now(),
                 topic: topic,
                 history: historyCopy,
+                audioBuffers: userState.currentBroadcastAudioBuffers ? [...userState.currentBroadcastAudioBuffers] : [], // Conserver les buffers audio associés
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 date: new Date().toLocaleDateString()
             };
@@ -3655,6 +3978,7 @@
             // Affecter les valeurs de l'historique d'émission dans userState
             userState.lastBroadcastTopic = bc.topic;
             userState.lastBroadcastHistory = bc.history;
+            userState.currentBroadcastAudioBuffers = bc.audioBuffers || []; // Recharger les buffers associés
             
             // Ouvrir la prévisualisation de téléchargement MP3
             openDownloadPreview('mp3');
@@ -4132,15 +4456,20 @@
                 console.error("Erreur d'initialisation des sélecteurs customs :", e);
             }
 
-            // Charger la clé ElevenLabs sauvegardée
+            // Charger les clés API Gemini et ElevenLabs sauvegardées
             try {
+                const savedGeminiKey = localStorage.getItem('veltrix_gemini_api_key');
+                if (savedGeminiKey) {
+                    const keyInput = document.getElementById('dashboard-gemini-key-input');
+                    if (keyInput) keyInput.value = savedGeminiKey;
+                }
                 const savedElevenKey = localStorage.getItem('veltrix_eleven_api_key');
                 if (savedElevenKey) {
                     const keyInput = document.getElementById('broadcast-eleven-key');
                     if (keyInput) keyInput.value = savedElevenKey;
                 }
             } catch (e) {
-                console.warn("Impossible de charger la clé ElevenLabs :", e);
+                console.warn("Impossible de charger les clés API sauvegardées :", e);
             }
             
             // Générer l'annuaire
@@ -4181,6 +4510,17 @@
                     listenersElem.textContent = `${base + fluctuation} auditeurs`;
                 }
             }, 15000);
+
+            // Listeners pour l'état d'activation du bouton de débat
+            document.getElementById('debate-topic-input').addEventListener('input', checkDebateButtonStatus);
+            document.getElementById('debate-language-select').addEventListener('change', checkDebateButtonStatus);
+            document.getElementById('entel-left-select').addEventListener('change', checkDebateButtonStatus);
+            document.getElementById('entel-right-select').addEventListener('change', checkDebateButtonStatus);
+
+            // Rendu initial de l'état du bouton et logs système de démarrage
+            checkDebateButtonStatus();
+            addSystemLog("Moteur Veltrix initialisé. Version 3.0.1 prête.");
+            addSystemLog("Session utilisateur vérifiée: Supabase connectée.", "SUCCESS");
         }
 
         // --- LOGIQUE DU SYSTÈME DE TÉLÉCHARGEMENT GETVELTRIX ---
@@ -4300,6 +4640,40 @@
         async function executeDownload() {
             const format = userState.activeFormat;
             if (!format) return;
+
+            // Si format MP3 et que nous avons les buffers audio collectés en local
+            if (format === 'mp3' && userState.currentBroadcastAudioBuffers && userState.currentBroadcastAudioBuffers.length > 0) {
+                const btn = document.getElementById('preview-download-action-btn');
+                const btnText = document.getElementById('download-button-text');
+                const originalText = btnText.textContent;
+
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-wait');
+                btnText.textContent = "Assemblage local...";
+
+                try {
+                    const blob = new Blob(userState.currentBroadcastAudioBuffers, { type: 'audio/mpeg' });
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `getveltrix-broadcast-${Date.now()}.mp3`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
+
+                    showGlobalNotification("✅ Téléchargement MP3 réussi (Généré en local) !");
+                    closeDownloadPreview();
+                    return;
+                } catch (err) {
+                    console.error("Erreur de téléchargement local :", err);
+                    addSystemLog(`Erreur d'assemblage local : ${err.message}`, "ERROR");
+                } finally {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-wait');
+                    btnText.textContent = originalText;
+                }
+            }
 
             const endpoint = format === 'pdf' ? '/api/download-pdf' : '/api/download-mp3';
             const topic = format === 'pdf' ? userState.lastDebateTopic : userState.lastBroadcastTopic;
@@ -4770,8 +5144,64 @@
             </div>
         </div>
     </div>
+
+    <!-- TIROIR CONSOLE LOG (RÉTRACTABLE) -->
+    <div id="console-log-drawer" class="fixed bottom-0 right-0 z-40 bg-darkCard/95 border-t border-l border-white/10 w-96 max-sm:w-full max-sm:rounded-t-2xl max-sm:rounded-l-none h-64 shadow-2xl transition-all duration-300 transform translate-y-full flex flex-col overflow-hidden backdrop-blur-md">
+        <div class="px-4 py-3 bg-darkBg/60 border-b border-white/5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-terminal text-neonGreen text-xs"></i>
+                <span class="text-xs font-display font-bold text-white uppercase tracking-wider">Console Veltrix Logs</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="clearSystemLogs()" class="text-[10px] text-slate-500 hover:text-white transition-all uppercase tracking-wider font-semibold">Effacer</button>
+                <span class="text-slate-600 text-[10px]">|</span>
+                <button onclick="toggleConsoleLogDrawer(false)" class="text-slate-400 hover:text-white transition-all"><i class="fa-solid fa-xmark text-xs"></i></button>
+            </div>
+        </div>
+        <div id="console-log-content" class="flex-grow p-4 overflow-y-auto font-mono text-[10px] text-slate-400 space-y-1.5 no-scrollbar select-text">
+            <!-- Les logs seront ajoutés ici dynamiquement -->
+        </div>
+    </div>
+
+    <!-- BOUTON D'ACCÈS CONSOLE LOGS -->
+    <button id="btn-toggle-console" onclick="toggleConsoleLogDrawer(true)" class="fixed bottom-4 right-4 z-30 w-10 h-10 rounded-full bg-darkCard border border-white/10 hover:border-neonGreen/40 text-slate-400 hover:text-neonGreen hidden md:flex items-center justify-center shadow-lg transition-all hover:scale-105" title="Consoles Logs">
+        <i class="fa-solid fa-terminal text-xs"></i>
+    </button>
     
     <script>
+        // --- GESTION DES CLÉS API DANS LE DRAWER ---
+        function saveDashboardGeminiKey() {
+            const keyInput = document.getElementById('dashboard-gemini-key-input').value.trim();
+            if (keyInput) {
+                localStorage.setItem('veltrix_gemini_api_key', keyInput);
+            } else {
+                localStorage.removeItem('veltrix_gemini_api_key');
+            }
+        }
+
+        function clearDashboardGeminiKey() {
+            localStorage.removeItem('veltrix_gemini_api_key');
+            const input = document.getElementById('dashboard-gemini-key-input');
+            if (input) input.value = "";
+            showGlobalNotification("Clé API Gemini effacée.");
+        }
+
+        function saveDashboardElevenKey() {
+            const keyInput = document.getElementById('broadcast-eleven-key').value.trim();
+            if (keyInput) {
+                localStorage.setItem('veltrix_eleven_api_key', keyInput);
+            } else {
+                localStorage.removeItem('veltrix_eleven_api_key');
+            }
+        }
+
+        function clearDashboardElevenKey() {
+            localStorage.removeItem('veltrix_eleven_api_key');
+            const input = document.getElementById('broadcast-eleven-key');
+            if (input) input.value = "";
+            showGlobalNotification("Clé API ElevenLabs effacée.");
+        }
+
         // Fermer tous les dropdowns si on clique en dehors
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.custom-select-wrapper')) {

@@ -4,10 +4,31 @@ const { createClient } = require('@supabase/supabase-js');
 
 
 const VOICE_MAPPING = {
+  // Par nom complet (turn.sender)
   "KronoPol-9": "pNInz6ob9g9j9YGCt834",
   "NexoFin-X": "ErXwobaYiN019tU2b10X",
-  "MètKonsey": "IKne3meq5aBnO1rMsExF",
-  "KèKontan": "EXAVITQu4vr4xnSDOCMa"
+  "VoxiDem-Alpha": "21m00Tcm4TlvDq8ikWAM",
+  "SigmAr-7": "VR6A1ElHj4d7vo8aZClL",
+  "BioGen-Theta": "AZnzlk1XvdvUeBnXmlld",
+  "NeurAx-8": "EXAVITQu4vr4xnSDOCMa",
+  "CypherNet-3": "MF3mGyEYCl7XYWbMs88y",
+  "TactiX-Omega": "TxGEqn7nUa5To4laKfCj",
+  "OmniX-7": "bV52Bp75A77Z1w76sdeP",
+  "LuminaX-3": "flq65ml14lJ9E7399341",
+  "VévéSage": "IKne3meq5aBnO1rMsExF",
+
+  // Par clé minuscule (par sécurité)
+  "kronopol9": "pNInz6ob9g9j9YGCt834",
+  "nexofin_x": "ErXwobaYiN019tU2b10X",
+  "voxidem_alpha": "21m00Tcm4TlvDq8ikWAM",
+  "sigmar_7": "VR6A1ElHj4d7vo8aZClL",
+  "biogen_theta": "AZnzlk1XvdvUeBnXmlld",
+  "neurax_8": "EXAVITQu4vr4xnSDOCMa",
+  "cyphernet_3": "MF3mGyEYCl7XYWbMs88y",
+  "tactix_omega": "TxGEqn7nUa5To4laKfCj",
+  "omnix_7": "bV52Bp75A77Z1w76sdeP",
+  "luminax_3": "flq65ml14lJ9E7399341",
+  "veve_sage": "IKne3meq5aBnO1rMsExF"
 };
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM"; // Rachel
 
