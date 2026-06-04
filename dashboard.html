@@ -2,7 +2,7 @@
 <html lang="fr" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GetVeltrix - Console de Gestion & Débats</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <!-- Tailwind CSS -->
@@ -415,11 +415,6 @@
                         Boutique de Crédits
                     </div>
                 </button>
-                <!-- Bouton Console Logs Mobile -->
-                <button onclick="toggleConsoleLogDrawer(true); toggleMobileSidebar(false);" class="md:hidden w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all relative">
-                    <i class="fa-solid fa-terminal text-lg text-slate-500"></i>
-                    <span>Console Logs</span>
-                </button>
             </nav>
         </div>
 
@@ -460,7 +455,7 @@
                 <button onclick="toggleMobileSidebar(true)" class="md:hidden w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white flex items-center justify-center border border-white/5 transition-all">
                     <i class="fa-solid fa-bars text-md"></i>
                 </button>
-                <h2 id="header-page-title" class="font-display font-bold text-lg sm:text-xl text-white">Vue d'ensemble</h2>
+                <h2 id="header-page-title" class="font-display font-bold text-lg sm:text-xl text-white hidden md:block">Vue d'ensemble</h2>
             </div>
             
             <div class="flex items-center gap-4">
@@ -594,14 +589,24 @@
                                 
                                 <!-- Bottom control bar inside the chatbox -->
                                 <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
-                                    <!-- Language select on the left -->
-                                    <div class="flex items-center gap-1.5 min-w-[110px]">
-                                        <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                            <option value="fr">Français</option>
-                                            <option value="en">English (Anglais)</option>
-                                            <option value="es">Español (Espagnol)</option>
-                                            <option value="ht">Kreyòl Ayisyen (Créole)</option>
-                                        </select>
+                                    <!-- Language & Model selects on the left -->
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <div class="min-w-[110px]">
+                                            <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                                <option value="fr">Français</option>
+                                                <option value="en">English (Anglais)</option>
+                                                <option value="es">Español (Espagnol)</option>
+                                                <option value="ht">Kreyòl Ayisyen (Créole)</option>
+                                            </select>
+                                        </div>
+                                        <div class="min-w-[130px]">
+                                            <select id="debate-model-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     
                                     <!-- Entel 1 and Entel 2 selects on the right -->
@@ -3000,7 +3005,9 @@
                         );
 
                         addSystemLog(`Envoi de la requête à Gemini pour ${sender.name}...`);
-                        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                        const modelSelect = document.getElementById('debate-model-select');
+                        const selectedModel = modelSelect ? modelSelect.value : 'gemini-2.5-flash';
+                        const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
                         const resp = await fetch(url, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -4444,8 +4451,9 @@
             // Initialiser les versions customs de tous les sélecteurs
             try {
                 initCustomSelect('debate-language-select', 'compact-select');
+                initCustomSelect('debate-model-select', 'compact-select');
                 initCustomSelect('broadcast-language-select');
-                initCustomSelect('entel-left-select', 'compact-select align-right');
+                initCustomSelect('entel-left-select', 'compact-select');
                 initCustomSelect('entel-right-select', 'compact-select align-right');
                 initCustomSelect('broadcast-entel-1');
                 initCustomSelect('broadcast-entel-2');
@@ -4866,7 +4874,11 @@
                 es: { icon: 'fa-earth-americas', color: 'text-red-400', label: 'Español (Espagnol)' },
                 ht: { icon: 'fa-earth-caribbean', color: 'text-neonGreen', label: 'Kreyòl Ayisyen (Créole)' },
                 real: { icon: 'fa-volume-high', color: 'text-neonGreen', label: 'Mode Réel (ElevenLabs - Premium)' },
-                simulation: { icon: 'fa-circle-play', color: 'text-slate-400', label: 'Mode Simulation (Gratuit)' }
+                simulation: { icon: 'fa-circle-play', color: 'text-slate-400', label: 'Mode Simulation (Gratuit)' },
+                'gemini-2.5-flash': { icon: 'fa-bolt', color: 'text-cyan-400', label: 'Gemini 2.5 Flash' },
+                'gemini-2.5-pro': { icon: 'fa-wand-magic-sparkles', color: 'text-purple-400', label: 'Gemini 2.5 Pro' },
+                'gemini-1.5-flash': { icon: 'fa-bolt', color: 'text-slate-400', label: 'Gemini 1.5 Flash' },
+                'gemini-1.5-pro': { icon: 'fa-wand-magic-sparkles', color: 'text-slate-400', label: 'Gemini 1.5 Pro' }
             };
             
             if (langIcons[value]) {
@@ -5180,7 +5192,7 @@
     </div>
 
     <!-- BOUTON D'ACCÈS CONSOLE LOGS -->
-    <button id="btn-toggle-console" onclick="toggleConsoleLogDrawer(true)" class="fixed bottom-4 right-4 z-30 w-10 h-10 rounded-full bg-darkCard border border-white/10 hover:border-neonGreen/40 text-slate-400 hover:text-neonGreen hidden md:flex items-center justify-center shadow-lg transition-all hover:scale-105" title="Consoles Logs">
+    <button id="btn-toggle-console" onclick="toggleConsoleLogDrawer(true)" class="fixed bottom-4 right-4 z-30 w-10 h-10 rounded-full bg-darkCard border border-white/10 hover:border-neonGreen/40 text-slate-400 hover:text-neonGreen hidden items-center justify-center shadow-lg transition-all hover:scale-105" title="Consoles Logs">
         <i class="fa-solid fa-terminal text-xs"></i>
     </button>
     
