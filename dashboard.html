@@ -730,7 +730,7 @@
                             <div class="flex items-center justify-between w-full pt-4 border-t border-white/5">
                                 <div class="flex items-center gap-2 text-slate-400">
                                     <i class="fa-solid fa-volume-low text-xs"></i>
-                                    <input type="range" class="w-20 accent-neonGreen bg-darkBg h-1 rounded-lg">
+                                    <input id="broadcast-volume-slider" type="range" min="0" max="1" step="0.05" value="1" oninput="changeBroadcastVolume(this.value)" class="w-20 accent-neonGreen bg-darkBg h-1 rounded-lg">
                                     <i class="fa-solid fa-volume-high text-xs"></i>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -2470,10 +2470,18 @@
             // RÈGLE 3 : PREMIER TOUR — salutation + annonce sujet
             if (isFirstTurn) {
                 p += `═ PREMIER TOUR ═\n`;
-                if (userName) {
-                    p += `Tu DOIS : (1) Saluer ${userName} par son prénom. (2) Annoncer le sujet "${topic}". (3) Donner ta position initiale. (4) Lancer un argument provocateur à ${opponentName}.\n\n`;
+                if (isBroadcast) {
+                    p += `Tu DOIS animer l'ouverture de cette émission :\n`;
+                    p += `  1. Salue chaleureusement l'utilisateur (${userName || 'notre auditeur'}) et remercie-le d'avoir lancé cette émission sur le sujet : "${topic}".\n`;
+                    p += `  2. Salue tes co-débatteurs (${opponentName}).\n`;
+                    p += `  3. Donne ta position de manière vive et rapide (1 phrase).\n`;
+                    p += `  4. Pose une question directe à l'un de tes co-débatteurs (${opponentName.split(' & ')[0]}) pour démarrer le débat.\n\n`;
                 } else {
-                    p += `Annonce le sujet "${topic}", présente-toi brièvement, et donne ta position initiale.\n\n`;
+                    if (userName) {
+                        p += `Tu DOIS : (1) Saluer ${userName} par son prénom. (2) Annoncer le sujet "${topic}". (3) Donner ta position initiale. (4) Lancer un argument provocateur à ${opponentName}.\n\n`;
+                    } else {
+                        p += `Annonce le sujet "${topic}", présente-toi brièvement, et donne ta position initiale.\n\n`;
+                    }
                 }
             }
 
@@ -2921,8 +2929,17 @@
         // --- VARIABLES ET ANALYSEURS POUR LE RENDU VOCAL ELEVENLABS ---
         let broadcastAudioCtx = null;
         let broadcastAnalyser = null;
+        let broadcastGainNode = null;
+        let broadcastVolume = 1.0;
         let broadcastAnimationFrameId = null;
         let isBroadcastAudioPlaying = false;
+
+        function changeBroadcastVolume(val) {
+            broadcastVolume = parseFloat(val);
+            if (broadcastGainNode && broadcastAudioCtx) {
+                broadcastGainNode.gain.setValueAtTime(broadcastVolume, broadcastAudioCtx.currentTime);
+            }
+        }
 
         const entelVoiceIds = {
             kronopol9: "pNInz6ob9g9j9YGCt834",     // KronoPol-9
@@ -3074,6 +3091,7 @@
                     broadcastAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
                     broadcastAnalyser = broadcastAudioCtx.createAnalyser();
                     broadcastAnalyser.fftSize = 32;
+                    broadcastGainNode = broadcastAudioCtx.createGain();
                 }
 
                 if (broadcastAudioCtx.state === 'suspended') {
@@ -3087,7 +3105,11 @@
                     source.buffer = decodedBuffer;
                     
                     source.connect(broadcastAnalyser);
-                    broadcastAnalyser.connect(broadcastAudioCtx.destination);
+                    broadcastAnalyser.connect(broadcastGainNode);
+                    broadcastGainNode.connect(broadcastAudioCtx.destination);
+                    
+                    // Appliquer le volume courant
+                    broadcastGainNode.gain.setValueAtTime(broadcastVolume, broadcastAudioCtx.currentTime);
                     
                     isBroadcastAudioPlaying = true;
                     animateWaveform();
@@ -3116,6 +3138,7 @@
                 else utterance.lang = "fr-FR"; // Français & Créole simulé
 
                 utterance.rate = 1.15; // Un peu plus vif
+                utterance.volume = broadcastVolume; // Appliquer le volume courant
 
                 isBroadcastAudioPlaying = false;
                 animateWaveformSimulation();
@@ -3375,11 +3398,30 @@
                 if (apiKey) {
                     try {
                         const otherSpeakersNames = speakers.filter(s => s.key !== currentSpeaker.key).map(s => s.name).join(' & ');
-                        const keywords = extractKeywords(topic);
                         const apiLang = lang === 'ht' ? 'Haitian Creole' : (lang === 'en' ? 'English' : (lang === 'es' ? 'Spanish' : 'French'));
                         
+                        const isFirstTurn = (step === 0);
+                        const lastOpponentMsg = step > 0 ? broadcastHistory[step - 1].text : null;
+                        const pendingQuestion = (step > 0 && broadcastHistory[step - 1].text.includes('?')) ? broadcastHistory[step - 1].text : null;
+                        const isQuestionTurn = (step < maxSteps - 1);
+                        const myPastArgs = broadcastHistory.filter(h => h.sender === currentSpeaker.name);
+                        const userName = activeProfile?.full_name?.split(' ')[0] || activeUser?.email?.split('@')[0] || '';
+
                         // Construction du prompt de système pour le broadcast via le constructeur unifié
-                        const prompt = buildEntelSystemInstruction(currentSpeaker, otherSpeakersNames, topic, keywords, apiLang, broadcastHistory.length === 0, true);
+                        const prompt = buildEntelSystemInstruction(
+                            currentSpeaker,
+                            otherSpeakersNames,
+                            topic,
+                            apiLang,
+                            step,
+                            maxSteps,
+                            true, // isBroadcast
+                            isFirstTurn ? userName : null,
+                            isQuestionTurn,
+                            pendingQuestion,
+                            lastOpponentMsg,
+                            myPastArgs
+                        );
 
                         const userPrompt = `This is a live table-round audio broadcast on the topic: "${topic}".\n`
                                          + `It is your turn now, ${currentSpeaker.name}. Speak dynamically in ${apiLang}.\n`
