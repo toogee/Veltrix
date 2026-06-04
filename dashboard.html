@@ -100,6 +100,45 @@
             box-shadow: 0 0 15px rgba(204, 255, 0, 0.15) !important;
         }
 
+        /* Styles compacts pour les sélecteurs de type Claude-Sonnet */
+        .compact-select {
+            width: auto;
+            display: inline-block;
+            min-width: 100px;
+        }
+        .compact-select .custom-select-trigger {
+            padding: 6px 12px !important;
+            border-radius: 9999px !important;
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        .compact-select .custom-select-trigger:hover, .compact-select .custom-select-trigger.active {
+            border-color: rgba(204, 255, 0, 0.5) !important;
+            box-shadow: 0 0 10px rgba(204, 255, 0, 0.1) !important;
+        }
+        .compact-select .custom-select-dropdown {
+            min-width: 250px !important;
+            width: max-content !important;
+            max-width: 300px !important;
+            border-radius: 14px !important;
+            margin-top: 6px !important;
+        }
+        .compact-select.align-right .custom-select-dropdown {
+            left: auto !important;
+            right: 0 !important;
+        }
+
+        /* Conteneur unifié style Claude */
+        .claude-input-container {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background-color: #090B11;
+            transition: all 0.3s ease;
+        }
+        .claude-input-container:focus-within {
+            border-color: rgba(204, 255, 0, 0.4);
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.05);
+        }
+
         /* Custom range slider styling */
         input[type="range"] {
             -webkit-appearance: none;
@@ -662,65 +701,62 @@
                             <p class="text-xs text-slate-500">Instanciez les Entels de votre choix, sélectionnez la langue d'expression et lancez la confrontation.</p>
                         </div>
 
-                        <!-- 1. Saisir le Sujet -->
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. SAISIR LE SUJET DU DÉBAT</label>
-                            <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neonGreen/60 transition-all resize-none overflow-hidden" rows="2" oninput="autoResizeTextarea(this)"></textarea>
-                        </div>
-
-                        <!-- 2. Sélectionner la langue -->
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">2. CHOISIR LA LANGUE D'ÉCHANGE</label>
-                            <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                <option value="fr">Français</option>
-                                <option value="en">English (Anglais)</option>
-                                <option value="es">Español (Espagnol)</option>
-                                <option value="ht">Kreyòl Ayisyen (Créole Haïtien)</option>
-                            </select>
-                        </div>
-
-                        <!-- 3. Sélectionner les deux Entels par catégorie -->
-                        <div class="space-y-3">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">3. CHOISIR LES 2 ENTELS FACE-À-FACE</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div class="space-y-1.5">
-                                    <span class="text-[10px] text-slate-500">Entel 1</span>
-                                    <select id="entel-left-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                        <!-- Injecté dynamiquement par JS -->
+                        <!-- Claude-Style Unified Chatbox Container -->
+                        <div class="claude-input-container rounded-2xl p-4 space-y-4">
+                            <!-- Textarea at the top -->
+                            <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden" rows="2" oninput="autoResizeTextarea(this)"></textarea>
+                            
+                            <!-- Bottom control bar inside the chatbox -->
+                            <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
+                                <!-- Language select on the left -->
+                                <div class="flex items-center gap-1.5 min-w-[110px]">
+                                    <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                        <option value="fr">Français</option>
+                                        <option value="en">English (Anglais)</option>
+                                        <option value="es">Español (Espagnol)</option>
+                                        <option value="ht">Kreyòl Ayisyen (Créole)</option>
                                     </select>
                                 </div>
-                                <div class="space-y-1.5">
-                                    <span class="text-[10px] text-slate-500">Entel 2</span>
-                                    <select id="entel-right-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                        <!-- Injecté dynamiquement par JS -->
-                                    </select>
+                                
+                                <!-- Entel 1 and Entel 2 selects on the right -->
+                                <div class="flex items-center gap-2">
+                                    <div class="w-32">
+                                        <select id="entel-left-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                            <!-- Injecté dynamiquement par JS -->
+                                        </select>
+                                    </div>
+                                    <div class="w-32">
+                                        <select id="entel-right-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                            <!-- Injecté dynamiquement par JS -->
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 4. Définir le volume / nombre de tours -->
-                        <div class="space-y-2">
+                        <!-- 4. NOMBRE D'ÉCHANGES (Sous le champ) -->
+                        <div class="space-y-2 pt-2">
                             <div class="flex justify-between items-center">
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">4. NOMBRE D'ÉCHANGES</label>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">4. NOMBRE D'ÉCHANGES</label>
                                 <span class="text-xs text-neonGreen font-semibold" id="turns-cost-display">4 messages (4 crédits)</span>
                             </div>
                             <input id="debate-turns-range" type="range" min="2" max="12" step="2" value="4" oninput="updateTurnsCost(this.value)" class="w-full accent-neonGreen bg-darkBg">
-                            <div class="flex justify-between text-[10px] text-slate-500">
+                            <div class="flex justify-between text-[9px] text-slate-500">
                                 <span>2 messages</span>
                                 <span>6 messages</span>
                                 <span>12 messages</span>
                             </div>
                         </div>
 
-                        <!-- 5. Mode de Débat -->
+                        <!-- 5. MODE DE RENDU (Pill Style) -->
                         <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block">5. MODE DE RENDU</label>
-                            <div class="grid grid-cols-2 gap-3">
-                                <label class="debate-mode-card p-3 bg-darkBg rounded-xl cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">5. MODE DE RENDU</label>
+                            <div class="flex flex-wrap gap-2">
+                                <label class="debate-mode-card px-4 py-2 bg-darkBg rounded-full cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
                                     <input type="radio" name="debate-mode" value="text" checked class="accent-neonGreen">
                                     <span>Tchat Écrit</span>
                                 </label>
-                                <label class="debate-mode-card p-3 bg-darkBg rounded-xl cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500 opacity-60">
+                                <label class="debate-mode-card px-4 py-2 bg-darkBg rounded-full cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500 opacity-60">
                                     <input type="radio" name="debate-mode" value="audio" disabled class="accent-neonGreen">
                                     <span class="flex items-center gap-1.5">Audio <span class="text-[9px] bg-neonGreen/20 text-neonGreen px-1 rounded font-bold">PRO</span></span>
                                 </label>
@@ -4549,10 +4585,10 @@
             
             // Initialiser les versions customs de tous les sélecteurs
             try {
-                initCustomSelect('debate-language-select');
+                initCustomSelect('debate-language-select', 'compact-select');
                 initCustomSelect('broadcast-language-select');
-                initCustomSelect('entel-left-select');
-                initCustomSelect('entel-right-select');
+                initCustomSelect('entel-left-select', 'compact-select align-right');
+                initCustomSelect('entel-right-select', 'compact-select align-right');
                 initCustomSelect('broadcast-entel-1');
                 initCustomSelect('broadcast-entel-2');
                 initCustomSelect('broadcast-entel-3');
