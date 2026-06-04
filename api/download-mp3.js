@@ -127,31 +127,31 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // 5. Lancer la génération vocale en parallèle pour optimiser la performance
-    const speechPromises = history.map(async (turn) => {
+    // 5. Générer la signature vocale pour le tier SPECIALIST
+    let watermarkBuffer = Buffer.from([]);
+    if (tier === 'SPECIALIST') {
+      try {
+        watermarkBuffer = await generateSpeech("Contenu protégé par GetVeltrix.", DEFAULT_VOICE, elevenLabsApiKey);
+      } catch (err) {
+        console.warn("Échec de génération du filigrane audio, poursuite sans filigrane :", err);
+      }
+    }
+
+    // 6. Générer les répliques de manière séquentielle pour éviter de dépasser la limite de requêtes parallèles d'ElevenLabs
+    const speechBuffers = [];
+    for (const turn of history) {
       const speakerName = turn.sender || 'Expert';
       const voiceId = VOICE_MAPPING[speakerName] || DEFAULT_VOICE;
       const text = turn.text || '';
-      if (!text) return Buffer.from([]);
+      
+      if (!text) {
+        speechBuffers.push(Buffer.from([]));
+        continue;
+      }
       
       const buffer = await generateSpeech(text, voiceId, elevenLabsApiKey);
-      return buffer;
-    });
-
-    // Optionnel : Générer la signature vocale en parallèle pour le tier SPECIALIST
-    let watermarkPromise = Promise.resolve(Buffer.from([]));
-    if (tier === 'SPECIALIST') {
-      watermarkPromise = generateSpeech("Contenu protégé par GetVeltrix.", DEFAULT_VOICE, elevenLabsApiKey)
-        .catch(err => {
-          console.warn("Échec de génération du filigrane audio, poursuite sans filigrane :", err);
-          return Buffer.from([]);
-        });
+      speechBuffers.push(buffer);
     }
-
-    const [speechBuffers, watermarkBuffer] = await Promise.all([
-      Promise.all(speechPromises),
-      watermarkPromise
-    ]);
 
     // 6. Concaténer les buffers MP3
     const finalBuffers = [];
