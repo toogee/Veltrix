@@ -39,6 +39,9 @@
         }
     </script>
     <style>
+        body {
+            touch-action: manipulation;
+        }
         .neon-glow-border {
             box-shadow: 0 0 15px rgba(204, 255, 0, 0.1);
             border: 1px solid rgba(204, 255, 0, 0.15);
@@ -585,7 +588,12 @@
                             <!-- Claude-Style Unified Chatbox Container -->
                             <div class="claude-input-container rounded-2xl p-4 space-y-4">
                                 <!-- Textarea at the top -->
-                                <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden" rows="2" oninput="autoResizeTextarea(this)"></textarea>
+                                <div class="relative flex items-start gap-2">
+                                    <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden pr-10" rows="2" oninput="autoResizeTextarea(this)"></textarea>
+                                    <button id="btn-debate-speech" onclick="startSpeechRecognition('debate-topic-input', 'btn-debate-speech')" class="absolute right-0 top-1 w-8 h-8 rounded-lg bg-white/5 border border-white/10 hover:border-neonGreen/30 text-slate-400 hover:text-neonGreen flex items-center justify-center transition-all shrink-0" title="Parler pour écrire">
+                                        <i class="fa-solid fa-microphone text-xs"></i>
+                                    </button>
+                                </div>
                                 
                                 <!-- Bottom control bar inside the chatbox -->
                                 <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
@@ -730,7 +738,12 @@
                             <div class="space-y-3">
                                 <div class="space-y-1.5">
                                     <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sujet de la Table Ronde</label>
-                                    <input id="broadcast-topic-input" type="text" placeholder="Ex: La décroissance macro-économique face à l'abondance technologique" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-neonGreen/60 transition-all">
+                                    <div class="relative flex items-center">
+                                        <input id="broadcast-topic-input" type="text" placeholder="Ex: La décroissance macro-économique face à l'abondance technologique" class="w-full bg-darkBg border border-white/10 rounded-xl pl-4 pr-12 py-3 text-xs text-white focus:outline-none focus:border-neonGreen/60 transition-all">
+                                        <button id="btn-broadcast-speech" onclick="startSpeechRecognition('broadcast-topic-input', 'btn-broadcast-speech')" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white/5 border border-white/10 hover:border-neonGreen/30 text-slate-400 hover:text-neonGreen flex items-center justify-center transition-all shrink-0" title="Parler pour écrire">
+                                            <i class="fa-solid fa-microphone text-xs"></i>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <!-- Sélectionner la langue du Broadcast -->
@@ -5197,6 +5210,87 @@
     </button>
     
     <script>
+        // Prevents pinch zoom on iOS Safari
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
+
+        // --- RECONNAISSANCE VOCALE (SPEECH TO TEXT) ---
+        let activeSpeechRecognition = null;
+        function startSpeechRecognition(inputId, buttonId) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                showGlobalNotification("La reconnaissance vocale n'est pas supportée par votre navigateur.");
+                return;
+            }
+
+            const button = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+            
+            if (activeSpeechRecognition) {
+                activeSpeechRecognition.stop();
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            
+            // Déterminer la langue en fonction du sélecteur actif
+            let langCode = 'fr-FR';
+            if (inputId === 'debate-topic-input') {
+                const debateLang = document.getElementById('debate-language-select')?.value;
+                if (debateLang === 'en') langCode = 'en-US';
+                else if (debateLang === 'es') langCode = 'es-ES';
+                else if (debateLang === 'ht') langCode = 'ht-HT';
+            } else if (inputId === 'broadcast-topic-input') {
+                const broadcastLang = document.getElementById('broadcast-language-select')?.value;
+                if (broadcastLang === 'en') langCode = 'en-US';
+                else if (broadcastLang === 'es') langCode = 'es-ES';
+                else if (broadcastLang === 'ht') langCode = 'ht-HT';
+            }
+
+            recognition.lang = langCode;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                activeSpeechRecognition = recognition;
+                button.classList.add('bg-neonGreen/20', 'text-neonGreen', 'border-neonGreen/40', 'animate-pulse');
+                const icon = button.querySelector('i');
+                if (icon) icon.className = 'fa-solid fa-microphone-lines text-xs';
+                showGlobalNotification("🎙️ Micro activé, parlez maintenant...");
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                if (input) {
+                    input.value = transcript;
+                    if (input.tagName.toLowerCase() === 'textarea') {
+                        autoResizeTextarea(input);
+                    }
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Erreur Speech:", event.error);
+                if (event.error === 'not-allowed') {
+                    showGlobalNotification("⚠️ Accès au micro refusé.");
+                } else {
+                    showGlobalNotification(`⚠️ Erreur micro: ${event.error}`);
+                }
+            };
+
+            recognition.onend = () => {
+                activeSpeechRecognition = null;
+                button.classList.remove('bg-neonGreen/20', 'text-neonGreen', 'border-neonGreen/40', 'animate-pulse');
+                const icon = button.querySelector('i');
+                if (icon) icon.className = 'fa-solid fa-microphone text-xs';
+            };
+
+            recognition.start();
+        }
+
         // --- GESTION DES CLÉS API DANS LE DRAWER ---
         function saveDashboardGeminiKey() {
             const keyInput = document.getElementById('dashboard-gemini-key-input').value.trim();
