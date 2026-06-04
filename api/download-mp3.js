@@ -1,7 +1,7 @@
 // api/download-mp3.js
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+
 
 const VOICE_MAPPING = {
   "KronoPol-9": "pNInz6ob9g9j9YGCt834",
@@ -63,6 +63,22 @@ module.exports = async function handler(req, res) {
   }
 
   const token = authHeader.split(' ')[1];
+
+  // Initialisation dynamique du client Supabase
+  const DEFAULT_SUPABASE_URL = "https://cphzzxxrvfaqxgyzzebo.supabase.co";
+  const DEFAULT_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwaHp6eHhydmZhcXhneXp6ZWJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNjQzODksImV4cCI6MjA5NTc0MDM4OX0.4xolo6bSh2td55h0dGxRlzxGdeCaIKK8Q13eDke--Cw";
+
+  const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || DEFAULT_SUPABASE_KEY;
+
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  });
+
   let activeUser = null;
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
