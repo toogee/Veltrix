@@ -258,58 +258,8 @@
             scrollbar-width: thin;
         }
 
-        /* Responsive Mobile Layout pour l'Arène */
+        /* Responsive Mobile Layout */
         @media (max-width: 1023px) {
-            .debate-grid-mobile {
-                position: relative;
-                overflow: hidden;
-                width: 100%;
-                display: flex !important;
-                flex-direction: row !important;
-                align-items: stretch !important;
-            }
-            
-            #debate-config-panel {
-                width: 100%;
-                flex-shrink: 0;
-                transform: translateX(0);
-                transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease-in-out, visibility 0.7s ease-in-out;
-                opacity: 1;
-                visibility: visible;
-                position: relative;
-            }
-            
-            #debate-arena-wrapper {
-                width: 100%;
-                flex-shrink: 0;
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 100%;
-                transform: translateX(100%);
-                transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease-in-out, visibility 0.7s ease-in-out;
-                opacity: 0;
-                visibility: hidden;
-            }
-            
-            /* Quand l'arène est déployée */
-            .arena-mobile-deployed #debate-config-panel {
-                transform: translateX(-100%) !important;
-                opacity: 0 !important;
-                visibility: hidden !important;
-                position: absolute !important;
-                pointer-events: none;
-            }
-            
-            .arena-mobile-deployed #debate-arena-wrapper {
-                transform: translateX(0) !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-                position: relative !important;
-                height: auto !important;
-                min-height: 650px;
-            }
-            
             /* Bouton déployer fixé en bas sur mobile */
             .mobile-sticky-btn-container {
                 position: fixed;
@@ -691,109 +641,101 @@
             </section>
 
             <!-- TAB 2: CRÉER / PARTICIPER À UN DÉBAT (SIMULATEUR INTERACTIF) -->
+            <!-- TAB 2: CRÉER / PARTICIPER À UN DÉBAT (SIMULATEUR INTERACTIF) -->
             <section id="tab-debate" class="tab-content space-y-8 hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start debate-grid-mobile">
+                <div class="max-w-3xl mx-auto">
                     
-                    <!-- Formulaire de configuration (Gauche) -->
-                    <div id="debate-config-panel" class="lg:col-span-5 bg-darkCard rounded-2xl border border-white/5 p-6 pb-24 lg:pb-6 space-y-5">
-                        <div>
-                            <h3 class="font-display font-bold text-xl text-white">Configurer votre Débat</h3>
-                            <p class="text-xs text-slate-500">Instanciez les Entels de votre choix, sélectionnez la langue d'expression et lancez la confrontation.</p>
-                        </div>
+                    <!-- Formulaire de configuration & Arène Unifiés -->
+                    <div id="debate-config-panel" class="bg-darkCard rounded-2xl border border-white/5 p-6 space-y-5">
+                        
+                        <!-- Form Container -->
+                        <div id="debate-form-container" class="space-y-5">
+                            <div>
+                                <h3 class="font-display font-bold text-xl text-white">Configurer votre Débat</h3>
+                                <p class="text-xs text-slate-500">Instanciez les Entels de votre choix, sélectionnez la langue d'expression et lancez la confrontation.</p>
+                            </div>
 
-                        <!-- Claude-Style Unified Chatbox Container -->
-                        <div class="claude-input-container rounded-2xl p-4 space-y-4">
-                            <!-- Textarea at the top -->
-                            <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden" rows="2" oninput="autoResizeTextarea(this)"></textarea>
-                            
-                            <!-- Bottom control bar inside the chatbox -->
-                            <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
-                                <!-- Language select on the left -->
-                                <div class="flex items-center gap-1.5 min-w-[110px]">
-                                    <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                        <option value="fr">Français</option>
-                                        <option value="en">English (Anglais)</option>
-                                        <option value="es">Español (Espagnol)</option>
-                                        <option value="ht">Kreyòl Ayisyen (Créole)</option>
-                                    </select>
-                                </div>
+                            <!-- Claude-Style Unified Chatbox Container -->
+                            <div class="claude-input-container rounded-2xl p-4 space-y-4">
+                                <!-- Textarea at the top -->
+                                <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden" rows="2" oninput="autoResizeTextarea(this)"></textarea>
                                 
-                                <!-- Entel 1 and Entel 2 selects on the right -->
-                                <div class="flex items-center gap-2">
-                                    <div class="w-32">
-                                        <select id="entel-left-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                            <!-- Injecté dynamiquement par JS -->
+                                <!-- Bottom control bar inside the chatbox -->
+                                <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
+                                    <!-- Language select on the left -->
+                                    <div class="flex items-center gap-1.5 min-w-[110px]">
+                                        <select id="debate-language-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                            <option value="fr">Français</option>
+                                            <option value="en">English (Anglais)</option>
+                                            <option value="es">Español (Espagnol)</option>
+                                            <option value="ht">Kreyòl Ayisyen (Créole)</option>
                                         </select>
                                     </div>
-                                    <div class="w-32">
-                                        <select id="entel-right-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
-                                            <!-- Injecté dynamiquement par JS -->
-                                        </select>
+                                    
+                                    <!-- Entel 1 and Entel 2 selects on the right -->
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-32">
+                                            <select id="entel-left-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                                <!-- Injecté dynamiquement par JS -->
+                                            </select>
+                                        </div>
+                                        <div class="w-32">
+                                            <select id="entel-right-select" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                                <!-- Injecté dynamiquement par JS -->
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- 4. NOMBRE D'ÉCHANGES (Sous le champ) -->
-                        <div class="space-y-2 pt-2">
-                            <div class="flex justify-between items-center">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">4. NOMBRE D'ÉCHANGES</label>
-                                <span class="text-xs text-neonGreen font-semibold" id="turns-cost-display">4 messages (4 crédits)</span>
+                            <!-- 4. NOMBRE D'ÉCHANGES (Sous le champ) -->
+                            <div class="space-y-2 pt-2">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">4. NOMBRE D'ÉCHANGES</label>
+                                    <span class="text-xs text-neonGreen font-semibold" id="turns-cost-display">4 messages (4 crédits)</span>
+                                </div>
+                                <input id="debate-turns-range" type="range" min="2" max="12" step="2" value="4" oninput="updateTurnsCost(this.value)" class="w-full accent-neonGreen bg-darkBg">
+                                <div class="flex justify-between text-[9px] text-slate-500">
+                                    <span>2 messages</span>
+                                    <span>6 messages</span>
+                                    <span>12 messages</span>
+                                </div>
                             </div>
-                            <input id="debate-turns-range" type="range" min="2" max="12" step="2" value="4" oninput="updateTurnsCost(this.value)" class="w-full accent-neonGreen bg-darkBg">
-                            <div class="flex justify-between text-[9px] text-slate-500">
-                                <span>2 messages</span>
-                                <span>6 messages</span>
-                                <span>12 messages</span>
+
+                            <!-- 5. MODE DE RENDU (Pill Style) -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">5. MODE DE RENDU</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="debate-mode-card px-4 py-2 bg-darkBg rounded-full cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
+                                        <input type="radio" name="debate-mode" value="text" checked class="accent-neonGreen">
+                                        <span>Tchat Écrit</span>
+                                    </label>
+                                    <label class="debate-mode-card px-4 py-2 bg-darkBg rounded-full cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500 opacity-60">
+                                        <input type="radio" name="debate-mode" value="audio" disabled class="accent-neonGreen">
+                                        <span class="flex items-center gap-1.5">Audio <span class="text-[9px] bg-neonGreen/20 text-neonGreen px-1 rounded font-bold">PRO</span></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Conteneur Boutons (Lancer le Débat CTA) -->
+                            <div class="pt-2">
+                                <button id="btn-start-debate" onclick="startCustomDebate()" class="w-full py-4 bg-slate-800 text-slate-500 opacity-50 cursor-not-allowed pointer-events-none font-display font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2" disabled>
+                                    <i class="fa-solid fa-play"></i>
+                                    <span>DÉPLOYER L'ARÈNE DE DÉBAT</span>
+                                </button>
+                                <button id="btn-stop-debate" onclick="stopCustomDebate()" class="w-full py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-display font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 border border-red-500/20 hidden">
+                                    <i class="fa-solid fa-stop"></i>
+                                    <span>ARRÊTER LE DÉBAT</span>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- 5. MODE DE RENDU (Pill Style) -->
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">5. MODE DE RENDU</label>
-                            <div class="flex flex-wrap gap-2">
-                                <label class="debate-mode-card px-4 py-2 bg-darkBg rounded-full cursor-pointer flex items-center gap-2.5 text-xs font-bold text-white">
-                                    <input type="radio" name="debate-mode" value="text" checked class="accent-neonGreen">
-                                    <span>Tchat Écrit</span>
-                                </label>
-                                <label class="debate-mode-card px-4 py-2 bg-darkBg rounded-full cursor-not-allowed flex items-center gap-2.5 text-xs text-slate-500 opacity-60">
-                                    <input type="radio" name="debate-mode" value="audio" disabled class="accent-neonGreen">
-                                    <span class="flex items-center gap-1.5">Audio <span class="text-[9px] bg-neonGreen/20 text-neonGreen px-1 rounded font-bold">PRO</span></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Conteneur Boutons (Normal sur PC, Fixé en bas sur Mobile) -->
-                        <div class="max-lg:mobile-sticky-btn-container max-lg:fixed max-lg:bottom-0 max-lg:left-0 max-lg:right-0 max-lg:p-4 max-lg:bg-darkBg/90 max-lg:backdrop-blur-md max-lg:border-t max-lg:border-white/5 max-lg:z-30">
-                            <!-- Lancer le Débat CTA -->
-                            <button id="btn-start-debate" onclick="startCustomDebate()" class="w-full py-4 bg-slate-800 text-slate-500 opacity-50 cursor-not-allowed pointer-events-none font-display font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2" disabled>
-                                <i class="fa-solid fa-play"></i>
-                                <span>DÉPLOYER L'ARÈNE DE DÉBAT</span>
-                            </button>
-                            <button id="btn-stop-debate" onclick="stopCustomDebate()" class="w-full py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-display font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 border border-red-500/20 hidden">
-                                <i class="fa-solid fa-stop"></i>
-                                <span>ARRÊTER LE DÉBAT</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Conteneur Enveloppe de l'Arène (Droite) -->
-                    <div class="lg:col-span-7 relative min-h-[650px] flex flex-col justify-start" id="debate-arena-wrapper">
-                        <!-- Indicateur visuel : Logo GetVeltrix statique centré dans la zone vide -->
-                        <div id="arena-placeholder-logo" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 transition-all duration-700 ease-in-out opacity-20">
-                            <div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 mb-4 animate-pulse" style="animation-duration: 4s;">
-                                <i class="fa-solid fa-brain text-4xl text-white/30"></i>
-                            </div>
-                            <h3 class="font-display font-bold text-2xl text-white/30 tracking-widest uppercase">GETVELTRIX</h3>
-                            <p class="text-xs text-slate-500 max-w-xs mt-2">Configurez le sujet, la langue et les Entels à gauche puis cliquez sur Déployer pour commencer la confrontation dans l'Arène.</p>
-                        </div>
-
-                        <!-- Visualisation du Débat interactif (L'Arène) -->
-                        <div id="debate-arena-panel" class="w-full bg-darkCard rounded-2xl border border-white/5 overflow-hidden flex flex-col transition-all duration-700 ease-in-out opacity-0 translate-y-[50px] invisible" style="height: 0;">
+                        <!-- Visualisation du Débat interactif (L'Arène) - Caché par défaut -->
+                        <div id="debate-arena-panel" class="w-full bg-darkCard rounded-2xl overflow-hidden flex flex-col transition-all duration-700 ease-in-out opacity-0 translate-y-[50px] hidden invisible" style="height: 0;">
                             <div class="p-4 bg-darkBg/60 border-b border-white/10 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <!-- Bouton Retour Mobile -->
-                                    <button onclick="exitMobileArena()" class="lg:hidden w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+                                    <!-- Bouton Retour -->
+                                    <button onclick="stopCustomDebate()" class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-all">
                                         <i class="fa-solid fa-arrow-left text-xs"></i>
                                     </button>
                                     <div class="flex items-center gap-2">
@@ -817,14 +759,14 @@
                                 </div>
                             </div>
 
-                            <div id="dashboard-chat-box" class="flex-grow p-6 overflow-y-auto space-y-4 no-scrollbar">
+                            <div id="dashboard-chat-box" class="flex-grow p-6 overflow-y-auto space-y-4 no-scrollbar min-h-[400px]">
                                 <div id="default-chat-placeholder" class="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
                                     <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
                                         <i class="fa-solid fa-comments text-3xl"></i>
                                     </div>
                                     <div class="max-w-md">
                                         <h4 class="text-sm font-bold text-white mb-1">Aucune discussion en cours</h4>
-                                        <p class="text-xs text-slate-500">Utilisez le panneau de gauche pour configurer un sujet, sélectionner vos Entels experts et lancer la confrontation.</p>
+                                        <p class="text-xs text-slate-500">Utilisez le panneau de configuration ci-dessus pour configurer un sujet, sélectionner vos Entels experts et lancer la confrontation.</p>
                                     </div>
                                 </div>
                             </div>
@@ -836,11 +778,16 @@
                                         <button onclick="openDownloadPreview('pdf')" class="px-2.5 py-1 bg-neonGreen/10 border border-neonGreen/30 text-neonGreen rounded-lg font-bold text-[9px] hover:bg-neonGreen hover:text-darkBg transition-all flex items-center gap-1.5 uppercase tracking-wider">
                                             <i class="fa-solid fa-file-pdf"></i> Exporter PDF
                                         </button>
+                                        <!-- Arrêter Bouton en direct dans le tchat -->
+                                        <button onclick="stopCustomDebate()" class="px-2.5 py-1 bg-red-500/10 border border-red-500/30 text-red-500 rounded-lg font-bold text-[9px] hover:bg-red-500 hover:text-white transition-all flex items-center gap-1.5 uppercase tracking-wider">
+                                            <i class="fa-solid fa-stop"></i> Arrêter
+                                        </button>
                                     </div>
                                 </div>
                                 <span id="typing-indicator" class="hidden text-neonGreen"><i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i>Un Entel génère sa réponse...</span>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </section>
@@ -1775,14 +1722,7 @@
             }
         }
 
-        // Quitter l'arène sur mobile
-        function exitMobileArena() {
-            const grid = document.querySelector('#tab-debate > .grid');
-            if (grid) {
-                grid.classList.remove('arena-mobile-deployed');
-                addSystemLog("Retour au panneau de configuration mobile.");
-            }
-        }
+
 
         // Remplir les menus Select au démarrage
         function populateSelectors() {
@@ -2930,6 +2870,36 @@
             return ctx;
         }
 
+        // --- ALTERNANCE D'AFFICHAGE DU DÉBAT (Claude Style) ---
+        function toggleDebateView(inDebate) {
+            const formContainer = document.getElementById('debate-form-container');
+            const arenaPanel = document.getElementById('debate-arena-panel');
+            
+            if (inDebate) {
+                // Masquer le formulaire de config (et donc le mode de rendu)
+                if (formContainer) formContainer.classList.add('hidden');
+                
+                // Afficher l'arène de débat
+                if (arenaPanel) {
+                    arenaPanel.classList.remove('hidden', 'invisible', 'opacity-0');
+                    arenaPanel.classList.add('visible', 'opacity-100');
+                    arenaPanel.style.height = '650px';
+                    arenaPanel.style.transform = 'translateY(0)';
+                }
+            } else {
+                // Afficher le formulaire de config
+                if (formContainer) formContainer.classList.remove('hidden');
+                
+                // Masquer l'arène de débat
+                if (arenaPanel) {
+                    arenaPanel.classList.add('hidden', 'invisible', 'opacity-0');
+                    arenaPanel.classList.remove('visible', 'opacity-100');
+                    arenaPanel.style.height = '0';
+                    arenaPanel.style.transform = 'translateY(50px)';
+                }
+            }
+        }
+
         // --- MOTEUR DE SIMULATION DE DÉBAT INTERACTIF (TCHAT ÉCRIT MULTILINGUE) ---
         async function startCustomDebate() {
             const supabase = window.supabaseClient;
@@ -2958,33 +2928,15 @@
             userState.isDebating = true;
             userState.shouldStopDebate = false;
 
-            document.getElementById('btn-start-debate').classList.add('hidden');
-            document.getElementById('btn-stop-debate').classList.remove('hidden');
+            const btnStart = document.getElementById('btn-start-debate');
+            const btnStop = document.getElementById('btn-stop-debate');
+            if (btnStart) btnStart.classList.add('hidden');
+            if (btnStop) btnStop.classList.remove('hidden');
 
             addSystemLog(`Lancement de la transition de déploiement pour le sujet: "${topic.slice(0, 60)}..."`);
             
-            // Réduction du panneau de configuration (Gauche)
-            const configPanel = document.getElementById('debate-config-panel');
-            configPanel.classList.add('lg:scale-[0.98]', 'lg:-translate-x-4', 'lg:opacity-85');
-
-            // Disparition du placeholder logo
-            const placeholderLogo = document.getElementById('arena-placeholder-logo');
-            placeholderLogo.style.opacity = '0';
-            placeholderLogo.style.visibility = 'hidden';
-
-            // Apparition de l'Arène (Droite)
-            const arenaPanel = document.getElementById('debate-arena-panel');
-            const isMobile = window.innerWidth < 1024;
-            if (isMobile) {
-                const grid = document.querySelector('#tab-debate > .grid');
-                grid.classList.add('arena-mobile-deployed');
-                addSystemLog("Transition mobile Slide-Left activée.");
-            } else {
-                arenaPanel.style.height = '650px';
-                arenaPanel.classList.remove('invisible', 'opacity-0', 'translate-y-[50px]');
-                arenaPanel.classList.add('visible', 'opacity-100', 'translate-y-0');
-                addSystemLog("Transition bureau Slide-Up active.");
-            }
+            // Appeler le toggle de vue unifiée
+            toggleDebateView(true);
 
             // Attente de l'animation de déploiement (700ms) pour éviter tout lag visuel pendant l'appel API
             await new Promise(resolve => setTimeout(resolve, 700));
@@ -3269,40 +3221,29 @@
             document.getElementById('typing-indicator').classList.add('hidden');
             
             // Réinitialiser les boutons
-            document.getElementById('btn-start-debate').classList.remove('hidden');
-            document.getElementById('btn-stop-debate').classList.add('hidden');
+            const btnStart = document.getElementById('btn-start-debate');
+            const btnStop = document.getElementById('btn-stop-debate');
+            if (btnStart) btnStart.classList.remove('hidden');
+            if (btnStop) btnStop.classList.add('hidden');
+            
+            // Revenir à la vue configuration unifiée
+            toggleDebateView(false);
             
             document.getElementById('debate-status-indicator').textContent = "STATUT: Arrêté";
             showGlobalNotification("Le débat a été arrêté.");
             addSystemLog("Le débat a été arrêté manuellement par l'utilisateur.", "WARNING");
-
-            // Rétablir le panneau de configuration (Gauche)
-            const configPanel = document.getElementById('debate-config-panel');
-            configPanel.classList.remove('lg:scale-[0.98]', 'lg:-translate-x-4', 'lg:opacity-85');
         }
 
         // Fonction pour réinitialiser l'arène en cas d'erreur de crédit/validation
         function resetArenaUI() {
             userState.isDebating = false;
-            document.getElementById('btn-start-debate').classList.remove('hidden');
-            document.getElementById('btn-stop-debate').classList.add('hidden');
+            const btnStart = document.getElementById('btn-start-debate');
+            const btnStop = document.getElementById('btn-stop-debate');
+            if (btnStart) btnStart.classList.remove('hidden');
+            if (btnStop) btnStop.classList.add('hidden');
             
-            // Rétablir le panneau de configuration (Gauche)
-            const configPanel = document.getElementById('debate-config-panel');
-            configPanel.classList.remove('lg:scale-[0.98]', 'lg:-translate-x-4', 'lg:opacity-85');
-
-            // Rétablir le placeholder
-            const placeholderLogo = document.getElementById('arena-placeholder-logo');
-            placeholderLogo.style.opacity = '0.2';
-            placeholderLogo.style.visibility = 'visible';
-
-            // Masquer l'Arène (Droite)
-            const arenaPanel = document.getElementById('debate-arena-panel');
-            const grid = document.querySelector('#tab-debate > .grid');
-            grid.classList.remove('arena-mobile-deployed');
-            arenaPanel.style.height = '0';
-            arenaPanel.classList.add('invisible', 'opacity-0', 'translate-y-[50px]');
-            arenaPanel.classList.remove('visible', 'opacity-100', 'translate-y-0');
+            // Revenir à la vue configuration unifiée
+            toggleDebateView(false);
         }
 
         // Ajouter une entrée d'historique dans la liste
