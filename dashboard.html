@@ -4054,7 +4054,7 @@
                 formatType.textContent = 'Document PDF';
                 subjectText.textContent = userState.lastDebateTopic || "Transcription de débat";
 
-                if (tier === 'ANALYST') {
+                if (tier === 'ANALYST' || tier === 'PRO') {
                     // Clean
                     overlayWatermark.classList.add('hidden');
                     overlayClean.classList.remove('hidden');

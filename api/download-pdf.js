@@ -199,8 +199,8 @@ module.exports = async function handler(req, res) {
       currentY -= 15; // Espace entre répliques
     }
 
-    // 5. Appliquer les Watermarks sur toutes les pages si Tier < ANALYST
-    if (tier !== 'ANALYST') {
+    // 5. Appliquer les Watermarks sur toutes les pages si Tier < ANALYST / PRO
+    if (tier !== 'ANALYST' && tier !== 'PRO') {
       const pages = pdfDoc.getPages();
       for (const page of pages) {
         // Filigrane diagonal central
