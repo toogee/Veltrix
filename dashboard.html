@@ -4154,13 +4154,14 @@
                 }
 
                 const token = session.access_token;
+                const elevenLabsApiKey = await getElevenLabsApiKey();
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ topic, history })
+                    body: JSON.stringify({ topic, history, elevenLabsApiKey })
                 });
 
                 if (!response.ok) {

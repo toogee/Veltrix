@@ -114,13 +114,14 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY;
+  // 4. Récupérer les paramètres du body
+  const { topic, history, elevenLabsApiKey: clientElevenKey } = req.body;
+
+  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY || clientElevenKey;
   if (!elevenLabsApiKey) {
-    return res.status(500).json({ error: 'Le moteur audio ElevenLabs est indisponible (clé API manquante au serveur).' });
+    return res.status(500).json({ error: 'Le moteur audio ElevenLabs est indisponible (clé API manquante au serveur ou non renseignée dans vos paramètres).' });
   }
 
-  // 4. Récupérer les paramètres du body
-  const { topic, history } = req.body;
   if (!topic || !Array.isArray(history) || history.length === 0) {
     return res.status(400).json({ error: 'Paramètres topic et history (array non-vide) requis.' });
   }
