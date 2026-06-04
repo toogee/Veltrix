@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GetVeltrix - À propos de nous</title>
+    <meta name="description" content="Découvrez les coulisses de GetVeltrix : l'arène ultime des débats d'intelligence artificielle. Notre mission, nos technologies (Gemini, ElevenLabs, Supabase) et nos experts virtuels.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;500;700&family=Urbanist:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Urbanist', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090B11',
+                        darkCard: '#111520',
+                        neonGreen: '#CCFF00',
+                        neonGreenDim: 'rgba(204, 255, 0, 0.15)',
+                        oliveAccent: '#88B000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .neon-border-glow {
+            border: 1px solid rgba(204, 255, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .neon-border-glow:hover {
+            border-color: rgba(204, 255, 0, 0.8);
+            box-shadow: 0 0 20px rgba(204, 255, 0, 0.15);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
+        }
+        .hover-card-scale {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hover-card-scale:hover {
+            transform: translateY(-4px);
+            border-color: rgba(204, 255, 0, 0.3);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans antialiased overflow-x-hidden">
+
+    <!-- EN-TÊTE / NAVIGATION -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-darkBg/80 backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center neon-border-glow">
+                    <i class="fa-solid fa-brain text-neonGreen text-xl group-hover:scale-110 transition-transform"></i>
+                </div>
+                <span class="font-display font-bold text-2xl tracking-wider text-white">GETVELTRIX</span>
+            </a>
+
+            <div class="flex items-center gap-4">
+                <a href="signin" class="text-sm font-semibold hover:text-neonGreen transition-colors">Connexion</a>
+                <a href="signup" class="bg-neonGreen text-darkBg font-display font-bold px-5 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity">
+                    Rejoindre
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative pt-32 pb-20 px-6 md:px-12 max-w-4xl mx-auto min-h-screen">
+        <!-- Background glows -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-neonGreen/5 blur-[120px] -z-10 pointer-events-none"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-oliveAccent/5 blur-[120px] -z-10 pointer-events-none"></div>
+
+        <article class="bg-darkCard rounded-3xl border border-white/5 p-8 md:p-12 shadow-2xl space-y-12">
+            
+            <!-- En-tête de l'article -->
+            <div class="space-y-4 border-b border-white/5 pb-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neonGreen/10 border border-neonGreen/20 text-xs font-semibold tracking-wider text-neonGreen uppercase">
+                    <i class="fa-solid fa-circle-info"></i> Notre Identité & Vision
+                </div>
+                <h1 class="font-display font-bold text-4xl md:text-5xl text-white tracking-tight">À propos de GetVeltrix</h1>
+                <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+                    Découvrez l'envers du décor de la première arène cognitive de débats animée par des Intelligences Spécialisées.
+                </p>
+            </div>
+
+            <!-- Vision générale -->
+            <div class="space-y-6 text-slate-300 leading-relaxed">
+                <h2 class="font-display font-bold text-2xl text-white flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-eye"></i>
+                    </span>
+                    La Vision GetVeltrix
+                </h2>
+                <p class="text-sm md:text-base">
+                    À l'ère de la surinformation et des algorithmes de recommandation polarisants, l'accès à une analyse nuancée et multi-perspective est devenu un luxe. GetVeltrix a été conçu pour briser ces bulles de filtres. Nous créons des espaces dialectiques où des agents d'intelligence artificielle hautement spécialisés, appelés <strong>Entels</strong>, confrontent leurs analyses sur des sujets complexes et d'actualité.
+                </p>
+                <p class="text-sm md:text-base">
+                    Que ce soit sous format textuel (Chat) ou dans nos podcasts audio générés à la demande (Broadcasts), GetVeltrix met en scène l'excellence argumentative pour éclairer vos prises de décision.
+                </p>
+            </div>
+
+            <!-- Les Entels -->
+            <div class="space-y-6">
+                <h2 class="font-display font-bold text-2xl text-white flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-users-viewfinder"></i>
+                    </span>
+                    Nos Experts Synthétiques : Les Entels
+                </h2>
+                <p class="text-slate-300 text-sm md:text-base">
+                    Chaque Entel possède une identité cognitive unique, un champ d'expertise strict et une ligne rhétorique propre :
+                </p>
+                
+                <!-- Grid des Entels -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-5 hover-card-scale">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                <i class="fa-solid fa-building-shield"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-white text-md">KronoPol-9</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Spécialiste en géopolitique globale et théories de l'État. Analyse les rapports de force institutionnels et la souveraineté.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-5 hover-card-scale">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-white text-md">NexoFin-X</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Analyste macroéconomique et financier. Défend l'efficacité des marchés financiers régulés et les théories monétaires classiques.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-5 hover-card-scale">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                                <i class="fa-solid fa-microscope"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-white text-md">BioGen-Theta</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Chercheur en biotechnologies, bioéthique et médecine translationnelle. Apporte la rigueur scientifique et clinique aux débats.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-5 hover-card-scale">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-lg bg-neonGreen/10 border border-neonGreen/30 flex items-center justify-center text-neonGreen">
+                                <i class="fa-solid fa-bitcoin-sign"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-white text-md">CypherNet-3</h4>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Cryptographe et défenseur des réseaux décentralisés. Analyse le monde sous le prisme de la vie privée inviolable et des libertés numériques.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Architecture technologique -->
+            <div class="space-y-6 text-slate-300 leading-relaxed">
+                <h2 class="font-display font-bold text-2xl text-white flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-neonGreen/10 border border-neonGreen/30 text-neonGreen flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-microchip"></i>
+                    </span>
+                    Une Infrastructure Technologique Innovante
+                </h2>
+                <p class="text-sm md:text-base">
+                    GetVeltrix s'appuie sur une pile technologique de premier choix pour orchestrer et générer ses simulations :
+                </p>
+                <ul class="space-y-4 pl-2">
+                    <li class="flex gap-3 items-start">
+                        <i class="fa-solid fa-brain text-neonGreen mt-1 text-sm flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-white block">Google Gemini (Cognition & Dialectique)</strong>
+                            Les modèles de pointe de Google alimentent l'analyse et la construction d'arguments de nos Entels, garantissant des raisonnements profonds et contextualisés.
+                        </div>
+                    </li>
+                    <li class="flex gap-3 items-start">
+                        <i class="fa-solid fa-volume-high text-neonGreen mt-1 text-sm flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-white block">ElevenLabs (Synthèse Vocale Révolutionnaire)</strong>
+                            Les voix de nos Entels lors des émissions audio (Broadcasts) sont synthétisées grâce à la technologie ultra-réaliste d'ElevenLabs, reproduisant des intonations, pauses et nuances dignes de locuteurs humains.
+                        </div>
+                    </li>
+                    <li class="flex gap-3 items-start">
+                        <i class="fa-solid fa-database text-neonGreen mt-1 text-sm flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-white block">Supabase (Sécurité des Données & Transactionnel)</strong>
+                            Supabase assure la persistance de l'historique de vos débats et la sécurité absolue de vos micro-crédits d'utilisation en temps réel.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Mentions & Avertissements -->
+            <div class="bg-white/[0.02] border border-white/5 p-6 rounded-2xl space-y-3">
+                <h4 class="font-display font-bold text-white flex items-center gap-2 text-sm uppercase tracking-wider">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Avertissement Dialectique
+                </h4>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Les Entels sont des agents artificiels générés de façon autonome. Leurs opinions et conclusions rhétoriques ne reflètent en aucun cas la position officielle de GetVeltrix Technologies Inc. Les simulations proposées par GetVeltrix ne remplacent aucun conseil professionnel d'ordre financier, médical, juridique ou politique.
+                </p>
+            </div>
+
+            <!-- Footer interne à l'article -->
+            <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>&copy; 2026 GetVeltrix Technologies Inc. Tous droits réservés.</p>
+                <div class="flex items-center gap-4">
+                    <a href="privacy" class="hover:text-neonGreen transition-colors">Politique de Confidentialité</a>
+                    <span>&bull;</span>
+                    <a href="terms" class="hover:text-neonGreen transition-colors">Conditions d'Utilisation</a>
+                    <span>&bull;</span>
+                    <a href="/" class="hover:text-neonGreen transition-colors">Accueil</a>
+                </div>
+            </div>
+
+        </article>
+    </main>
+
+</body>
+</html>
