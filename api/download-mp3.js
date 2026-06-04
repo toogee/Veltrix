@@ -149,7 +149,22 @@ module.exports = async function handler(req, res) {
         continue;
       }
       
-      const buffer = await generateSpeech(text, voiceId, elevenLabsApiKey);
+      let buffer;
+      try {
+        buffer = await generateSpeech(text, voiceId, elevenLabsApiKey);
+      } catch (err) {
+        // En cas d'erreur 404 (voix personnalisée introuvable avec cette clé API), repli sur la voix par défaut
+        if (err.message.includes('404') && voiceId !== DEFAULT_VOICE) {
+          console.warn(`Voix ${voiceId} introuvable (404). Repli sur la voix par défaut.`);
+          try {
+            buffer = await generateSpeech(text, DEFAULT_VOICE, elevenLabsApiKey);
+          } catch (retryErr) {
+            throw new Error(`Échec du repli vocal : ${retryErr.message}`);
+          }
+        } else {
+          throw err;
+        }
+      }
       speechBuffers.push(buffer);
     }
 
