@@ -734,9 +734,6 @@
                                     <i class="fa-solid fa-volume-high text-xs"></i>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <button id="broadcast-download-btn" onclick="openDownloadPreview('mp3')" class="px-3.5 py-2 bg-neonGreen/10 border border-neonGreen/20 text-neonGreen rounded-lg text-[10px] font-bold hover:bg-neonGreen hover:text-darkBg transition-all flex items-center gap-1.5 uppercase tracking-wider">
-                                        <i class="fa-solid fa-download"></i> Télécharger MP3
-                                    </button>
                                     <button onclick="stopAudioRoom()" class="px-3.5 py-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-[10px] font-bold hover:bg-red-500 hover:text-white transition-all uppercase tracking-wider">
                                         QUITTER
                                     </button>
@@ -755,6 +752,19 @@
                             </div>
                         </div>
 
+                    </div>
+                </div>
+
+                <!-- Historique des Émissions Audio -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+                    <div class="lg:col-span-12 bg-darkCard rounded-2xl border border-white/5 p-6 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-display font-bold text-lg text-white">Historique des Émissions Audio</h3>
+                            <span class="text-xs text-slate-500" id="broadcast-history-count">0 émission(s) terminées</span>
+                        </div>
+                        <div class="space-y-4" id="broadcast-history-list">
+                            <p class="text-xs text-slate-500 text-center py-4" id="no-broadcasts-msg">Aucune émission audio n'a été réalisée pour le moment.</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -866,6 +876,7 @@
             lastDebateHistory: null,
             lastBroadcastTopic: null,
             lastBroadcastHistory: null,
+            completedBroadcasts: [],
             activeFormat: null
         };
 
@@ -3443,6 +3454,7 @@
                     userState.broadcastInterval = setTimeout(runSpeechStep, 1500); // Pause naturelle réduite entre répliques
                 } else {
                     userState.broadcastInterval = setTimeout(() => {
+                        saveBroadcastToHistory(userState.lastBroadcastTopic, userState.lastBroadcastHistory);
                         stopAudioRoom();
                         showGlobalNotification("Table ronde audio complétée ! Fin de l'émission.");
                     }, 2000);
@@ -3481,6 +3493,91 @@
             document.getElementById('audio-panel-active').classList.add('hidden');
             document.getElementById('audio-panel-default').classList.remove('hidden');
             document.getElementById('broadcast-transcription-text').textContent = "Initialisation du flux vocal...";
+        }
+
+        // --- GESTION DE L'HISTORIQUE DES ÉMISSIONS AUDIO ---
+        function saveBroadcastToHistory(topic, history) {
+            if (!topic || !history || history.length === 0) return;
+            
+            // Copie profonde de l'historique pour figer l'état
+            const historyCopy = JSON.parse(JSON.stringify(history));
+            
+            const broadcastItem = {
+                id: 'bc_' + Date.now(),
+                topic: topic,
+                history: historyCopy,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString()
+            };
+            
+            userState.completedBroadcasts.unshift(broadcastItem);
+            renderBroadcastHistory();
+        }
+
+        function renderBroadcastHistory() {
+            const listContainer = document.getElementById('broadcast-history-list');
+            const countLabel = document.getElementById('broadcast-history-count');
+            const noMsg = document.getElementById('no-broadcasts-msg');
+            
+            if (!listContainer) return;
+            
+            if (userState.completedBroadcasts.length === 0) {
+                if (noMsg) noMsg.classList.remove('hidden');
+                if (countLabel) countLabel.textContent = "0 émission(s) terminées";
+                return;
+            }
+            
+            if (noMsg) noMsg.classList.add('hidden');
+            if (countLabel) countLabel.textContent = `${userState.completedBroadcasts.length} émission(s) terminées`;
+            
+            listContainer.innerHTML = '';
+            userState.completedBroadcasts.forEach(bc => {
+                const item = document.createElement('div');
+                item.className = "flex flex-wrap items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 gap-4 w-full";
+                
+                // Extraire les noms uniques des locuteurs
+                const speakers = [...new Set(bc.history.map(h => h.sender))];
+                let initialsHtml = '<div class="flex -space-x-3">';
+                speakers.forEach((spName, i) => {
+                    const initials = spName.slice(0, 2).toUpperCase();
+                    const colors = ["bg-neonGreen/10 border-neonGreen/30 text-neonGreen", "bg-purple-500/10 border-purple-500/30 text-purple-400", "bg-sky-500/10 border-sky-500/30 text-sky-400"];
+                    const colClass = colors[i % colors.length];
+                    initialsHtml += `
+                        <div class="w-9 h-9 rounded-lg ${colClass} flex items-center justify-center text-xs font-bold font-display border">
+                            ${initials}
+                        </div>
+                    `;
+                });
+                initialsHtml += '</div>';
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        ${initialsHtml}
+                        <div>
+                            <h4 class="text-sm font-bold text-white">${bc.topic}</h4>
+                            <p class="text-xs text-slate-500">Émission complétée &bull; ${bc.history.length} répliques &bull; le ${bc.date} à ${bc.timestamp}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="downloadCompletedBroadcast('${bc.id}')" class="px-3.5 py-2 bg-neonGreen text-darkBg rounded-lg text-[10px] font-bold hover:scale-105 transition-all flex items-center gap-1.5 uppercase tracking-wider">
+                            <i class="fa-solid fa-download"></i> Télécharger MP3
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        function downloadCompletedBroadcast(bcId) {
+            const bc = userState.completedBroadcasts.find(b => b.id === bcId);
+            if (!bc) return;
+            
+            // Affecter les valeurs de l'historique d'émission dans userState
+            userState.lastBroadcastTopic = bc.topic;
+            userState.lastBroadcastHistory = bc.history;
+            
+            // Ouvrir la prévisualisation de téléchargement MP3
+            openDownloadPreview('mp3');
         }
 
         // --- ANNUAIRE DES ENTELS : AFFICHAGE COMPACT ET RECHERCHE PAR CATEGORIES ---

@@ -157,9 +157,9 @@ module.exports = async function handler(req, res) {
         try {
           buffer = await generateSpeech(text, voiceId, elevenLabsApiKey);
         } catch (err) {
-          // En cas d'erreur 404 (voix personnalisée introuvable avec cette clé API), repli sur la voix par défaut
-          if (err.message.includes('404') && voiceId !== DEFAULT_VOICE) {
-            console.warn(`Voix ${voiceId} introuvable (404). Repli sur la voix par défaut.`);
+          // Si la voix personnalisée échoue (404, 400, 403, etc. avec clé personnelle), repli sur la voix par défaut
+          if (voiceId !== DEFAULT_VOICE) {
+            console.warn(`Erreur avec la voix ${voiceId} (${err.message}). Repli sur la voix par défaut.`);
             try {
               buffer = await generateSpeech(text, DEFAULT_VOICE, elevenLabsApiKey);
             } catch (retryErr) {
