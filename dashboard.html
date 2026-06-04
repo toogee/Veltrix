@@ -3423,10 +3423,24 @@
                             myPastArgs
                         );
 
-                        const userPrompt = `This is a live table-round audio broadcast on the topic: "${topic}".\n`
-                                         + `It is your turn now, ${currentSpeaker.name}. Speak dynamically in ${apiLang}.\n`
-                                         + `Here is the audio transcript history so far:\n`
-                                         + (broadcastHistory.length === 0 ? `[Broadcast just started. Make your opening point.]` : broadcastHistory.map(h => `${h.sender}: ${h.text}`).join('\n'));
+                        let userPrompt = "";
+                        if (isFirstTurn) {
+                            const nameToUse = userName || (lang === 'ht' ? 'oditè a' : (lang === 'en' ? 'our listener' : (lang === 'es' ? 'nuestro oyente' : 'notre auditeur')));
+                            if (lang === 'ht') {
+                                userPrompt = `[Emisyon an fèk kòmanse. Kòm animatè, ou DWE: (1) Salye itilizatè a (${nameToUse}) epi remèsye l pou sijè sa a. (2) Salye lòt Entel yo (${otherSpeakersNames}). (3) Repete sijè a "${topic}". (4) Poze youn nan yo yon kesyon dirèk pou deba a kòmanse. Pale sèlman nan lang Kreyòl Ayisyen.]`;
+                            } else if (lang === 'en') {
+                                userPrompt = `[The broadcast has just started. As the host, you MUST: (1) Greet the user (${nameToUse}) and thank them for the topic. (2) Greet the other co-hosts (${otherSpeakersNames}). (3) Repeat the topic "${topic}". (4) Ask a direct question to one of them to start the debate. Speak only in English.]`;
+                            } else if (lang === 'es') {
+                                userPrompt = `[La emisión acaba de comenzar. Como presentador, DEBES: (1) Saludar al usuario (${nameToUse}) y agradecerle por el tema. (2) Saludar a los otros participantes (${otherSpeakersNames}). (3) Repetir el tema "${topic}". (4) Hacer una pregunta directa a uno de ellos para iniciar el debate. Habla solo en Español.]`;
+                            } else {
+                                userPrompt = `[L'émission vient de commencer. En tant qu'animateur, tu DOIS: (1) Saluer l'utilisateur (${nameToUse}) et le remercier pour ce sujet. (2) Saluer tes co-débatteurs (${otherSpeakersNames}). (3) Répéter le sujet "${topic}". (4) Poser une question directe à l'un d'entre eux pour lancer le débat. Parle uniquement en Français.]`;
+                            }
+                        } else {
+                            userPrompt = `This is a live table-round audio broadcast on the topic: "${topic}".\n`
+                                       + `It is your turn now, ${currentSpeaker.name}. Speak dynamically in ${apiLang}.\n`
+                                       + `Here is the audio transcript history so far:\n`
+                                       + broadcastHistory.map(h => `${h.sender}: ${h.text}`).join('\n');
+                        }
 
                         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
                         const payload = {
@@ -3456,7 +3470,31 @@
                 // 2. Fallback statique si Gemini échoue ou clé manquante
                 if (!isUsingGemini) {
                     const localizedArgs = currentSpeaker.arguments[lang] || currentSpeaker.arguments['fr'];
-                    argument = localizedArgs[step % localizedArgs.length];
+                    const defaultArg = localizedArgs[step % localizedArgs.length];
+                    
+                    if (step === 0) {
+                        const userName = activeProfile?.full_name?.split(' ')[0] || activeUser?.email?.split('@')[0] || '';
+                        const nameToUse = userName || (lang === 'ht' ? 'oditè a' : (lang === 'en' ? 'our listener' : (lang === 'es' ? 'nuestro oyente' : 'notre auditeur')));
+                        const otherSpeakersNames = speakers.filter(s => s.key !== currentSpeaker.key).map(s => s.name).join(' & ');
+                        const firstOpponentName = otherSpeakersNames.split(' & ')[0];
+                        
+                        let defaultText = defaultArg || "";
+                        if (defaultText) {
+                            defaultText = defaultText.charAt(0).toLowerCase() + defaultText.slice(1);
+                        }
+                        
+                        if (lang === 'ht') {
+                            argument = `Bonjou ${nameToUse} ! Mwen se ${currentSpeaker.name}. Mèsi pou sijè sa a : « ${topic} ». Mwen vle salye kò-debatè m yo, ${otherSpeakersNames}. Pou mwen menm, ${defaultText} ${firstOpponentName}, kisa w panse de sa ?`;
+                        } else if (lang === 'en') {
+                            argument = `Hello ${nameToUse}! This is ${currentSpeaker.name}. Thank you for this topic: "${topic}". I greet my co-hosts, ${otherSpeakersNames}. In my view, ${defaultText} ${firstOpponentName}, what are your thoughts?`;
+                        } else if (lang === 'es') {
+                            argument = `¡Hola ${nameToUse}! Aquí ${currentSpeaker.name}. Gracias por este tema: "${topic}". Saludo a mis compañeros, ${otherSpeakersNames}. Desde mi punto de vista, ${defaultText} ${firstOpponentName}, ¿qué opinas?`;
+                        } else {
+                            argument = `Bonjour ${nameToUse} ! Ici ${currentSpeaker.name}. Merci pour ce sujet important : « ${topic} ». Je salue mes co-débatteurs, ${otherSpeakersNames}. De mon point de vue, ${defaultText} ${firstOpponentName}, qu'en penses-tu ?`;
+                        }
+                    } else {
+                        argument = defaultArg;
+                    }
                 }
 
                 // Enregistrer dans la mémoire de l'arène
