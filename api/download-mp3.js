@@ -137,35 +137,42 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    // 6. Générer les répliques de manière séquentielle pour éviter de dépasser la limite de requêtes parallèles d'ElevenLabs
-    const speechBuffers = [];
-    for (const turn of history) {
-      const speakerName = turn.sender || 'Expert';
-      const voiceId = VOICE_MAPPING[speakerName] || DEFAULT_VOICE;
-      const text = turn.text || '';
-      
-      if (!text) {
-        speechBuffers.push(Buffer.from([]));
-        continue;
-      }
-      
-      let buffer;
-      try {
-        buffer = await generateSpeech(text, voiceId, elevenLabsApiKey);
-      } catch (err) {
-        // En cas d'erreur 404 (voix personnalisée introuvable avec cette clé API), repli sur la voix par défaut
-        if (err.message.includes('404') && voiceId !== DEFAULT_VOICE) {
-          console.warn(`Voix ${voiceId} introuvable (404). Repli sur la voix par défaut.`);
-          try {
-            buffer = await generateSpeech(text, DEFAULT_VOICE, elevenLabsApiKey);
-          } catch (retryErr) {
-            throw new Error(`Échec du repli vocal : ${retryErr.message}`);
-          }
-        } else {
-          throw err;
+    // 6. Générer les répliques en parallèle par lots de 2 pour équilibrer la limite de requêtes ElevenLabs (max 3 concurrentes) et le timeout de Vercel (10s)
+    const speechBuffers = new Array(history.length);
+    const batchSize = 2;
+    for (let i = 0; i < history.length; i += batchSize) {
+      const chunk = history.slice(i, i + batchSize);
+      const chunkPromises = chunk.map(async (turn, chunkIdx) => {
+        const globalIdx = i + chunkIdx;
+        const speakerName = turn.sender || 'Expert';
+        const voiceId = VOICE_MAPPING[speakerName] || DEFAULT_VOICE;
+        const text = turn.text || '';
+        
+        if (!text) {
+          speechBuffers[globalIdx] = Buffer.from([]);
+          return;
         }
-      }
-      speechBuffers.push(buffer);
+        
+        let buffer;
+        try {
+          buffer = await generateSpeech(text, voiceId, elevenLabsApiKey);
+        } catch (err) {
+          // En cas d'erreur 404 (voix personnalisée introuvable avec cette clé API), repli sur la voix par défaut
+          if (err.message.includes('404') && voiceId !== DEFAULT_VOICE) {
+            console.warn(`Voix ${voiceId} introuvable (404). Repli sur la voix par défaut.`);
+            try {
+              buffer = await generateSpeech(text, DEFAULT_VOICE, elevenLabsApiKey);
+            } catch (retryErr) {
+              throw new Error(`Échec du repli vocal : ${retryErr.message}`);
+            }
+          } else {
+            throw err;
+          }
+        }
+        speechBuffers[globalIdx] = buffer;
+      });
+      
+      await Promise.all(chunkPromises);
     }
 
     // 6. Concaténer les buffers MP3
