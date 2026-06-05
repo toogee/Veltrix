@@ -1040,6 +1040,13 @@
     <!-- LOGIQUE LOGICIELLE ET BASE DE DONNÉES MULTILINGUE DES ENTELS -->
     <script>
 
+        let cachedGeminiApiKey = null;
+        let cachedElevenLabsApiKey = null;
+
+        // Détection iOS Safari — SpeechSynthesis est bloquée après await sur iOS
+        const isIOSSafari = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
         // État Global de l'utilisateur
         let userState = {
             credits: 420,
@@ -1055,7 +1062,8 @@
             lastBroadcastTopic: null,
             lastBroadcastHistory: null,
             completedBroadcasts: [],
-            activeFormat: null
+            activeFormat: null,
+            speechSynthesisBlocked: false
         };
 
         // Base de Données des Entels avec Localisation 4 Langues (fr, en, es, ht)
@@ -2057,8 +2065,19 @@
             }
         }
 
+        function getCachedGeminiApiKey() {
+            if (cachedGeminiApiKey !== null) return cachedGeminiApiKey;
+            const savedKey = localStorage.getItem('veltrix_gemini_api_key');
+            if (savedKey) {
+                cachedGeminiApiKey = savedKey;
+                return savedKey;
+            }
+            return "";
+        }
+
         // --- DÉMON DE RÉCUPÉRATION DYNAMIQUE CLÉ API D'ENVIRONNEMENT ---
         async function getGeminiApiKey() {
+            if (cachedGeminiApiKey !== null) return cachedGeminiApiKey;
             // 1. Essayer de charger depuis /.env (idéal pour le serveur local http://localhost:3000)
             try {
                 const response = await fetch('/.env');
@@ -2066,8 +2085,8 @@
                     const text = await response.text();
                     const match = text.match(/GEMINI_API_KEY\s*=\s*([^\r\n]+)/);
                     if (match && match[1]) {
-                        const key = match[1].trim();
-                        if (key) return key;
+                        cachedGeminiApiKey = match[1].trim();
+                        return cachedGeminiApiKey;
                     }
                 }
             } catch (e) {
@@ -2076,9 +2095,13 @@
 
             // 2. Essayer localStorage
             const savedKey = localStorage.getItem('veltrix_gemini_api_key');
-            if (savedKey) return savedKey;
+            if (savedKey) {
+                cachedGeminiApiKey = savedKey;
+                return savedKey;
+            }
 
             // 3. Fallback vide pour forcer l'usage du fichier .env ou du localStorage
+            cachedGeminiApiKey = "";
             return "";
         }
 
@@ -3353,8 +3376,19 @@
             }
         }
 
+        function getCachedElevenLabsApiKey() {
+            if (cachedElevenLabsApiKey !== null) return cachedElevenLabsApiKey;
+            const savedKey = localStorage.getItem('veltrix_eleven_api_key');
+            if (savedKey) {
+                cachedElevenLabsApiKey = savedKey;
+                return savedKey;
+            }
+            return "";
+        }
+
         // --- DEMON DE RECUPERATION CLÉ ELEVENLABS ---
         async function getElevenLabsApiKey() {
+            if (cachedElevenLabsApiKey !== null) return cachedElevenLabsApiKey;
             // 1. Essayer de charger depuis /.env
             try {
                 const response = await fetch('/.env');
@@ -3362,8 +3396,8 @@
                     const text = await response.text();
                     const match = text.match(/ELEVENLABS_API_KEY\s*=\s*([^\r\n]+)/);
                     if (match && match[1]) {
-                        const key = match[1].trim();
-                        if (key) return key;
+                        cachedElevenLabsApiKey = match[1].trim();
+                        return cachedElevenLabsApiKey;
                     }
                 }
             } catch (e) {
@@ -3372,8 +3406,12 @@
 
             // 2. Essayer localStorage
             const savedKey = localStorage.getItem('veltrix_eleven_api_key');
-            if (savedKey) return savedKey;
+            if (savedKey) {
+                cachedElevenLabsApiKey = savedKey;
+                return savedKey;
+            }
 
+            cachedElevenLabsApiKey = "";
             return "";
         }
 
@@ -3494,25 +3532,91 @@
             return new Promise((resolve) => {
                 if (!userState.isBroadcasting) { resolve(); return; }
 
+                // Sur iOS Safari, SpeechSynthesis est bloquée après tout await — on saute directement
+                // à la simulation par minuterie. Cela empêche le blocage permanent du broadcast.
+                if (isIOSSafari || userState.speechSynthesisBlocked) {
+                    isBroadcastAudioPlaying = false;
+                    animateWaveformSimulation();
+                    // Durée proportionnelle à la longueur du texte (lecture naturelle ~150 mots/min)
+                    const readingMs = Math.max(3000, Math.min(text.length * 55, 18000));
+                    setTimeout(resolve, readingMs);
+                    return;
+                }
+
+                if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+                    console.warn("SpeechSynthesis not supported.");
+                    setTimeout(resolve, Math.max(2000, text.length * 25));
+                    return;
+                }
+
                 const utterance = new SpeechSynthesisUtterance(text);
-                
                 if (language === "en") utterance.lang = "en-US";
                 else if (language === "es") utterance.lang = "es-ES";
-                else utterance.lang = "fr-FR"; // Français & Créole simulé
+                else utterance.lang = "fr-FR";
 
-                utterance.rate = 1.15; // Un peu plus vif
-                utterance.volume = broadcastVolume; // Appliquer le volume courant
+                utterance.rate = 1.15;
+                utterance.volume = broadcastVolume;
 
                 isBroadcastAudioPlaying = false;
                 animateWaveformSimulation();
 
-                window.speechSynthesis.speak(utterance);
+                let resolved = false;
+
+                // Si la parole ne démarre pas dans 2 secondes → fallback timer
+                const startTimer = setTimeout(() => {
+                    if (!resolved) {
+                        console.warn("SpeechSynthesis n'a pas démarré. Basculer en simulation.");
+                        try { window.speechSynthesis.cancel(); } catch(e) {}
+                        userState.speechSynthesisBlocked = true;
+                        resolved = true;
+                        resolve();
+                    }
+                }, 2000);
+
+                // Sécurité absolue
+                const safetyTimer = setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        resolve();
+                    }
+                }, Math.max(5000, text.length * 60));
+
+                utterance.onstart = () => { clearTimeout(startTimer); };
 
                 utterance.onend = () => {
-                    resolve();
+                    if (!resolved) {
+                        clearTimeout(startTimer);
+                        clearTimeout(safetyTimer);
+                        resolved = true;
+                        resolve();
+                    }
                 };
+
+                utterance.onerror = (err) => {
+                    console.error("SpeechSynthesis error:", err);
+                    if (!resolved) {
+                        clearTimeout(startTimer);
+                        clearTimeout(safetyTimer);
+                        resolved = true;
+                        resolve();
+                    }
+                };
+
+                try {
+                    window.speechSynthesis.speak(utterance);
+                    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+                } catch (e) {
+                    console.error("SpeechSynthesis speak exception:", e);
+                    userState.speechSynthesisBlocked = true;
+                    clearTimeout(startTimer);
+                    clearTimeout(safetyTimer);
+                    resolved = true;
+                    resolve();
+                }
             });
         }
+
+
 
         // --- ANIMATION DES ONDES DE FRÉQUENCE RÉELLES ---
         function animateWaveform() {
@@ -3578,6 +3682,31 @@
 
         // --- HÉBERGEMENT ET CONDUITE D'UN BROADCAST AUDIO DIRECT PERSONNALISÉ ---
         async function deployCustomBroadcast() {
+            // Débloquer l'audio/voix pour iOS Safari immédiatement dans le click handler
+            try {
+                if (!broadcastAudioCtx) {
+                    broadcastAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    broadcastAnalyser = broadcastAudioCtx.createAnalyser();
+                    broadcastAnalyser.fftSize = 32;
+                    broadcastGainNode = broadcastAudioCtx.createGain();
+                }
+                if (broadcastAudioCtx.state === 'suspended') {
+                    broadcastAudioCtx.resume();
+                }
+            } catch (e) {
+                console.warn("AudioContext unlock failed:", e);
+            }
+
+            try {
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                    const dummy = new SpeechSynthesisUtterance("");
+                    window.speechSynthesis.speak(dummy);
+                }
+            } catch (e) {
+                console.warn("SpeechSynthesis unlock failed:", e);
+            }
+
             const supabase = window.supabaseClient;
             if (userState.isBroadcasting) {
                 showGlobalNotification("Une émission est déjà active à l'antenne. Quittez d'abord le live actuel.");
@@ -3660,6 +3789,31 @@
 
         // Écouter un broadcast pré-configuré public
         function listenPreconfiguredBroadcast(topic, keys, lang) {
+            // Débloquer l'audio/voix pour iOS Safari immédiatement dans le click handler
+            try {
+                if (!broadcastAudioCtx) {
+                    broadcastAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    broadcastAnalyser = broadcastAudioCtx.createAnalyser();
+                    broadcastAnalyser.fftSize = 32;
+                    broadcastGainNode = broadcastAudioCtx.createGain();
+                }
+                if (broadcastAudioCtx.state === 'suspended') {
+                    broadcastAudioCtx.resume();
+                }
+            } catch (e) {
+                console.warn("AudioContext unlock failed:", e);
+            }
+
+            try {
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                    const dummy = new SpeechSynthesisUtterance("");
+                    window.speechSynthesis.speak(dummy);
+                }
+            } catch (e) {
+                console.warn("SpeechSynthesis unlock failed:", e);
+            }
+
             const allEntels = getAllEntels();
             const speakers = keys.map(k => allEntels.find(e => e.key === k)).filter(Boolean);
             startAudioBroadcastingSim(topic, speakers, lang || 'fr');
@@ -3776,7 +3930,7 @@
                 let isUsingGemini = false;
 
                 // 1. Appeler l'API Gemini si disponible
-                const apiKey = await getGeminiApiKey();
+                const apiKey = getCachedGeminiApiKey();
                 if (apiKey) {
                     try {
                         const otherSpeakersNames = speakers.filter(s => s.key !== currentSpeaker.key).map(s => s.name).join(' & ');
@@ -3830,11 +3984,17 @@
                             systemInstruction: { parts: [{ text: prompt }] }
                         };
 
+                        // Timeout 8 secondes pour éviter de bloquer sur réseau mobile lent
+                        const controller = new AbortController();
+                        const geminiTimeout = setTimeout(() => controller.abort(), 8000);
+
                         const response = await fetch(url, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
+                            body: JSON.stringify(payload),
+                            signal: controller.signal
                         });
+                        clearTimeout(geminiTimeout);
 
                         if (response.ok) {
                             const data = await response.json();
@@ -3887,7 +4047,7 @@
                 
                 try {
                     if (voiceMode === 'real') {
-                        const elevenKey = await getElevenLabsApiKey();
+                        const elevenKey = getCachedElevenLabsApiKey();
                         const voiceId = entelVoiceIds[currentSpeaker.key] || "21m00Tcm4TlvDq8ikWAM";
                         const stability = parseFloat(document.getElementById('broadcast-stability-range').value);
                         const similarity = parseFloat(document.getElementById('broadcast-similarity-range').value);
@@ -4545,6 +4705,9 @@
                     const keyInput = document.getElementById('broadcast-eleven-key');
                     if (keyInput) keyInput.value = savedElevenKey;
                 }
+                // Pré-charger/mettre en cache les clés API (depuis .env ou localStorage) au démarrage
+                getGeminiApiKey();
+                getElevenLabsApiKey();
             } catch (e) {
                 console.warn("Impossible de charger les clés API sauvegardées :", e);
             }
@@ -5397,12 +5560,14 @@
             } else {
                 localStorage.removeItem('veltrix_gemini_api_key');
             }
+            cachedGeminiApiKey = null;
         }
 
         function clearDashboardGeminiKey() {
             localStorage.removeItem('veltrix_gemini_api_key');
             const input = document.getElementById('dashboard-gemini-key-input');
             if (input) input.value = "";
+            cachedGeminiApiKey = null;
             showGlobalNotification("Clé API Gemini effacée.");
         }
 
@@ -5413,12 +5578,14 @@
             } else {
                 localStorage.removeItem('veltrix_eleven_api_key');
             }
+            cachedElevenLabsApiKey = null;
         }
 
         function clearDashboardElevenKey() {
             localStorage.removeItem('veltrix_eleven_api_key');
             const input = document.getElementById('broadcast-eleven-key');
             if (input) input.value = "";
+            cachedElevenLabsApiKey = null;
             showGlobalNotification("Clé API ElevenLabs effacée.");
         }
 
