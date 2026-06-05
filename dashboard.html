@@ -131,6 +131,15 @@
             right: 0 !important;
         }
 
+        .custom-select-dropdown.open-up {
+            top: auto !important;
+            bottom: 100% !important;
+            margin-bottom: 8px !important;
+            margin-top: 0 !important;
+            transform-origin: bottom center !important;
+        }
+
+
         /* Conteneur unifié style Claude */
         .claude-input-container {
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -4964,8 +4973,36 @@
             });
             
             if (dropdown.classList.contains('hidden')) {
+                // Réinitialiser les styles de décalage avant le calcul
+                dropdown.style.left = '';
+                dropdown.style.right = '';
+                
+                // Déterminer s'il faut ouvrir vers le haut (si pas assez d'espace en bas)
+                const rect = trigger.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                const spaceAbove = rect.top;
+                const dropdownHeight = 240; // max-h-60 est de 240px
+                
+                if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+                    dropdown.classList.add('open-up');
+                } else {
+                    dropdown.classList.remove('open-up');
+                }
+                
                 dropdown.classList.remove('hidden');
                 if (trigger) trigger.classList.add('active');
+                
+                // Gérer le débordement horizontal sur mobile
+                const dropRect = dropdown.getBoundingClientRect();
+                if (dropRect.right > window.innerWidth) {
+                    const shift = window.innerWidth - dropRect.right - 12; // 12px de marge
+                    dropdown.style.left = `${shift}px`;
+                }
+                if (dropRect.left < 0) {
+                    const shift = -dropRect.left + 12; // 12px de marge
+                    dropdown.style.left = `${shift}px`;
+                }
+                
                 setTimeout(() => {
                     dropdown.classList.remove('scale-95', 'opacity-0');
                     arrow.classList.add('rotate-180');
