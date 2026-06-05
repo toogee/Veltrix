@@ -4977,13 +4977,11 @@
                 dropdown.style.left = '';
                 dropdown.style.right = '';
                 
-                // Déterminer s'il faut ouvrir vers le haut (si pas assez d'espace en bas)
+                // Déterminer s'il faut ouvrir vers le haut (si le trigger est dans la moitié inférieure de l'écran)
                 const rect = trigger.getBoundingClientRect();
-                const spaceBelow = window.innerHeight - rect.bottom;
-                const spaceAbove = rect.top;
-                const dropdownHeight = 240; // max-h-60 est de 240px
+                const openUp = rect.top > (window.innerHeight / 2);
                 
-                if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+                if (openUp) {
                     dropdown.classList.add('open-up');
                 } else {
                     dropdown.classList.remove('open-up');
