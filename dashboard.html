@@ -4844,7 +4844,7 @@
             
             const labelSpan = document.createElement('span');
             labelSpan.className = "custom-select-label flex items-center gap-2";
-            labelSpan.innerHTML = getOptionLabelHTML(activeOption);
+            labelSpan.innerHTML = getOptionLabelHTML(activeOption, false, selectId);
             
             const arrowIcon = document.createElement('i');
             arrowIcon.className = "fa-solid fa-chevron-down text-slate-500 text-[10px] transition-transform duration-300 custom-select-arrow";
@@ -4882,7 +4882,7 @@
             const item = document.createElement('div');
             item.className = "px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors text-xs text-white";
             item.setAttribute('data-value', opt.value);
-            item.innerHTML = getOptionLabelHTML(opt, true);
+            item.innerHTML = getOptionLabelHTML(opt, true, selectId);
             
             item.onclick = (e) => {
                 e.stopPropagation();
@@ -4896,13 +4896,13 @@
                 
                 const wrapper = select.parentNode.querySelector(`.custom-select-wrapper[data-select="${selectId}"]`);
                 const label = wrapper.querySelector('.custom-select-label');
-                label.innerHTML = getOptionLabelHTML(opt);
+                label.innerHTML = getOptionLabelHTML(opt, false, selectId);
             };
             
             return item;
         }
         
-        function getOptionLabelHTML(option, showSubtitle = false) {
+        function getOptionLabelHTML(option, showSubtitle = false, selectId = '') {
             if (!option) return 'Sélectionner...';
             
             const text = option.text;
@@ -4971,6 +4971,16 @@
                         <span class="text-[9px] text-slate-500 mt-1 block">${subtitle}</span>
                     </div>
                 `;
+            }
+            
+            if (selectId === 'broadcast-entel-1') {
+                return `<i class="fa-solid ${icon} ${color} text-xs"></i> <span>EN1</span>`;
+            }
+            if (selectId === 'broadcast-entel-2') {
+                return `<i class="fa-solid ${icon} ${color} text-xs"></i> <span>EN2</span>`;
+            }
+            if (selectId === 'broadcast-entel-3') {
+                return `<i class="fa-solid ${icon} ${color} text-xs"></i> <span>EN3</span>`;
             }
             
             return `<i class="fa-solid ${icon} ${color} text-xs"></i> <span>${title}</span>`;
