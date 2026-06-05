@@ -140,10 +140,12 @@
         }
 
         @media (max-w: 640px) {
-            .custom-select-dropdown {
+            .custom-select-dropdown,
+            .compact-select.align-right .custom-select-dropdown {
                 position: fixed !important;
                 top: 50% !important;
                 left: 50% !important;
+                right: auto !important;
                 width: calc(100% - 32px) !important;
                 max-width: 320px !important;
                 max-height: 70vh !important;
@@ -154,7 +156,8 @@
                 border: 1px solid rgba(255, 255, 255, 0.15) !important;
                 box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9) !important;
             }
-            .custom-select-dropdown:not(.scale-95) {
+            .custom-select-dropdown:not(.scale-95),
+            .compact-select.align-right .custom-select-dropdown:not(.scale-95) {
                 transform: translate(-50%, -50%) scale(1) !important;
             }
         }
@@ -795,19 +798,25 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Right controls (Entels 1, 2, 3) -->
+                                    <!-- Right controls (Speakers Count & Entels 1, 2, 3) -->
                                     <div class="flex items-center gap-2 flex-wrap">
-                                        <div class="w-28">
+                                        <div class="w-[74px]" id="broadcast-speakers-count-container">
+                                            <select id="broadcast-speakers-count" onchange="toggleBroadcastSpeakersCount()" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
+                                                <option value="3">3 EN</option>
+                                                <option value="2">2 EN</option>
+                                            </select>
+                                        </div>
+                                        <div class="w-20" id="broadcast-entel-1-container">
                                             <select id="broadcast-entel-1" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
                                                 <!-- Injecté dynamiquement -->
                                             </select>
                                         </div>
-                                        <div class="w-28">
+                                        <div class="w-20" id="broadcast-entel-2-container">
                                             <select id="broadcast-entel-2" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
                                                 <!-- Injecté dynamiquement -->
                                             </select>
                                         </div>
-                                        <div class="w-28">
+                                        <div class="w-20" id="broadcast-entel-3-container">
                                             <select id="broadcast-entel-3" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neonGreen/60">
                                                 <!-- Injecté dynamiquement -->
                                             </select>
@@ -3555,6 +3564,18 @@
             });
         }
 
+        // --- VISIBILITÉ DU NOMBRE D'ENTELS (2 OU 3) ---
+        function toggleBroadcastSpeakersCount() {
+            const count = document.getElementById('broadcast-speakers-count').value;
+            const entel3Container = document.getElementById('broadcast-entel-3-container');
+            if (!entel3Container) return;
+            if (count === '2') {
+                entel3Container.classList.add('hidden');
+            } else {
+                entel3Container.classList.remove('hidden');
+            }
+        }
+
         // --- HÉBERGEMENT ET CONDUITE D'UN BROADCAST AUDIO DIRECT PERSONNALISÉ ---
         async function deployCustomBroadcast() {
             const supabase = window.supabaseClient;
@@ -3628,7 +3649,13 @@
             const speaker2 = allEntels.find(e => e.key === id2);
             const speaker3 = allEntels.find(e => e.key === id3);
 
-            startAudioBroadcastingSim(topic, [speaker1, speaker2, speaker3], selectedLang);
+            const speakersCount = document.getElementById('broadcast-speakers-count').value;
+            const speakers = [speaker1, speaker2];
+            if (speakersCount === '3' && speaker3) {
+                speakers.push(speaker3);
+            }
+
+            startAudioBroadcastingSim(topic, speakers, selectedLang);
         }
 
         // Écouter un broadcast pré-configuré public
@@ -4496,9 +4523,12 @@
                 initCustomSelect('broadcast-voice-mode', 'compact-select');
                 initCustomSelect('entel-left-select', 'compact-select');
                 initCustomSelect('entel-right-select', 'compact-select align-right');
+                initCustomSelect('broadcast-speakers-count', 'compact-select');
                 initCustomSelect('broadcast-entel-1', 'compact-select');
                 initCustomSelect('broadcast-entel-2', 'compact-select');
                 initCustomSelect('broadcast-entel-3', 'compact-select align-right');
+                
+                toggleBroadcastSpeakersCount();
             } catch (e) {
                 console.error("Erreur d'initialisation des sélecteurs customs :", e);
             }
@@ -4907,6 +4937,11 @@
             
             const text = option.text;
             const value = option.value;
+            
+            if (selectId === 'broadcast-speakers-count') {
+                const icon = value === '3' ? 'fa-users' : 'fa-user-group';
+                return `<i class="fa-solid ${icon} text-neonGreen text-xs"></i> <span>${value} EN</span>`;
+            }
             
             const langIcons = {
                 fr: { icon: 'fa-earth-europe', color: 'text-blue-400', label: 'Français' },
