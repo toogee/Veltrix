@@ -3483,47 +3483,53 @@
             return await response.arrayBuffer();
         }
 
-        // --- LECTURE AUDIO VIA WEB AUDIO API ---
+        let globalHtmlAudio = null;
+
+        // --- LECTURE AUDIO ULTRA-ROBUSTE (HTML5 AUDIO) ---
         function playAudioBuffer(audioBuffer) {
             return new Promise((resolve, reject) => {
                 if (!userState.isBroadcasting) { resolve(); return; }
 
-                if (!broadcastAudioCtx) {
-                    broadcastAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    broadcastAnalyser = broadcastAudioCtx.createAnalyser();
-                    broadcastAnalyser.fftSize = 32;
-                    broadcastGainNode = broadcastAudioCtx.createGain();
+                if (!globalHtmlAudio) {
+                    globalHtmlAudio = new Audio();
+                    globalHtmlAudio.crossOrigin = "anonymous";
+                    globalHtmlAudio.playsInline = true;
                 }
 
-                if (broadcastAudioCtx.state === 'suspended') {
-                    broadcastAudioCtx.resume();
-                }
+                globalHtmlAudio.volume = broadcastVolume;
 
-                broadcastAudioCtx.decodeAudioData(audioBuffer, (decodedBuffer) => {
-                    if (!userState.isBroadcasting) { resolve(); return; }
-                    
-                    const source = broadcastAudioCtx.createBufferSource();
-                    source.buffer = decodedBuffer;
-                    
-                    source.connect(broadcastAnalyser);
-                    broadcastAnalyser.connect(broadcastGainNode);
-                    broadcastGainNode.connect(broadcastAudioCtx.destination);
-                    
-                    // Appliquer le volume courant
-                    broadcastGainNode.gain.value = broadcastVolume;
-                    
+                // Créer un Blob URL pour l'audio
+                const blob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+                const blobUrl = URL.createObjectURL(blob);
+
+                globalHtmlAudio.src = blobUrl;
+                
+                globalHtmlAudio.onplay = () => {
                     isBroadcastAudioPlaying = true;
-                    animateWaveform();
+                    // On utilise la simulation d'onde visuelle pour éviter les bugs Safari de createMediaElementSource
+                    animateWaveformSimulation(); 
+                };
 
-                    source.start(0);
-                    
-                    source.onended = () => {
-                        isBroadcastAudioPlaying = false;
-                        resolve();
-                    };
-                }, (err) => {
-                    reject(new Error("Erreur de décodage audio ElevenLabs."));
-                });
+                globalHtmlAudio.onended = () => {
+                    isBroadcastAudioPlaying = false;
+                    URL.revokeObjectURL(blobUrl);
+                    resolve();
+                };
+
+                globalHtmlAudio.onerror = (err) => {
+                    console.error("Erreur HTML5 Audio:", err);
+                    URL.revokeObjectURL(blobUrl);
+                    resolve(); // On résout quand même pour ne pas bloquer le broadcast
+                };
+
+                const playPromise = globalHtmlAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => {
+                        console.warn("Autoplay HTML5 Audio bloqué :", err);
+                        URL.revokeObjectURL(blobUrl);
+                        resolve(); // Fallback silencieux si bloqué
+                    });
+                }
             });
         }
 

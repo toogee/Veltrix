@@ -740,31 +740,49 @@
             return await response.arrayBuffer();
         }
 
-        // --- JOUER LA VOIX AVEC WEB AUDIO API ET VRAIES ONDES ---
+        let globalHtmlAudio = null;
+
+        // --- JOUER LA VOIX (HTML5 AUDIO ROBUSTE) ---
         function playAudioBuffer(audioBuffer) {
             return new Promise((resolve, reject) => {
                 if (shouldStop) { resolve(); return; }
 
-                audioCtx.decodeAudioData(audioBuffer, (decodedBuffer) => {
-                    const source = audioCtx.createBufferSource();
-                    source.buffer = decodedBuffer;
-                    
-                    // Connecter à l'analyseur de forme d'onde
-                    source.connect(analyser);
-                    analyser.connect(audioCtx.destination);
-                    
-                    isAudioPlaying = true;
-                    animateWaveform(); // Lancer l'animation des ondes
+                if (!globalHtmlAudio) {
+                    globalHtmlAudio = new Audio();
+                    globalHtmlAudio.crossOrigin = "anonymous";
+                    globalHtmlAudio.playsInline = true;
+                }
 
-                    source.start(0);
-                    
-                    source.onended = () => {
-                        isAudioPlaying = false;
+                const blob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+                const blobUrl = URL.createObjectURL(blob);
+
+                globalHtmlAudio.src = blobUrl;
+
+                globalHtmlAudio.onplay = () => {
+                    isAudioPlaying = true;
+                    animateWaveformSimulation(); // Utiliser simulation d'onde car plus robuste sur mobile sans Web Audio API
+                };
+
+                globalHtmlAudio.onended = () => {
+                    isAudioPlaying = false;
+                    URL.revokeObjectURL(blobUrl);
+                    resolve();
+                };
+
+                globalHtmlAudio.onerror = (err) => {
+                    console.error("Erreur HTML5 Audio", err);
+                    URL.revokeObjectURL(blobUrl);
+                    resolve();
+                };
+
+                const playPromise = globalHtmlAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => {
+                        console.warn("Autoplay HTML5 Audio bloqué :", err);
+                        URL.revokeObjectURL(blobUrl);
                         resolve();
-                    };
-                }, (err) => {
-                    reject(new Error("Erreur de décodage audio ElevenLabs."));
-                });
+                    });
+                }
             });
         }
 
