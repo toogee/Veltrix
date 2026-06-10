@@ -3538,9 +3538,9 @@
             return new Promise((resolve) => {
                 if (!userState.isBroadcasting) { resolve(); return; }
 
-                // Sur iOS Safari, SpeechSynthesis est bloquée après tout await — on saute directement
-                // à la simulation par minuterie. Cela empêche le blocage permanent du broadcast.
-                if (isIOSSafari || userState.speechSynthesisBlocked) {
+                // Sur iOS Safari, SpeechSynthesis peut être bloquée après un await,
+                // mais on essaie quand même grâce au déblocage asynchrone ajouté plus tôt.
+                if (userState.speechSynthesisBlocked) {
                     isBroadcastAudioPlaying = false;
                     animateWaveformSimulation();
                     // Durée proportionnelle à la longueur du texte (lecture naturelle ~150 mots/min)
