@@ -3483,53 +3483,48 @@
             return await response.arrayBuffer();
         }
 
-        let globalHtmlAudio = null;
-
-        // --- LECTURE AUDIO ULTRA-ROBUSTE (HTML5 AUDIO) ---
+        // --- LECTURE AUDIO VIA WEB AUDIO API (AVEC UNMUTE HACK iOS) ---
         function playAudioBuffer(audioBuffer) {
             return new Promise((resolve, reject) => {
                 if (!userState.isBroadcasting) { resolve(); return; }
 
-                if (!globalHtmlAudio) {
-                    globalHtmlAudio = new Audio();
-                    globalHtmlAudio.crossOrigin = "anonymous";
-                    globalHtmlAudio.playsInline = true;
+                if (!broadcastAudioCtx) {
+                    broadcastAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    broadcastAnalyser = broadcastAudioCtx.createAnalyser();
+                    broadcastAnalyser.fftSize = 32;
+                    broadcastGainNode = broadcastAudioCtx.createGain();
                 }
 
-                globalHtmlAudio.volume = broadcastVolume;
+                if (broadcastAudioCtx.state === 'suspended') {
+                    broadcastAudioCtx.resume();
+                }
 
-                // Créer un Blob URL pour l'audio
-                const blob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-                const blobUrl = URL.createObjectURL(blob);
-
-                globalHtmlAudio.src = blobUrl;
-                
-                globalHtmlAudio.onplay = () => {
+                broadcastAudioCtx.decodeAudioData(audioBuffer, (decodedBuffer) => {
+                    if (!userState.isBroadcasting) { resolve(); return; }
+                    
+                    const source = broadcastAudioCtx.createBufferSource();
+                    source.buffer = decodedBuffer;
+                    
+                    source.connect(broadcastAnalyser);
+                    broadcastAnalyser.connect(broadcastGainNode);
+                    broadcastGainNode.connect(broadcastAudioCtx.destination);
+                    
+                    // Appliquer le volume courant
+                    broadcastGainNode.gain.value = broadcastVolume;
+                    
                     isBroadcastAudioPlaying = true;
-                    // On utilise la simulation d'onde visuelle pour éviter les bugs Safari de createMediaElementSource
-                    animateWaveformSimulation(); 
-                };
+                    animateWaveform();
 
-                globalHtmlAudio.onended = () => {
-                    isBroadcastAudioPlaying = false;
-                    URL.revokeObjectURL(blobUrl);
-                    resolve();
-                };
-
-                globalHtmlAudio.onerror = (err) => {
-                    console.error("Erreur HTML5 Audio:", err);
-                    URL.revokeObjectURL(blobUrl);
-                    resolve(); // On résout quand même pour ne pas bloquer le broadcast
-                };
-
-                const playPromise = globalHtmlAudio.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(err => {
-                        console.warn("Autoplay HTML5 Audio bloqué :", err);
-                        URL.revokeObjectURL(blobUrl);
-                        resolve(); // Fallback silencieux si bloqué
-                    });
-                }
+                    source.start(0);
+                    
+                    source.onended = () => {
+                        isBroadcastAudioPlaying = false;
+                        resolve();
+                    };
+                }, (err) => {
+                    console.error("Erreur de décodage audio ElevenLabs.", err);
+                    resolve(); // On résout pour ne pas bloquer la file
+                });
             });
         }
 
@@ -3706,14 +3701,15 @@
                 source.connect(broadcastAudioCtx.destination);
                 source.start(0);
 
-                // DEBLOCAGE COMPLET HTML5 AUDIO
-                if (!globalHtmlAudio) {
-                    globalHtmlAudio = new Audio();
-                    globalHtmlAudio.crossOrigin = "anonymous";
-                    globalHtmlAudio.playsInline = true;
+                // DEBLOCAGE COMPLET iOS SILENT SWITCH (UNMUTE HACK)
+                if (!window.iosSilentLoop) {
+                    window.iosSilentLoop = new Audio();
+                    window.iosSilentLoop.crossOrigin = "anonymous";
+                    window.iosSilentLoop.playsInline = true;
+                    window.iosSilentLoop.loop = true;
+                    window.iosSilentLoop.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+                    window.iosSilentLoop.play().catch(e => console.warn("Unmute hack failed", e));
                 }
-                globalHtmlAudio.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
-                globalHtmlAudio.play().catch(e => console.warn("HTML Audio unlock silently failed", e));
                 // ----------------------------------------------------------------------------------------------------
             } catch (e) {
                 console.warn("AudioContext unlock failed:", e);
@@ -3829,14 +3825,15 @@
                 source.connect(broadcastAudioCtx.destination);
                 source.start(0);
 
-                // DEBLOCAGE COMPLET HTML5 AUDIO
-                if (!globalHtmlAudio) {
-                    globalHtmlAudio = new Audio();
-                    globalHtmlAudio.crossOrigin = "anonymous";
-                    globalHtmlAudio.playsInline = true;
+                // DEBLOCAGE COMPLET iOS SILENT SWITCH (UNMUTE HACK)
+                if (!window.iosSilentLoop) {
+                    window.iosSilentLoop = new Audio();
+                    window.iosSilentLoop.crossOrigin = "anonymous";
+                    window.iosSilentLoop.playsInline = true;
+                    window.iosSilentLoop.loop = true;
+                    window.iosSilentLoop.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+                    window.iosSilentLoop.play().catch(e => console.warn("Unmute hack failed", e));
                 }
-                globalHtmlAudio.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
-                globalHtmlAudio.play().catch(e => console.warn("HTML Audio unlock silently failed", e));
                 // ----------------------------------------------------------------------------------------------------
             } catch (e) {
                 console.warn("AudioContext unlock failed:", e);

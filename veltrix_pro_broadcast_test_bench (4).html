@@ -508,14 +508,15 @@
                 source.connect(audioCtx.destination);
                 source.start(0);
 
-                // DEBLOCAGE COMPLET HTML5 AUDIO
-                if (!globalHtmlAudio) {
-                    globalHtmlAudio = new Audio();
-                    globalHtmlAudio.crossOrigin = "anonymous";
-                    globalHtmlAudio.playsInline = true;
+                // DEBLOCAGE COMPLET iOS SILENT SWITCH (UNMUTE HACK)
+                if (!window.iosSilentLoop) {
+                    window.iosSilentLoop = new Audio();
+                    window.iosSilentLoop.crossOrigin = "anonymous";
+                    window.iosSilentLoop.playsInline = true;
+                    window.iosSilentLoop.loop = true;
+                    window.iosSilentLoop.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+                    window.iosSilentLoop.play().catch(e => console.warn("Unmute hack failed", e));
                 }
-                globalHtmlAudio.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
-                globalHtmlAudio.play().catch(e => console.warn("HTML Audio unlock silently failed", e));
             } catch (e) {
                 console.warn("AudioContext unlock failed:", e);
             }
@@ -749,49 +750,32 @@
             return await response.arrayBuffer();
         }
 
-        let globalHtmlAudio = null;
-
-        // --- JOUER LA VOIX (HTML5 AUDIO ROBUSTE) ---
+        // --- JOUER LA VOIX AVEC WEB AUDIO API ET VRAIES ONDES ---
         function playAudioBuffer(audioBuffer) {
             return new Promise((resolve, reject) => {
                 if (shouldStop) { resolve(); return; }
 
-                if (!globalHtmlAudio) {
-                    globalHtmlAudio = new Audio();
-                    globalHtmlAudio.crossOrigin = "anonymous";
-                    globalHtmlAudio.playsInline = true;
-                }
-
-                const blob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-                const blobUrl = URL.createObjectURL(blob);
-
-                globalHtmlAudio.src = blobUrl;
-
-                globalHtmlAudio.onplay = () => {
+                audioCtx.decodeAudioData(audioBuffer, (decodedBuffer) => {
+                    const source = audioCtx.createBufferSource();
+                    source.buffer = decodedBuffer;
+                    
+                    // Connecter à l'analyseur de forme d'onde
+                    source.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                    
                     isAudioPlaying = true;
-                    animateWaveformSimulation(); // Utiliser simulation d'onde car plus robuste sur mobile sans Web Audio API
-                };
+                    animateWaveform(); // Lancer l'animation des ondes
 
-                globalHtmlAudio.onended = () => {
-                    isAudioPlaying = false;
-                    URL.revokeObjectURL(blobUrl);
-                    resolve();
-                };
-
-                globalHtmlAudio.onerror = (err) => {
-                    console.error("Erreur HTML5 Audio", err);
-                    URL.revokeObjectURL(blobUrl);
-                    resolve();
-                };
-
-                const playPromise = globalHtmlAudio.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(err => {
-                        console.warn("Autoplay HTML5 Audio bloqué :", err);
-                        URL.revokeObjectURL(blobUrl);
+                    source.start(0);
+                    
+                    source.onended = () => {
+                        isAudioPlaying = false;
                         resolve();
-                    });
-                }
+                    };
+                }, (err) => {
+                    console.error("Erreur de décodage audio ElevenLabs.", err);
+                    resolve();
+                });
             });
         }
 
