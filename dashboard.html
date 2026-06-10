@@ -1663,16 +1663,17 @@
         }
 
         function autoSuggestEntels(inputElement, mode) {
-            const text = inputElement.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            if (!text || text.length < 8) return; 
+            const rawText = inputElement.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (!rawText || rawText.length < 8) return; 
             
             const scores = {};
             for (const [entelId, keywords] of Object.entries(entelKeywords)) {
                 scores[entelId] = 0;
                 for (const kw of keywords) {
-                    // Matcher les mots-clés sans accents
                     const kwNormalized = kw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    if (text.includes(kwNormalized)) {
+                    // Utiliser des frontières de mots pour éviter que "mò" matche "monde"
+                    const regex = new RegExp(`\\b${kwNormalized}\\b`, "i");
+                    if (regex.test(rawText)) {
                         scores[entelId]++;
                     }
                 }
@@ -2264,7 +2265,7 @@
             const opponentName = opponent?.name || 'votre interlocuteur';
 
             // Extraire mots-clés du sujet réel pour ancrer chaque argument
-            const stopWords = new Set(['les','des','une','est','elle','que','qui','dans','pour','par','sur','avec','sans','mais','donc','car','cette','ces','son','ses','leur','leurs','plus','très','tout','bien','fait','ils','elles','nous','vous','ont','aux','du','de','le','la','et','en','au','ce','il','je','tu','the','and','for','that','this','with','are','have','has','not','but','from','they','were','been','their','what','est']);
+            const stopWords = new Set(['les','des','une','est','elle','que','qui','dans','pour','par','sur','avec','sans','mais','donc','car','cette','ces','son','ses','leur','leurs','plus','très','tout','bien','fait','ils','elles','nous','vous','ont','aux','du','de','le','la','et','en','au','ce','il','je','tu','the','and','for','that','this','with','are','have','has','not','but','from','they','were','been','their','what','est','quel','quelle','quels','quelles','quoi','comment','pourquoi','quand','où','est-ce','monde']);
             const topicKeywords = topic.toLowerCase().replace(/[«»"?!.,;:()]/g,'').split(/\s+/).filter(w => w.length > 3 && !stopWords.has(w)).slice(0, 4);
             const kw1 = topicKeywords[0] || 'phénomène';
             const kw2 = topicKeywords[1] || 'mécanisme';
@@ -2705,6 +2706,7 @@
             const core = argPool[turnIndex % argPool.length];
 
             // ─── PREMIER TOUR — salutation + sujet en entier (seule fois) ───
+            let result = "";
             if (isFirstTurn) {
                 const g = {
                     fr: isOmniX
@@ -2735,11 +2737,8 @@
                         ? `Hi${userName ? ' ' + userName : ''}! I'm ${sender.name}. We're debating: "${topic}". As a sociologist, my position: `
                         : `Hello${userName ? ' ' + userName : ''}! ${sender.name} here. Today: "${topic}". My econometric analysis is clear: `
                 };
-                return (g[lang] || g.fr) + core;
-            }
-
-            // ─── RÉPONDRE À UNE QUESTION — 4 openers variés par style (jamais "Pour répondre directement") ───
-            if (pendingQuestion) {
+                result = (g[lang] || g.fr) + core;
+            } else if (pendingQuestion) {
                 const opLeft = {
                     fr: ['Bonne question qui touche au cœur du problème — ', "Tu soulèves quelque chose d'essentiel là — ", "C'est exactement la question qu'il fallait poser — ", 'Voilà qui va au fond des choses — '],
                     ht: ['Bon kesyon ki touche kè pwoblèm nan — ', 'Ou soulève yon bagay esansyèl la — ', 'Se egzakteman kesyon ki t fò poze a — ', 'Sa a touche fon bagay yo — '],
@@ -2751,33 +2750,31 @@
                     en: ['The data answers that clearly — ', 'Econometrically, the answer is straightforward — ', 'The numbers settle this — ', "That's exactly what the models confirm — "]
                 };
                 const pool = isLeftEntel ? (opLeft[lang] || opLeft.fr) : (opRight[lang] || opRight.fr);
-                return pool[turnIndex % pool.length] + core;
+                result = pool[turnIndex % pool.length] + core;
+            } else {
+                const transLeft = [
+                    { fr: "En s'intéressant de plus près aux dynamiques institutionnelles, ", ht: "Lè nou gade pi pre dinamik enstitisyonèl yo, ", en: "Looking closer at institutional dynamics, " },
+                    { fr: 'Attends — il y a une confusion fondamentale dans ton analyse. ', ht: 'Rete — gen yon konfizyon fondamantal nan analiz ou a. ', en: "Wait — there's a fundamental confusion in your analysis. " },
+                    { fr: 'Tu mélanges cause et conséquence, et ça change tout. ', ht: 'Ou ap melanje koz ak konsekans, epi sa chanje tout bagay. ', en: "You're mixing cause and effect, and that changes everything. " },
+                    { fr: "Ce que tu décris est réel, mais tu rates l'essentiel. ", ht: "Sa ou dékri a reyèl, men ou rate esansyèl la. ", en: "What you describe is real, but you're missing the essential. " },
+                    { fr: 'Historiquement, cette position a toujours buté sur un problème majeur. ', ht: 'Istwa, pozisyon sa a toujou bite sou yon gwo pwoblèm. ', en: 'Historically, this position has always stumbled on one major problem. ' },
+                    { fr: "Ton analyse part d'un bon endroit mais elle s'arrête trop tôt. ", ht: 'Analiz ou a kòmanse nan bon kote men li kanpe twò bonè. ', en: 'Your analysis starts right but stops too early. ' },
+                    { fr: "Je vais aller plus loin que toi sur ce point, parce que les faits le permettent. ", ht: 'Mwen pral plis lwen pase ou sou pwen sa a, paske fè yo pèmèt sa. ', en: "I'll push further than you on this, because the facts allow it. " }
+                ];
+                const transRight = [
+                    { fr: "Si on regarde la tendance statistique générale, ", ht: "Si nou gade tandans statistik jeneral la, ", en: "Looking at the general statistical trend, " },
+                    { fr: 'Les données ne mentent pas, contrairement aux intuitions. ', ht: 'Done yo pa bay manti, kontrèman ak entisyon yo. ', en: "Data doesn't lie, unlike intuitions. " },
+                    { fr: 'Si on quantifie ce que tu viens de dire, le résultat est troublant. ', ht: 'Si nou kwantifye sa ou sot di a, rezilta a deranjman. ', en: 'If we quantify what you just said, the result is troubling. ' },
+                    { fr: "Ce que tu affirmes là, aucune étude sérieuse ne le confirme. ", ht: 'Sa ou afime là a, okenn etid serye pa konfime li. ', en: "What you're claiming there, no serious study confirms. " },
+                    { fr: 'Économétriquement parlant, ton raisonnement inverse la causalité. ', ht: 'Ekonometrikman, rezon ou a envèse kaozalite a. ', en: 'Econometrically speaking, your reasoning inverts causality. ' },
+                    { fr: 'Regarde les chiffres réels — pas les discours, les chiffres. ', ht: 'Gade chif reyèl yo — pa diskou yo, chif yo. ', en: 'Look at the real numbers — not the speeches, the numbers. ' },
+                    { fr: 'Ton intuition est compréhensible, mais les modèles disent autre chose. ', ht: 'Entisyon ou a konpreyansib, men modèl yo di lòt bagay. ', en: 'Your intuition is understandable, but the models say otherwise. ' }
+                ];
+                const tPool = isLeftEntel ? transLeft : transRight;
+                const trans = tPool[turnIndex % tPool.length];
+                result = (trans[lang] || trans.fr) + core;
             }
 
-            // ─── TRANSITIONS — chaque Entel a son propre registre ───
-            const transLeft = [
-                { fr: "En s'intéressant de plus près aux dynamiques institutionnelles, ", ht: "Lè nou gade pi pre dinamik enstitisyonèl yo, ", en: "Looking closer at institutional dynamics, " },
-                { fr: 'Attends — il y a une confusion fondamentale dans ton analyse. ', ht: 'Rete — gen yon konfizyon fondamantal nan analiz ou a. ', en: "Wait — there's a fundamental confusion in your analysis. " },
-                { fr: 'Tu mélanges cause et conséquence, et ça change tout. ', ht: 'Ou ap melanje koz ak konsekans, epi sa chanje tout bagay. ', en: "You're mixing cause and effect, and that changes everything. " },
-                { fr: "Ce que tu décris est réel, mais tu rates l'essentiel. ", ht: "Sa ou dékri a reyèl, men ou rate esansyèl la. ", en: "What you describe is real, but you're missing the essential. " },
-                { fr: 'Historiquement, cette position a toujours buté sur un problème majeur. ', ht: 'Istwa, pozisyon sa a toujou bite sou yon gwo pwoblèm. ', en: 'Historically, this position has always stumbled on one major problem. ' },
-                { fr: "Ton analyse part d'un bon endroit mais elle s'arrête trop tôt. ", ht: 'Analiz ou a kòmanse nan bon kote men li kanpe twò bonè. ', en: 'Your analysis starts right but stops too early. ' },
-                { fr: "Je vais aller plus loin que toi sur ce point, parce que les faits le permettent. ", ht: 'Mwen pral plis lwen pase ou sou pwen sa a, paske fè yo pèmèt sa. ', en: "I'll push further than you on this, because the facts allow it. " }
-            ];
-            const transRight = [
-                { fr: "Si on regarde la tendance statistique générale, ", ht: "Si nou gade tandans statistik jeneral la, ", en: "Looking at the general statistical trend, " },
-                { fr: 'Les données ne mentent pas, contrairement aux intuitions. ', ht: 'Done yo pa bay manti, kontrèman ak entisyon yo. ', en: "Data doesn't lie, unlike intuitions. " },
-                { fr: 'Si on quantifie ce que tu viens de dire, le résultat est troublant. ', ht: 'Si nou kwantifye sa ou sot di a, rezilta a deranjman. ', en: 'If we quantify what you just said, the result is troubling. ' },
-                { fr: "Ce que tu affirmes là, aucune étude sérieuse ne le confirme. ", ht: 'Sa ou afime là a, okenn etid serye pa konfime li. ', en: "What you're claiming there, no serious study confirms. " },
-                { fr: 'Économétriquement parlant, ton raisonnement inverse la causalité. ', ht: 'Ekonometrikman, rezon ou a envèse kaozalite a. ', en: 'Econometrically speaking, your reasoning inverts causality. ' },
-                { fr: 'Regarde les chiffres réels — pas les discours, les chiffres. ', ht: 'Gade chif reyèl yo — pa diskou yo, chif yo. ', en: 'Look at the real numbers — not the speeches, the numbers. ' },
-                { fr: 'Ton intuition est compréhensible, mais les modèles disent autre chose. ', ht: 'Entisyon ou a konpreyansib, men modèl yo di lòt bagay. ', en: 'Your intuition is understandable, but the models say otherwise. ' }
-            ];
-            const tPool = isLeftEntel ? transLeft : transRight;
-            const trans = tPool[turnIndex % tPool.length];
-            let txt = (trans[lang] || trans.fr) + core;
-
-            // ─── QUESTIONS ANCRÉES DANS LES MOTS-CLÉS DU SUJET ───
             if (isQuestionTurn) {
                 const qLeft = [
                     { fr: ` → ${opponentName}, si ${kw1} stimule vraiment l'économie comme tu le suggères, pourquoi les pays les plus affectés ont-ils systématiquement les PIB les plus faibles ?`, ht: ` → ${opponentName}, si ${kw1} vrèman stimile ekonomi a, poukisa peyi ki pi afekte yo sistematikman gen PIB ki pi ba yo ?`, en: ` → ${opponentName}, if ${kw1} truly stimulates the economy as you suggest, why do the most affected countries systematically have the lowest GDPs?` },
@@ -2791,9 +2788,9 @@
                 ];
                 const qPool = isLeftEntel ? qLeft : qRight;
                 const q = qPool[turnIndex % qPool.length];
-                txt += (q[lang] || q.fr);
+                result += (q[lang] || q.fr);
             }
-            return txt;
+            return `[MODE HORS-LIGNE] ${result}`;
         }
 
         // --- CONSTRUCTEUR DE SYSTEM INSTRUCTIONS POUR GEMINI (v5 — Cohérent, Ancré, Progressif) ---
