@@ -3705,6 +3705,15 @@
                 source.buffer = buffer;
                 source.connect(broadcastAudioCtx.destination);
                 source.start(0);
+
+                // DEBLOCAGE COMPLET HTML5 AUDIO
+                if (!globalHtmlAudio) {
+                    globalHtmlAudio = new Audio();
+                    globalHtmlAudio.crossOrigin = "anonymous";
+                    globalHtmlAudio.playsInline = true;
+                }
+                globalHtmlAudio.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+                globalHtmlAudio.play().catch(e => console.warn("HTML Audio unlock silently failed", e));
                 // ----------------------------------------------------------------------------------------------------
             } catch (e) {
                 console.warn("AudioContext unlock failed:", e);
@@ -3819,6 +3828,15 @@
                 source.buffer = buffer;
                 source.connect(broadcastAudioCtx.destination);
                 source.start(0);
+
+                // DEBLOCAGE COMPLET HTML5 AUDIO
+                if (!globalHtmlAudio) {
+                    globalHtmlAudio = new Audio();
+                    globalHtmlAudio.crossOrigin = "anonymous";
+                    globalHtmlAudio.playsInline = true;
+                }
+                globalHtmlAudio.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+                globalHtmlAudio.play().catch(e => console.warn("HTML Audio unlock silently failed", e));
                 // ----------------------------------------------------------------------------------------------------
             } catch (e) {
                 console.warn("AudioContext unlock failed:", e);
