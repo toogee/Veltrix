@@ -622,11 +622,12 @@
                             <div class="claude-input-container rounded-2xl p-4 space-y-4">
                                 <!-- Textarea at the top -->
                                 <div class="relative flex items-start gap-2">
-                                    <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden pr-10" rows="2" oninput="autoResizeTextarea(this)"></textarea>
+                                    <textarea id="debate-topic-input" placeholder="Ex: Faut-il interdire le chiffrement quantique pour la sécurité nationale ?" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden pr-10" rows="2" oninput="autoResizeTextarea(this); debouncedAutoSuggest(this, 'debate')"></textarea>
                                     <button id="btn-debate-speech" onclick="startSpeechRecognition('debate-topic-input', 'btn-debate-speech')" class="absolute right-0 top-1 w-8 h-8 rounded-lg bg-white/5 border border-white/10 hover:border-neonGreen/30 text-slate-400 hover:text-neonGreen flex items-center justify-center transition-all shrink-0" title="Parler pour écrire">
                                         <i class="fa-solid fa-microphone text-xs"></i>
                                     </button>
                                 </div>
+                                <div id="auto-suggest-notif-debate" class="text-[10px] text-neonGreen font-medium mt-1 hidden transition-all duration-300"></div>
                                 
                                 <!-- Bottom control bar inside the chatbox -->
                                 <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
@@ -772,11 +773,12 @@
                             <div class="claude-input-container rounded-2xl p-4 space-y-4">
                                 <!-- Textarea at the top -->
                                 <div class="relative flex items-start gap-2">
-                                    <textarea id="broadcast-topic-input" placeholder="Ex: La décroissance macro-économique face à l'abondance de l'IA" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden pr-10" rows="2" oninput="autoResizeTextarea(this)"></textarea>
+                                    <textarea id="broadcast-topic-input" placeholder="Ex: La décroissance macro-économique face à l'abondance de l'IA" class="w-full bg-transparent text-sm text-white focus:outline-none placeholder:text-slate-500 resize-none overflow-hidden pr-10" rows="2" oninput="autoResizeTextarea(this); debouncedAutoSuggest(this, 'broadcast')"></textarea>
                                     <button id="btn-broadcast-speech" onclick="startSpeechRecognition('broadcast-topic-input', 'btn-broadcast-speech')" class="absolute right-0 top-1 w-8 h-8 rounded-lg bg-white/5 border border-white/10 hover:border-neonGreen/30 text-slate-400 hover:text-neonGreen flex items-center justify-center transition-all shrink-0" title="Parler pour écrire">
                                         <i class="fa-solid fa-microphone text-xs"></i>
                                     </button>
                                 </div>
+                                <div id="auto-suggest-notif-broadcast" class="text-[10px] text-neonGreen font-medium mt-1 hidden transition-all duration-300"></div>
                                 
                                 <!-- Bottom control bar inside the chatbox -->
                                 <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
@@ -1628,6 +1630,88 @@
                 }
             }
             return list;
+        }
+
+        // ==========================================
+        // AUTO-SUGGEST ENTELS
+        // ==========================================
+        const entelKeywords = {
+            'kronopol9': ['argent', 'économie', 'finance', 'crypto', 'banque', 'inflation', 'capital', 'marché', 'richesse', 'prix', 'chômage', 'bitcoin', 'dollar', 'bourse'],
+            'nexofin_x': ['argent', 'économie', 'finance', 'crypto', 'banque', 'inflation', 'capital', 'marché', 'richesse', 'prix', 'chômage', 'bitcoin', 'dollar', 'bourse', 'impôt', 'taxe'],
+            'cyphernet_3': ['loi', 'gouvernement', 'politique', 'état', 'sécurité', 'justice', 'droit', 'société', 'république', 'démocratie', 'liberté', 'censure'],
+            'voxidem_alpha': ['loi', 'gouvernement', 'politique', 'état', 'sécurité', 'justice', 'droit', 'société', 'république', 'démocratie', 'guerre', 'paix', 'ordre', 'pouvoir'],
+            'biogen_theta': ['santé', 'médecine', 'maladie', 'hôpital', 'virus', 'vie', 'biologie', 'génétique', 'corps', 'soin', 'vaccin', 'mort', 'cancer'],
+            'luminax_3': ['dieu', 'religion', 'spiritualité', 'esprit', 'âme', 'conscience', 'foi', 'croyance', 'univers', 'énergie', 'amour', 'paix', 'karma'],
+            'veve_sage': ['dieu', 'religion', 'spiritualité', 'esprit', 'âme', 'conscience', 'foi', 'croyance', 'univers', 'énergie', 'vodou', 'lwa', 'afrique', 'ancêtre', 'magie', 'rituel']
+        };
+
+        let autoSuggestTimer = null;
+
+        function debouncedAutoSuggest(inputElement, mode) {
+            if (autoSuggestTimer) clearTimeout(autoSuggestTimer);
+            autoSuggestTimer = setTimeout(() => {
+                autoSuggestEntels(inputElement, mode);
+            }, 800);
+        }
+
+        function autoSuggestEntels(inputElement, mode) {
+            const text = inputElement.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (!text || text.length < 8) return; 
+            
+            const scores = {};
+            for (const [entelId, keywords] of Object.entries(entelKeywords)) {
+                scores[entelId] = 0;
+                for (const kw of keywords) {
+                    // Matcher les mots-clés sans accents
+                    const kwNormalized = kw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    if (text.includes(kwNormalized)) {
+                        scores[entelId]++;
+                    }
+                }
+            }
+            
+            const sorted = Object.keys(scores).map(key => ({ id: key, score: scores[key] })).sort((a, b) => b.score - a.score);
+            
+            if (sorted[0].score > 0) {
+                const top1 = sorted[0].id;
+                const top2 = sorted[1].score > 0 ? sorted[1].id : sorted[2].id;
+                const top3 = sorted[2].id;
+                
+                const allEntels = getAllEntels();
+                
+                if (mode === 'debate') {
+                    document.getElementById('entel-left-select').value = top1;
+                    document.getElementById('entel-right-select').value = top2;
+                    initCustomSelect('entel-left-select', 'compact-select');
+                    initCustomSelect('entel-right-select', 'compact-select align-right');
+                    
+                    const notif = document.getElementById('auto-suggest-notif-debate');
+                    if (notif) {
+                        const name1 = allEntels.find(e => e.key === top1)?.name || top1;
+                        const name2 = allEntels.find(e => e.key === top2)?.name || top2;
+                        notif.innerHTML = `✨ <span class="text-white">Entels suggérés :</span> ${name1} vs ${name2}`;
+                        notif.classList.remove('hidden');
+                        setTimeout(() => notif.classList.add('hidden'), 5000);
+                    }
+                } else if (mode === 'broadcast') {
+                    document.getElementById('broadcast-entel-1').value = top1;
+                    document.getElementById('broadcast-entel-2').value = top2;
+                    document.getElementById('broadcast-entel-3').value = top3;
+                    initCustomSelect('broadcast-entel-1', 'compact-select');
+                    initCustomSelect('broadcast-entel-2', 'compact-select');
+                    initCustomSelect('broadcast-entel-3', 'compact-select align-right');
+                    
+                    const notif = document.getElementById('auto-suggest-notif-broadcast');
+                    if (notif) {
+                        const name1 = allEntels.find(e => e.key === top1)?.name || top1;
+                        const name2 = allEntels.find(e => e.key === top2)?.name || top2;
+                        const name3 = allEntels.find(e => e.key === top3)?.name || top3;
+                        notif.innerHTML = `✨ <span class="text-white">Intervenants suggérés :</span> ${name1}, ${name2}, ${name3}`;
+                        notif.classList.remove('hidden');
+                        setTimeout(() => notif.classList.add('hidden'), 5000);
+                    }
+                }
+            }
         }
 
         // --- HELPER FONCTIONS CONSOLE LOGS & TEXTAREA AUTO-RESIZE ---
