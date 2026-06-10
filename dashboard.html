@@ -1636,13 +1636,14 @@
         // AUTO-SUGGEST ENTELS
         // ==========================================
         const entelKeywords = {
-            'kronopol9': ['argent', 'économie', 'finance', 'crypto', 'banque', 'inflation', 'capital', 'marché', 'richesse', 'prix', 'chômage', 'bitcoin', 'dollar', 'bourse'],
-            'nexofin_x': ['argent', 'économie', 'finance', 'crypto', 'banque', 'inflation', 'capital', 'marché', 'richesse', 'prix', 'chômage', 'bitcoin', 'dollar', 'bourse', 'impôt', 'taxe'],
-            'cyphernet_3': ['loi', 'gouvernement', 'politique', 'état', 'sécurité', 'justice', 'droit', 'société', 'république', 'démocratie', 'liberté', 'censure'],
-            'voxidem_alpha': ['loi', 'gouvernement', 'politique', 'état', 'sécurité', 'justice', 'droit', 'société', 'république', 'démocratie', 'guerre', 'paix', 'ordre', 'pouvoir'],
-            'biogen_theta': ['santé', 'médecine', 'maladie', 'hôpital', 'virus', 'vie', 'biologie', 'génétique', 'corps', 'soin', 'vaccin', 'mort', 'cancer'],
-            'luminax_3': ['dieu', 'religion', 'spiritualité', 'esprit', 'âme', 'conscience', 'foi', 'croyance', 'univers', 'énergie', 'amour', 'paix', 'karma'],
-            'veve_sage': ['dieu', 'religion', 'spiritualité', 'esprit', 'âme', 'conscience', 'foi', 'croyance', 'univers', 'énergie', 'vodou', 'lwa', 'afrique', 'ancêtre', 'magie', 'rituel']
+            'omnix_7': ['sport', 'espò', 'football', 'foutbòl', 'soccer', 'joueur', 'jwè', 'player', 'messi', 'ronaldo', 'basketball', 'baskètbòl', 'musique', 'mizik', 'music', 'art', 'atizay', 'technologie', 'technology', 'teknoloji', 'ordinateur', 'ai', 'ia', 'intelligence'],
+            'kronopol9': ['argent', 'lajan', 'kòb', 'kob', 'money', 'économie', 'ekonomi', 'economy', 'finance', 'crypto', 'banque', 'bank', 'inflation', 'capital', 'marché', 'market', 'komès', 'richesse', 'prix', 'pri', 'price', 'chômage', 'job', 'travay', 'bitcoin', 'dollar', 'bourse'],
+            'nexofin_x': ['argent', 'lajan', 'kòb', 'kob', 'money', 'économie', 'ekonomi', 'economy', 'finance', 'crypto', 'banque', 'bank', 'inflation', 'capital', 'marché', 'market', 'komès', 'richesse', 'prix', 'pri', 'price', 'chômage', 'job', 'travay', 'bitcoin', 'dollar', 'bourse', 'impôt', 'taxe', 'tax'],
+            'cyphernet_3': ['loi', 'lalwa', 'law', 'gouvernement', 'gouvènman', 'government', 'politique', 'politik', 'politics', 'état', 'eta', 'state', 'sécurité', 'sekirite', 'security', 'justice', 'jistis', 'droit', 'dwa', 'rights', 'société', 'république', 'démocratie', 'liberté', 'censure'],
+            'voxidem_alpha': ['loi', 'lalwa', 'law', 'gouvernement', 'gouvènman', 'government', 'politique', 'politik', 'politics', 'état', 'eta', 'state', 'sécurité', 'sekirite', 'security', 'justice', 'jistis', 'droit', 'dwa', 'rights', 'société', 'république', 'démocratie', 'guerre', 'gè', 'war', 'paix', 'pè', 'peace', 'ordre', 'pouvoir', 'pouvwa', 'power', 'lapolis', 'police'],
+            'biogen_theta': ['santé', 'sante', 'health', 'médecine', 'medicine', 'maladie', 'maladi', 'disease', 'hôpital', 'lopital', 'hospital', 'doktè', 'doctor', 'virus', 'vie', 'lavi', 'life', 'biologie', 'génétique', 'corps', 'kò', 'body', 'soin', 'vaccin', 'mort', 'mò', 'cancer', 'kansè', 'medikaman'],
+            'luminax_3': ['dieu', 'bondye', 'god', 'religion', 'relijyon', 'spiritualité', 'esprit', 'lespri', 'spirit', 'âme', 'nam', 'soul', 'conscience', 'konsyans', 'foi', 'lafwa', 'faith', 'croyance', 'univers', 'énergie', 'enèji', 'amour', 'lanmou', 'love', 'paix', 'karma'],
+            'veve_sage': ['dieu', 'bondye', 'god', 'religion', 'relijyon', 'spiritualité', 'esprit', 'lespri', 'spirit', 'âme', 'nam', 'soul', 'conscience', 'konsyans', 'foi', 'lafwa', 'faith', 'croyance', 'univers', 'énergie', 'enèji', 'vodou', 'lwa', 'afrique', 'ancêtre', 'zansèt', 'magie', 'rituel', 'majik']
         };
 
         let autoSuggestTimer = null;
@@ -1671,45 +1672,61 @@
             }
             
             const sorted = Object.keys(scores).map(key => ({ id: key, score: scores[key] })).sort((a, b) => b.score - a.score);
+            const allEntels = getAllEntels();
+            
+            let top1, top2, top3;
             
             if (sorted[0].score > 0) {
-                const top1 = sorted[0].id;
-                const top2 = sorted[1].score > 0 ? sorted[1].id : sorted[2].id;
-                const top3 = sorted[2].id;
+                top1 = sorted[0].id;
+                top2 = sorted[1].score > 0 ? sorted[1].id : sorted[2].id;
+                top3 = sorted[2].id;
+            } else {
+                // FALLBACK : Si aucun mot-clé n'est trouvé, choisir OmniX-7 (généraliste) + 2 autres aléatoires
+                top1 = 'omnix_7';
+                const others = allEntels.filter(e => e.key !== 'omnix_7').map(e => e.key);
+                // Mélanger les autres
+                for (let i = others.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [others[i], others[j]] = [others[j], others[i]];
+                }
+                top2 = others[0];
+                top3 = others[1];
+            }
                 
-                const allEntels = getAllEntels();
+            if (mode === 'debate') {
+                document.getElementById('entel-left-select').value = top1;
+                document.getElementById('entel-right-select').value = top2;
+                initCustomSelect('entel-left-select', 'compact-select');
+                initCustomSelect('entel-right-select', 'compact-select align-right');
                 
-                if (mode === 'debate') {
-                    document.getElementById('entel-left-select').value = top1;
-                    document.getElementById('entel-right-select').value = top2;
-                    initCustomSelect('entel-left-select', 'compact-select');
-                    initCustomSelect('entel-right-select', 'compact-select align-right');
-                    
-                    const notif = document.getElementById('auto-suggest-notif-debate');
-                    if (notif) {
-                        const name1 = allEntels.find(e => e.key === top1)?.name || top1;
-                        const name2 = allEntels.find(e => e.key === top2)?.name || top2;
-                        notif.innerHTML = `✨ <span class="text-white">Entels suggérés :</span> ${name1} vs ${name2}`;
-                        notif.classList.remove('hidden');
-                        setTimeout(() => notif.classList.add('hidden'), 5000);
-                    }
-                } else if (mode === 'broadcast') {
-                    document.getElementById('broadcast-entel-1').value = top1;
-                    document.getElementById('broadcast-entel-2').value = top2;
-                    document.getElementById('broadcast-entel-3').value = top3;
-                    initCustomSelect('broadcast-entel-1', 'compact-select');
-                    initCustomSelect('broadcast-entel-2', 'compact-select');
-                    initCustomSelect('broadcast-entel-3', 'compact-select align-right');
-                    
-                    const notif = document.getElementById('auto-suggest-notif-broadcast');
-                    if (notif) {
-                        const name1 = allEntels.find(e => e.key === top1)?.name || top1;
-                        const name2 = allEntels.find(e => e.key === top2)?.name || top2;
-                        const name3 = allEntels.find(e => e.key === top3)?.name || top3;
-                        notif.innerHTML = `✨ <span class="text-white">Intervenants suggérés :</span> ${name1}, ${name2}, ${name3}`;
-                        notif.classList.remove('hidden');
-                        setTimeout(() => notif.classList.add('hidden'), 5000);
-                    }
+                const notif = document.getElementById('auto-suggest-notif-debate');
+                if (notif) {
+                    const name1 = allEntels.find(e => e.key === top1)?.name || top1;
+                    const name2 = allEntels.find(e => e.key === top2)?.name || top2;
+                    notif.innerHTML = sorted[0].score > 0 
+                        ? `✨ <span class="text-white">Entels suggérés :</span> ${name1} vs ${name2}`
+                        : `🤖 <span class="text-white">Sujet complexe détecté :</span> ${name1} (Généraliste) vs ${name2} sélectionnés`;
+                    notif.classList.remove('hidden');
+                    setTimeout(() => notif.classList.add('hidden'), 5000);
+                }
+            } else if (mode === 'broadcast') {
+                document.getElementById('broadcast-entel-1').value = top1;
+                document.getElementById('broadcast-entel-2').value = top2;
+                document.getElementById('broadcast-entel-3').value = top3;
+                initCustomSelect('broadcast-entel-1', 'compact-select');
+                initCustomSelect('broadcast-entel-2', 'compact-select');
+                initCustomSelect('broadcast-entel-3', 'compact-select align-right');
+                
+                const notif = document.getElementById('auto-suggest-notif-broadcast');
+                if (notif) {
+                    const name1 = allEntels.find(e => e.key === top1)?.name || top1;
+                    const name2 = allEntels.find(e => e.key === top2)?.name || top2;
+                    const name3 = allEntels.find(e => e.key === top3)?.name || top3;
+                    notif.innerHTML = sorted[0].score > 0 
+                        ? `✨ <span class="text-white">Intervenants suggérés :</span> ${name1}, ${name2}, ${name3}`
+                        : `🤖 <span class="text-white">Sujet complexe détecté :</span> ${name1} (Généraliste) et équipe sélectionnés`;
+                    notif.classList.remove('hidden');
+                    setTimeout(() => notif.classList.add('hidden'), 5000);
                 }
             }
         }
