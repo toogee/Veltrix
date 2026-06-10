@@ -2752,82 +2752,88 @@
                 p += `Pour faire référence au sujet, utilise uniquement : "ce sujet", "cette question", "le sujet soumis", "ce débat", ou une référence indirecte.\n\n`;
             }
 
-            // RÈGLE 3 : PREMIER TOUR — salutation + annonce sujet
+            // RÈGLE 3 : GESTION DES PHASES DU DÉBAT (Introduction, Exposition, Confrontation, Synthèse)
+            const isLastTurn = (turnIndex === totalTurns - 1);
+            const isExposition = (turnIndex === 1);
+            
+            p += `═ STRUCTURE DU DÉBAT ═\n`;
             if (isFirstTurn) {
-                p += `═ PREMIER TOUR ═\n`;
+                // PHASE 1: INTRODUCTION (Animateur)
+                p += `PHASE ACTUELLE : INTRODUCTION (Tour ${turnIndex + 1}/${totalTurns})\n`;
                 if (isBroadcast) {
-                    p += `Tu DOIS animer l'ouverture de cette émission :\n`;
-                    p += `  1. Salue chaleureusement l'utilisateur (${userName || 'notre auditeur'}) et remercie-le d'avoir lancé cette émission sur le sujet : "${topic}".\n`;
-                    p += `  2. Salue tes co-débatteurs (${opponentName}).\n`;
+                    p += `Tu es l'animateur et tu ouvres l'émission :\n`;
+                    p += `  1. Salue chaleureusement l'utilisateur (${userName || 'notre auditeur'}) et remercie-le d'avoir lancé l'émission sur ce sujet : "${topic}".\n`;
+                    p += `  2. Présente rapidement tes co-débatteurs (${opponentName}).\n`;
                     p += `  3. Donne ta position de manière vive et rapide (1 phrase).\n`;
-                    p += `  4. Pose une question directe à l'un de tes co-débatteurs (${opponentName.split(' & ')[0]}) pour démarrer le débat.\n\n`;
+                    p += `  4. Pose une question directe à ${opponentName.split(' & ')[0]} pour lancer le débat.\n\n`;
                 } else {
                     if (userName) {
-                        p += `Tu DOIS : (1) Saluer ${userName} par son prénom. (2) Annoncer le sujet "${topic}". (3) Donner ta position initiale. (4) Lancer un argument provocateur à ${opponentName}.\n\n`;
+                        p += `Tu DOIS : (1) Saluer ${userName}. (2) Annoncer le sujet "${topic}". (3) Donner ta position initiale. (4) Lancer un argument provocateur à ${opponentName}.\n\n`;
                     } else {
                         p += `Annonce le sujet "${topic}", présente-toi brièvement, et donne ta position initiale.\n\n`;
                     }
                 }
+            } else if (isLastTurn) {
+                // PHASE 4: SYNTHÈSE / CONCLUSION
+                p += `PHASE ACTUELLE : CONCLUSION (Dernier tour ${turnIndex + 1}/${totalTurns})\n`;
+                p += `C'est le mot de la fin pour cette émission. Tu NE DOIS PLUS poser de questions ouvertes.\n`;
+                p += `  1. Résume brièvement ta position finale sur ce sujet.\n`;
+                p += `  2. Formule une conclusion marquante ou une ouverture d'esprit.\n`;
+                if (isBroadcast) {
+                    p += `  3. Remercie les auditeurs de Veltrix et clôture l'émission de manière formelle.\n\n`;
+                }
+            } else if (isExposition) {
+                // PHASE 2: EXPOSITION (Deuxième Entel)
+                p += `PHASE ACTUELLE : EXPOSITION (Tour ${turnIndex + 1}/${totalTurns})\n`;
+                p += `C'est ta première prise de parole :\n`;
+                if (pendingQuestion) {
+                    p += `  1. Réponds directement à la question d'introduction posée par ${opponentName} : "${pendingQuestion}"\n`;
+                }
+                p += `  2. Expose ta thèse principale de manière forte et claire concernant le sujet.\n`;
+                p += `  3. Pose une question de relance à ${opponentName}.\n\n`;
+            } else {
+                // PHASE 3: CONFRONTATION
+                p += `PHASE ACTUELLE : CONFRONTATION (Tour ${turnIndex + 1}/${totalTurns})\n`;
+                if (lastOpponentMessage) {
+                    p += `  1. Ta PREMIÈRE phrase doit réfuter ou nuancer CET argument spécifique de ${opponentName} : "${lastOpponentMessage}"\n`;
+                }
+                if (pendingQuestion) {
+                    p += `  2. Réponds brièvement à la question de ${opponentName} : "${pendingQuestion}"\n`;
+                }
+                p += `  3. Avance UN NOUVEL argument (historique, économique, ou concret) qui n'a pas encore été dit.\n`;
+                if (isQuestionTurn) {
+                    p += `  4. Termine par une question directe et incisive à ${opponentName} basée sur le point faible de son approche.\n`;
+                    p += `     Format : "→ ${opponentName}, [ta question spécifique] ?"\n`;
+                }
+                p += `\n`;
             }
 
-            // RÈGLE 4 : RÉPONDRE À CE QU'A DIT L'ADVERSAIRE
-            if (!isFirstTurn && lastOpponentMessage) {
-                p += `═ RÉPONSE OBLIGATOIRE À ${opponentName.toUpperCase()} ═\n`;
-                p += `${opponentName} vient de dire : "${lastOpponentMessage}"\n`;
-                p += `Ta PREMIÈRE phrase doit réfuter ou nuancer CET argument spécifique (sans réécrire le texte du sujet).\n\n`;
-            }
-
-            // RÈGLE 5 : RÉPONDRE À UNE QUESTION DIRECTE
-            if (pendingQuestion) {
-                p += `═ QUESTION DE ${opponentName.toUpperCase()} À LAQUELLE TU DOIS RÉPONDRE ═\n`;
-                p += `Question posée : "${pendingQuestion}"\n`;
-                p += `Commence par répondre directement (1 phrase), puis continue ton argument.\n\n`;
-            }
-
-            // RÈGLE 6 : POSER UNE QUESTION (basée sur le dernier argument adverse)
-            if (isQuestionTurn && !isFirstTurn && lastOpponentMessage) {
-                p += `═ POSE UNE QUESTION À ${opponentName.toUpperCase()} ═\n`;
-                p += `Après ton argument, pose une question DIRECTE basée sur le POINT LE PLUS FAIBLE de ce qu'a dit ${opponentName} : "${lastOpponentMessage}"\n`;
-                p += `Format : "→ ${opponentName}, [ta question spécifique] ?"\n\n`;
-            }
-
-            // RÈGLE 7 : ANTI-RÉPÉTITION — ARGUMENT DIFFÉRENT À CHAQUE TOUR
-            p += `═ ANTI-RÉPÉTITION (TRÈS IMPORTANT) ═\n`;
-            p += `Tu dois apporter un NOUVEL argument à chaque tour. Voici les angles possibles (choisis celui que tu n'as PAS encore utilisé) :\n`;
-            p += `  1. Dimension historique / précédents\n`;
-            p += `  2. Dimension économique / intérêts financiers\n`;
-            p += `  3. Dimension géopolitique / rapport de force\n`;
-            p += `  4. Dimension institutionnelle / règles du jeu\n`;
-            p += `  5. Dimension technologique / information\n`;
-            p += `  6. Dimension éthique / légitimité morale\n`;
-            p += `  7. Dimension sociale / impact populaire\n`;
-            p += `  8. Dimension juridique / droit international\n`;
-            p += `  9. Contre-exemple concret / cas similaire dans l'histoire\n`;
-            p += `  10. Chiffres / données empiriques liées au sujet\n`;
-            p += `  11. Citation d'un fait récent lié au sujet\n`;
-            p += `  12. Conséquences à long terme si la thèse adverse est vraie\n`;
+            // RÈGLE 4 : ANTI-DÉRIVE ET RAPPEL DU SUJET
+            p += `═ RÈGLE ANTI-DÉRIVE (TRÈS IMPORTANT) ═\n`;
+            p += `Il est INTERDIT de t'éloigner du sujet central. Tu dois utiliser des termes et concepts liés à "${topic}" dans ton argumentation.\n`;
             if (allPreviousArgs && allPreviousArgs.length > 0) {
-                p += `\nTes arguments déjà utilisés (NE PAS réutiliser) :\n`;
+                p += `Tes arguments déjà utilisés (NE PAS réutiliser les mêmes idées) :\n`;
                 allPreviousArgs.forEach((a, i) => { p += `  - "${a.text.slice(0, 70)}..."\n`; });
             }
-            p += `Angle recommandé pour CE tour (tour ${turnIndex + 1}/${totalTurns}) : angle n°${(turnIndex % 12) + 1}.\n\n`;
+            p += `\n`;
 
-            // RÈGLE 8 : TON ET FORMAT
+            // RÈGLE 5 : TON ET FORMAT
             p += `═ TON ET FORMAT ═\n`;
+            p += `Phrases courtes et percutantes. Style radio/podcast dynamique.\n`;
             if (isBroadcast) {
-                if (isFirstTurn) {
-                    p += `Mode radio : ton narratif, vivant, avec analogies. 5-7 phrases. 130 mots max.\n`;
+                if (isFirstTurn || isLastTurn) {
+                    p += `5 à 6 phrases courtes. 100-120 mots max.\n`;
                 } else {
-                    p += `Mode radio : ton narratif, vivant, avec analogies. 3-4 phrases. 80 mots max.\n`;
+                    p += `3 à 4 phrases courtes. 80 mots max.\n`;
                 }
             } else {
-                p += `Mode tchat : direct, humain, incisif. 3-4 phrases. 70-90 mots. 1-2 émojis si naturel.\n`;
+                p += `Mode tchat : direct, incisif. 3-4 phrases. 70-90 mots. 1-2 émojis si naturel.\n`;
             }
             p += `Parle comme un expert humain passionné, PAS comme une IA.\n`;
             if (language === 'Haitian Creole' || language === 'ht') {
                 p += `Kreyòl: itilize kreyòl oral, natirèl. "Pou mwen menm...", "Ann gade reyalite a...", "Sa yo di a pa vre paske...".\n`;
             }
-            p += `Mentionne ${opponentName} max UNE fois. Ne dis JAMAIS que tu es une IA.\n`;
+            p += `Mentionne ${opponentName} max UNE fois. Ne dis JAMAIS que tu es une IA ni un modèle de langage.\n`;
 
             return p;
         }
@@ -3994,23 +4000,22 @@
                             myPastArgs
                         );
 
-                        let userPrompt = "";
+                        let userPrompt = `This is a live table-round audio broadcast on the topic: "${topic}".\n`;
+                        const isLastTurn = (step === maxSteps - 1);
+                        const isExposition = (step === 1);
+                        
                         if (isFirstTurn) {
-                            const nameToUse = userName || (lang === 'ht' ? 'oditè a' : (lang === 'en' ? 'our listener' : (lang === 'es' ? 'nuestro oyente' : 'notre auditeur')));
-                            if (lang === 'ht') {
-                                userPrompt = `[Emisyon an fèk kòmanse. Kòm animatè, ou DWE: (1) Salye itilizatè a (${nameToUse}) epi remèsye l pou sijè sa a. (2) Salye lòt Entel yo (${otherSpeakersNames}). (3) Repete sijè a "${topic}". (4) Poze youn nan yo yon kesyon dirèk pou deba a kòmanse. Pale sèlman nan lang Kreyòl Ayisyen.]`;
-                            } else if (lang === 'en') {
-                                userPrompt = `[The broadcast has just started. As the host, you MUST: (1) Greet the user (${nameToUse}) and thank them for the topic. (2) Greet the other co-hosts (${otherSpeakersNames}). (3) Repeat the topic "${topic}". (4) Ask a direct question to one of them to start the debate. Speak only in English.]`;
-                            } else if (lang === 'es') {
-                                userPrompt = `[La emisión acaba de comenzar. Como presentador, DEBES: (1) Saludar al usuario (${nameToUse}) y agradecerle por el tema. (2) Saludar a los otros participantes (${otherSpeakersNames}). (3) Repetir el tema "${topic}". (4) Hacer una pregunta directa a uno de ellos para iniciar el debate. Habla solo en Español.]`;
-                            } else {
-                                userPrompt = `[L'émission vient de commencer. En tant qu'animateur, tu DOIS: (1) Saluer l'utilisateur (${nameToUse}) et le remercier pour ce sujet. (2) Saluer tes co-débatteurs (${otherSpeakersNames}). (3) Répéter le sujet "${topic}". (4) Poser une question directe à l'un d'entre eux pour lancer le débat. Parle uniquement en Français.]`;
-                            }
+                            userPrompt += `[SYSTEM] The broadcast has just started. You are the HOST. Introduce the topic, state your position, and ask your co-host a question.\n`;
+                        } else if (isLastTurn) {
+                            userPrompt += `[SYSTEM] This is the LAST TURN of the broadcast. You must synthesize the debate and CONCLUDE. Do NOT ask any more open questions.\n`;
+                        } else if (isExposition) {
+                            userPrompt += `[SYSTEM] This is your first turn to speak. Answer the host's question and expose your main thesis.\n`;
                         } else {
-                            userPrompt = `This is a live table-round audio broadcast on the topic: "${topic}".\n`
-                                       + `It is your turn now, ${currentSpeaker.name}. Speak dynamically in ${apiLang}.\n`
-                                       + `Here is the audio transcript history so far:\n`
-                                       + broadcastHistory.map(h => `${h.sender}: ${h.text}`).join('\n');
+                            userPrompt += `[SYSTEM] It is your turn now, ${currentSpeaker.name}. Focus on confronting the previous argument and bringing a new point.\n`;
+                        }
+                        
+                        if (!isFirstTurn) {
+                            userPrompt += `Here is the audio transcript history so far:\n` + broadcastHistory.map(h => `${h.sender}: ${h.text}`).join('\n');
                         }
 
                         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
