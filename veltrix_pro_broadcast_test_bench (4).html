@@ -491,11 +491,24 @@
                 return;
             }
 
-            // Initialiser l'Web Audio API si elle n'est pas encore créée
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 32;
+            // Initialiser l'Web Audio API et forcer le déblocage (iOS/Android)
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioCtx.createAnalyser();
+                    analyser.fftSize = 32;
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                // --- AJOUT IMPORTANT: Jouer un buffer silencieux pour débloquer l'audio sur mobile ---
+                const buffer = audioCtx.createBuffer(1, 1, 22050);
+                const source = audioCtx.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioCtx.destination);
+                source.start(0);
+            } catch (e) {
+                console.warn("AudioContext unlock failed:", e);
             }
 
             shouldStop = false;

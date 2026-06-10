@@ -3693,6 +3693,13 @@
                 if (broadcastAudioCtx.state === 'suspended') {
                     broadcastAudioCtx.resume();
                 }
+                // --- AJOUT IMPORTANT: Jouer un buffer silencieux pour débloquer l'audio sur mobile (Safari/Android) ---
+                const buffer = broadcastAudioCtx.createBuffer(1, 1, 22050);
+                const source = broadcastAudioCtx.createBufferSource();
+                source.buffer = buffer;
+                source.connect(broadcastAudioCtx.destination);
+                source.start(0);
+                // ----------------------------------------------------------------------------------------------------
             } catch (e) {
                 console.warn("AudioContext unlock failed:", e);
             }
@@ -3800,6 +3807,13 @@
                 if (broadcastAudioCtx.state === 'suspended') {
                     broadcastAudioCtx.resume();
                 }
+                // --- AJOUT IMPORTANT: Jouer un buffer silencieux pour débloquer l'audio sur mobile (Safari/Android) ---
+                const buffer = broadcastAudioCtx.createBuffer(1, 1, 22050);
+                const source = broadcastAudioCtx.createBufferSource();
+                source.buffer = buffer;
+                source.connect(broadcastAudioCtx.destination);
+                source.start(0);
+                // ----------------------------------------------------------------------------------------------------
             } catch (e) {
                 console.warn("AudioContext unlock failed:", e);
             }
